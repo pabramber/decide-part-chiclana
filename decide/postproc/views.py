@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
+from math import floor
 
 class PostProcView(APIView):
 
@@ -75,8 +75,8 @@ class PostProcView(APIView):
 
     def post(self, request):
         """
-         * type: IDENTITY | DHONDT
-         * seats: int (just in case type is DHONDT)
+         * type: IDENTITY | DHONDT | DROOP
+         * seats: int (just in case type is DHONDT or DROOP)
          * options: [
             {
              option: str,
@@ -97,5 +97,7 @@ class PostProcView(APIView):
             response = self.identity(opts)
         elif t == 'DHONDT':
             response = self.dhondt(opts, seats)
+        elif t == 'DROOP':
+            response = self.droop(opts, seats)
 
         return response
