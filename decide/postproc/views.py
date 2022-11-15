@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from math import floor
+from collections import Counter
 
 class PostProcView(APIView):
 
@@ -62,12 +63,12 @@ class PostProcView(APIView):
 
         k = seats - sum_e
         r.sort(key = lambda x: -x[0])
-        best_r_index = {i for _, i in r[:k]}
-
+        best_r_index = Counter(i for _, i in (r*k)[:k])
+        
         for i, opt in enumerate(options):
             out.append({
                 **opt,
-                'postproc': e[i] + 1 if i in best_r_index else e[i],
+                'postproc': e[i] + best_r_index[i] if i in best_r_index else e[i],
             })
 
         out.sort(key=lambda x: (-x['postproc'], -x['votes']))
