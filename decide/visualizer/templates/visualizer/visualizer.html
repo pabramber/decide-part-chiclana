@@ -43,6 +43,8 @@
 
                 <canvas id="bar-chart"></canvas>
                 <canvas id="pie-chart"></canvas>
+                <canvas id="polar-chart-post"></canvas>
+                <canvas id="polar-chart-votes"></canvas>
             </div>
 
         </div>
@@ -104,7 +106,6 @@
 
         ctx = document.getElementById("pie-chart").getContext("2d");
         let randomColors = [...Array(voting.postproc.length).keys()].map(i => "#" + Math.floor(random(i*10)*16777215).toString(16));
-        console.log(randomColors)
         var myChart = new Chart(ctx, {
             type: 'pie',
             data: {
@@ -131,6 +132,55 @@
                 responsive: true,
                 title: {
                     text: voting.name,
+                    display: true
+                }
+            }
+        });
+
+        ctx = document.getElementById("polar-chart-post").getContext("2d");
+        randomColors = [...Array(voting.postproc.length).keys()].map(i => "#" + Math.floor(random((i+100)*10)*16777215).toString(16));
+        var myChart = new Chart(ctx, {
+            type: 'polarArea',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                    label: 'Postproc',
+                    data: postproc,
+                    backgroundColor: randomColors,
+                    borderColor: randomColors,
+                    borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    text: voting.name + " (postproc)",
+                    display: true
+                }
+            }
+        });
+
+        ctx = document.getElementById("polar-chart-votes").getContext("2d");
+        var myChart = new Chart(ctx, {
+            type: 'polarArea',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                    label: 'Votes',
+                    data: votes,
+                    backgroundColor: randomColors,
+                    borderColor: randomColors,
+                    borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    text: voting.name + " (votes)",
                     display: true
                 }
             }
