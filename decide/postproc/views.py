@@ -45,6 +45,34 @@ class PostProcView(APIView):
         out.sort(key=lambda x: (-x['postproc'], -x['votes']))
         return Response(out)
 
+    def droop(self, options, seats):
+        out = []
+
+        e, r = [], []
+        sum_e = 0
+        m = sum([opt['votes'] for opt in options])
+        q = round(1 + m / (seats + 1))
+
+        for i, opt in enumerate(options):
+            ei = floor(opt['votes'] / q)
+            ri = opt['votes'] - q*ei
+            e.append(ei)
+            r.append((ri, i))
+            sum_e += ei
+
+        k = seats - sum_e
+        r.sort(key = lambda x: -x[0])
+        best_r_index = {i for _, i in r[:k]}
+
+        for i, opt in enumerate(options):
+            out.append({
+                **opt,
+                'postproc': e[i] + 1 if i in best_r_index else e[i],
+            })
+
+        out.sort(key=lambda x: (-x['postproc'], -x['votes']))
+        return Response(out)
+
     def post(self, request):
         """
          * type: IDENTITY | DHONDT
