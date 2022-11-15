@@ -143,3 +143,27 @@ class RegisterView(CreateView):
             return HttpResponse("Integrity Error raised", status=HTTP_400_BAD_REQUEST)
         return redirect("/")
 
+
+    
+class LoginView(CreateView):
+
+    template_name = "authentication/login.html"
+    form_class = CustomUserCreationForm
+    model = User
+
+    def post(self, request):
+        values = request.POST   
+
+        username = values['username']
+        pass1 = values['password1']
+
+        user = authenticate(request, username=username, password=pass1)
+        if user is not None:
+            login(request, user)
+            print("authenticate")
+        else:
+            print("usuario no autenticado")
+            return HttpResponse("Username and password do not match", status=HTTP_400_BAD_REQUEST)
+
+        return redirect("/")
+
