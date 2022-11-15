@@ -5,6 +5,7 @@ from django.dispatch import receiver
 
 from base import mods
 from base.models import Auth, Key
+from postproc.models import PostprocTypeEnum
 
 
 class Question(models.Model):
@@ -32,6 +33,8 @@ class Voting(models.Model):
     name = models.CharField(max_length=200)
     desc = models.TextField(blank=True, null=True)
     question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE)
+    postproc_type = models.CharField(max_length=255, choices=PostprocTypeEnum.choices(), default='IDENTITY')
+    number_seats = models.PositiveIntegerField(default=1)
 
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
@@ -112,8 +115,8 @@ class Voting(models.Model):
                 'number': opt.number,
                 'votes': votes
             })
-
-        data = { 'type': 'IDENTITY', 'options': opts }
+        print(self.postproc_type)
+        data = { 'type': self.postproc_type, 'seats': self.number_seats, 'options': opts }
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp
