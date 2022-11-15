@@ -115,7 +115,7 @@ class Voting(models.Model):
                 'number': opt.number,
                 'votes': votes
             })
-        print(self.postproc_type)
+        
         data = { 'type': self.postproc_type, 'seats': self.number_seats, 'options': opts }
         postp = mods.post('postproc', json=data)
 
