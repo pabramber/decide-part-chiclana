@@ -40,6 +40,8 @@
                         </tr>
                     </tbody>
                 </table>
+
+                <canvas id="bar-chart"></canvas>
             </div>
 
         </div>
@@ -52,6 +54,9 @@
     <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
 
+    <!-- Chartjs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+
     <script>
         var voting = {{voting|safe}};
         var app = new Vue({
@@ -62,5 +67,40 @@
             }
         })
     </script>
+
+    <script>
+        let labels = voting.postproc.map((opt) => opt.option)
+        let postproc = voting.postproc.map((opt) => opt.postproc)
+        let votes = voting.postproc.map((opt) => opt.votes)
+
+        let ctx = document.getElementById("bar-chart").getContext("2d");
+        let chart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                    label: "Post proc",
+                    backgroundColor: 'rgba(84, 153, 199, 0.5)',
+                    borderColor: "#417690",
+                    data: postproc
+                    },
+                    {
+                    label: "Votes",
+                    backgroundColor: "rgba(236, 112, 99, 0.5)",
+                    borderColor: "#417690",
+                    data: votes
+                    }
+                ]
+            },
+            options: {
+                title: {
+                    text: voting.name,
+                    display: true
+                }
+            }
+        });
+    </script>
+    
 </body>
 {% endblock %}
