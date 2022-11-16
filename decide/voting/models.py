@@ -33,6 +33,15 @@ class Voting(models.Model):
     name = models.CharField(max_length=200)
     desc = models.TextField(blank=True, null=True)
     question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE)
+
+    voting_types = (
+        ('CV', 'CLASSIC VOTING'),
+        ('PV', 'PREFERENCE VOTING'),
+        ('BV', 'BINARY VOTING'),
+        ('SV', 'SCORE VOTING'),)
+
+    voting_type = models.CharField(max_length=2, choices=voting_types, default='CV')
+
     postproc_type = models.CharField(max_length=255, choices=PostprocTypeEnum.choices(), default='IDENTITY')
     number_seats = models.PositiveIntegerField(default=1)
 
