@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
+from store.models import Vote
 from base import mods
 from base.models import Auth, Key
 from postproc.models import PostprocTypeEnum
@@ -10,6 +10,9 @@ from postproc.models import PostprocTypeEnum
 
 class Question(models.Model):
     desc = models.TextField()
+    TYPES = [('O', 'Options'),
+            ('S','Score')]
+    tipo = models.CharField(max_length=1, choices=TYPES, default='O')  
     yes_no_question = models.BooleanField(verbose_name='Yes/No question', default=False)
 
     def save(self):
@@ -20,6 +23,20 @@ class Question(models.Model):
 
     def __str__(self):
         return self.desc
+@receiver(post_save, sender=Question)
+def my_handler(sender, instance, **kwargs):
+    if instance.tipo == 'S':
+        instance.options.all().delete()
+        instance.options.create(option='1')
+        instance.options.create(option='2')
+        instance.options.create(option='3')
+        instance.options.create(option='4')
+        instance.options.create(option='5')
+        instance.options.create(option='6')
+        instance.options.create(option='7')
+        instance.options.create(option='8')
+        instance.options.create(option='9')
+        instance.options.create(option='10')
 
 
 class QuestionOption(models.Model):
@@ -27,7 +44,7 @@ class QuestionOption(models.Model):
     number = models.PositiveIntegerField(blank=True, null=True)
     option = models.TextField()
 
-    def save(self):
+    def save(self, *args, **kwargs):
         if self.question.yes_no_question:
             if not self.option == 'Sí' and not self.option == 'No':
                 return ""
