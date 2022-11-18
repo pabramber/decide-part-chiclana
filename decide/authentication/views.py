@@ -100,12 +100,43 @@ class CustomUserCreationForm(UserCreationForm):
             return True
         return False
   
-
     def clean_password2(self, password1, password2):  
         if password1 and password2 and password1 != password2:  
             return True
         return False
+    
+    def clean_password_lenght(self, password1):
+        if len(password1)<8:
+            return True
+        else:
+            return False
 
+    def clean_password_commonly(self, password1):
+        commonly_passwords = ['12345678 ', '11111111', '00000000', 'password', 'password0', 'password1', 'decide', 'decide password', 'password decide', '01234567', 
+        '2345678', 'qwertyui', 'asdfghjk', 'zxcvbnm', 'password123', 'password12', 'password1234', 'iloveyou', 'welcome', '1q2w3e4r', 'adminadmin', 'admin123', '1234567890',
+        '0987654321', '87654321', 'google12', 'google00', 'monkey', 'dragon']
+
+        ret = False
+        for common_password in commonly_passwords:
+
+            if (password1==common_password):
+                ret = True
+                break
+        
+        return ret
+
+    def clean_password_too_similar(self, password, username, first_name, last_name):
+        if (password.__contains__(username) | password.__contains__(first_name) | password.__contains__(last_name)):
+            return True
+            
+        else:
+            return False
+
+    def clean_password_numeric(self, password):
+        if (password.isnumeric()):
+            return True
+        else:
+            return False
 
 
 class RegisterView(CreateView):
@@ -116,12 +147,12 @@ class RegisterView(CreateView):
 
     def get_form(self, form_class=None):
         form = super(RegisterView, self).get_form()
-        form.fields['username'].widget = forms.TextInput(attrs={'class':'form-control mb-2'})
-        form.fields['password1'].widget = forms.PasswordInput(attrs={'class':'form-control mb-2'}) 
-        form.fields['password2'].widget = forms.PasswordInput(attrs={'class':'form-control mb-2'}) 
-        form.fields['first_name'].widget = forms.TextInput(attrs={'class':'form-control mb-2'}) 
-        form.fields['last_name'].widget = forms.TextInput(attrs={'class':'form-control mb-2'}) 
-        form.fields['email'].widget = forms.EmailInput(attrs={'class':'form-control mb-2'}) 
+        form.fields['username'].widget = forms.TextInput(attrs={'class':'form-control mb-2', 'placeholder':'150 characters or fewer. Letters, digits and @/./+/-/_ only.'})
+        form.fields['password1'].widget = forms.PasswordInput(attrs={'class':'form-control mb-2', 'placeholder':'8 characters or more. Can\'t be too similar to your personal data or a commonly password or entirely numeric'}) 
+        form.fields['password2'].widget = forms.PasswordInput(attrs={'class':'form-control mb-2', 'placeholder':'Must be the same as the previous password'}) 
+        form.fields['first_name'].widget = forms.TextInput(attrs={'class':'form-control mb-2', 'placeholder':'Jhon'}) 
+        form.fields['last_name'].widget = forms.TextInput(attrs={'class':'form-control mb-2', 'placeholder':'Doe'}) 
+        form.fields['email'].widget = forms.EmailInput(attrs={'class':'form-control mb-2', 'placeholder':'Insert an email like this: jhondoe@example.com'}) 
 
         return form
 
@@ -131,45 +162,62 @@ class RegisterView(CreateView):
     def post(self, request):
         values = request.POST   
 
-        
         username = values['username']
         pass1 = values['password1']
         pass2 = values['password2']
         email = values['email']
+        first_name = values['first_name']
+        last_name = values['last_name']
         ver = CustomUserCreationForm()
 
         errors = []
 
         if(ver.clean_password2(pass1, pass2)):
             errors.append("Both passwords must be the same")
-            #return HttpResponse("Both passwords must be the same", status=HTTP_400_BAD_REQUEST)
+
         if(ver.username_clean_lenght(username)):
             errors.append("This username is higher 150 characters")
-            #return HttpResponse("This username has already taken by other user or the username is not like the template", status=HTTP_400_BAD_REQUEST)
+           
         if(ver.username_clean_exits(username)):
             errors.append("This username has already taken by other user")
+
         if(ver.username_clean_pattern(username)):
             errors.append("This username is not like the template")
+
         if(ver.email_clean(email)):
             errors.append("This email has already taken by other user")
-            #return HttpResponse("This email has already taken by other user", status=HTTP_400_BAD_REQUEST)
+            
+        if(ver.clean_password_lenght(pass1)):
+            errors.append("This password must contain at least 8 characters")
 
-        template = loader.get_template("authentication/authentication.html")
+        if(ver.clean_password_commonly(pass1)):
+            errors.append("This password is a commonly password")
 
-        context = {"errors":errors}
+        if(ver.clean_password_too_similar(pass1, username, first_name, last_name)):
+            errors.append("This password is too similar to your personal data")
+
+        if(ver.clean_password_numeric(pass1)):
+            errors.append("This password is entirely numeric")
+
+
         if (len(errors)>0):
+            template = loader.get_template("authentication/authentication.html")
+            context = {"errors":errors}
+
             return HttpResponse(template.render(context, request))
         else:
             try:
                 user = User(username=username)
-                user.first_name = values['first_name']
-                user.last_name = values['last_name']
+                user.first_name = first_name
+                user.last_name = last_name
                 user.email = email
                 user.set_password(pass1)
                 user.save()
                 token, _ = Token.objects.get_or_create(user=user)
+
             except IntegrityError:
                 return HttpResponse("Integrity Error raised", status=HTTP_400_BAD_REQUEST)
+
             return redirect("/")
 
 
