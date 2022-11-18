@@ -67,16 +67,27 @@ class CustomUserCreationForm(UserCreationForm):
             'last_name':('Last Name')
         }
   
-    def username_clean(self, username):  
+    def username_clean_lenght(self, username):  
         username = username.lower()  
+
+        if len(username) > 150:
+            return True
+        else:
+            return False
+        
+
+    def username_clean_exits(self, username):
+        username = username.lower()
 
         new = User.objects.filter(username = username)  
         if new.count():  
             return True
+        else:
+            return False
 
-        if len(username) > 150:
-            return True
-        
+    def username_clean_pattern(self, username):
+        username = username.lower()
+
         username_val_regex = re.search("[^\w@.\-_+]", username)
         if(username_val_regex != None):
             return True
@@ -89,10 +100,13 @@ class CustomUserCreationForm(UserCreationForm):
             return True
         return False
   
+
     def clean_password2(self, password1, password2):  
         if password1 and password2 and password1 != password2:  
             return True
-        return False 
+        return False
+
+
 
 class RegisterView(CreateView):
     template_name = "authentication/authentication.html"
@@ -124,24 +138,39 @@ class RegisterView(CreateView):
         email = values['email']
         ver = CustomUserCreationForm()
 
-        if(ver.clean_password2(pass1, pass2)):
-            return HttpResponse("Both passwords must be the same", status=HTTP_400_BAD_REQUEST)
-        if(ver.username_clean(username)):
-            return HttpResponse("This username has already taken by other user or the username is not like the template", status=HTTP_400_BAD_REQUEST)
-        if(ver.email_clean(email)):
-            return HttpResponse("This email has already taken by other user", status=HTTP_400_BAD_REQUEST)
+        errors = []
 
-        try:
-            user = User(username=username)
-            user.first_name = values['first_name']
-            user.last_name = values['last_name']
-            user.email = email
-            user.set_password(pass1)
-            user.save()
-            token, _ = Token.objects.get_or_create(user=user)
-        except IntegrityError:
-            return HttpResponse("Integrity Error raised", status=HTTP_400_BAD_REQUEST)
-        return redirect("/")
+        if(ver.clean_password2(pass1, pass2)):
+            errors.append("Both passwords must be the same")
+            #return HttpResponse("Both passwords must be the same", status=HTTP_400_BAD_REQUEST)
+        if(ver.username_clean_lenght(username)):
+            errors.append("This username is higher 150 characters")
+            #return HttpResponse("This username has already taken by other user or the username is not like the template", status=HTTP_400_BAD_REQUEST)
+        if(ver.username_clean_exits(username)):
+            errors.append("This username has already taken by other user")
+        if(ver.username_clean_pattern(username)):
+            errors.append("This username is not like the template")
+        if(ver.email_clean(email)):
+            errors.append("This email has already taken by other user")
+            #return HttpResponse("This email has already taken by other user", status=HTTP_400_BAD_REQUEST)
+
+        template = loader.get_template("authentication/authentication.html")
+
+        context = {"errors":errors}
+        if (len(errors)>0):
+            return HttpResponse(template.render(context, request))
+        else:
+            try:
+                user = User(username=username)
+                user.first_name = values['first_name']
+                user.last_name = values['last_name']
+                user.email = email
+                user.set_password(pass1)
+                user.save()
+                token, _ = Token.objects.get_or_create(user=user)
+            except IntegrityError:
+                return HttpResponse("Integrity Error raised", status=HTTP_400_BAD_REQUEST)
+            return redirect("/")
 
 
     
@@ -166,4 +195,5 @@ class LoginView(CreateView):
             return HttpResponse("Username and password do not match", status=HTTP_400_BAD_REQUEST)
 
         return redirect("/")
+
 
