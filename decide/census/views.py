@@ -11,7 +11,49 @@ from rest_framework.status import (
 )
 
 from base.perms import UserIsStaff
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.contrib import messages
+from .resources import CensusResource
+from tablib import Dataset
 from .models import Census
+
+
+def importer(request):
+    if request.method == 'POST':
+        census_resource = CensusResource()
+        dataset = Dataset()
+        new_census = request.FILES['myfile']
+
+        if not new_census.name.endswith('xlsx'):
+            messages.info(request, 'formato incorrecto, debe ser .xslx')
+            return render(request, 'importer.html')
+
+        imported_data = dataset.load(new_census.read(),format='xlsx')
+        #print(imported_data)
+        for data in imported_data:
+            value = Census(
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3],
+                    data[4],
+                    data[5],
+                    data[6],
+                    data[7],
+                    data[8],
+                    data[9],
+                    data[10],
+                    data[11]
+                    ) 
+            value.save()
+        
+        #result = person_resource.import_data(dataset, dry_run=True)  # Test the data import
+
+        #if not result.has_errors():
+        #    person_resource.import_data(dataset, dry_run=False)  # Actually import now
+
+    return render(request, 'importer.html')
 
 
 class CensusCreate(generics.ListCreateAPIView):
@@ -49,3 +91,4 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
+
