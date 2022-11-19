@@ -1,5 +1,6 @@
 from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -13,6 +14,14 @@ from rest_framework.status import (
 from base.perms import UserIsStaff
 from .models import Census
 
+class FiltroVotante(generics.ListAPIView):
+    def get_queryset(self):
+
+        user = self.request.user
+        return Census.objects.filter(census=user)
+
+def filtros(request):
+    return render(request, 'filter.html')
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
