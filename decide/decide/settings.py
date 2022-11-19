@@ -180,3 +180,13 @@ if os.path.exists("config.jsonnet"):
 
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
+
+
+# Configuracion email
+
+EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST="smtp.gmail.com"
+EMAIL_USE_TLS=True
+EMAIL_PORT=587
+EMAIL_HOST_USER="decidepartchiclana2@gmail.com"
+EMAIL_HOST_PASSWORD="gtpsbwiaqpfqruiu"   

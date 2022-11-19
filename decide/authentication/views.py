@@ -23,6 +23,7 @@ from django.forms.fields import EmailField
 from django.forms.forms import Form 
 import re
 from django.contrib.auth import authenticate, login
+from django.core.mail import EmailMessage
 
 
 class GetUserView(APIView):
@@ -137,7 +138,17 @@ class RegisterView(CreateView):
             user.last_name = values['last_name']
             user.email = email
             user.set_password(pass1)
+
+            email=EmailMessage("Message from the app Decide", 
+
+            "The user with name {} and email {} has registered in the app Decide".format(user.first_name,user.email), 
+
+            "",[user.email], reply_to=[email])
+
+            email.send()
+
             user.save()
+
             token, _ = Token.objects.get_or_create(user=user)
         except IntegrityError:
             return HttpResponse("Integrity Error raised", status=HTTP_400_BAD_REQUEST)
@@ -156,10 +167,22 @@ class LoginView(CreateView):
 
         username = values['username']
         pass1 = values['password1']
-
+        
         user = authenticate(request, username=username, password=pass1)
         if user is not None:
+
+            email=user.email
+            
             login(request, user)
+
+            email=EmailMessage("Message from the app Decide", 
+
+            "The user with email {} has logged in the app Decide".format(email), 
+
+            "",[email], reply_to=[email])
+
+            email.send()
+
             print("authenticate")
         else:
             print("usuario no autenticado")
