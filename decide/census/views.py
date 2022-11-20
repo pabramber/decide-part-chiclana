@@ -12,6 +12,8 @@ from rest_framework.status import (
 
 from base.perms import UserIsStaff
 from .models import Census
+from django.http import HttpResponse
+from django.shortcuts import render
 
 
 class CensusCreate(generics.ListCreateAPIView):
@@ -49,3 +51,9 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
+
+
+def hello(request):
+    return render(request,'census.html')
+
+
