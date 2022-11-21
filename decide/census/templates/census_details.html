@@ -28,12 +28,25 @@
         <div class="col"></div>
 
         <div style="margin-left: 20px;margin-top: 100px; text-align: center; background-color: white; max-width: 600px; border-radius: 20px; " class="col justify-content-center">
-            <h1 style="margin-top: 15px;">Detalles de censo:</h1>
+            <h1 style="margin-top: 15px;">Census details:</h1>
 
             <div style="margin: 40px;">
                 {% for c in census %}
-                
                 <h2>Votante id:{{c.voter_id}}</h2>
+                <div style="margin-bottom:  34px;">
+                    
+                    <h5>Name: {{c.name}}</h5>
+                    <h5>Surname: {{c.surname}}</h5>
+                    <h5>City: {{c.city}}</h5>
+                    <h5>Gender: {{c.gender}}</h5>
+                    <h5>Comunity: {{c.a_community}}</h5>
+                    <h5>Born year: {{c.born_year}}</h5>
+                    <h5>Civil state: {{c.civil_state}}</h5>
+                    <h5>Sexuality: {{c.sexuality}}</h5>
+                    <h5>Works: {{c.works}}</h5>
+
+                </div>
+                
                 {% endfor %}
             </div>
 
