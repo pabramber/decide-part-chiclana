@@ -18,11 +18,94 @@ from django.contrib import messages
 from .resources import CensusResource
 from tablib import Dataset
 from .models import Census
+from django.views.generic import ListView
 
 
-def filtros(request):
-    censos = Census.objects.all()
-    return render(request, 'filter.html', {'censos' : censos})
+def filter(request):
+    censo = Census.objects.all()
+    return render(request, 'filter.html', {'census' : censo})
+
+class FilterVotingID(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('i')
+        return Census.objects.filter(voting_id__icontains=query).order_by('-voting_id')
+
+class FilterVoterID(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('i')
+        return Census.objects.filter(voting_id__icontains=query).order_by('-voter_id')
+
+class FilterName(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        return Census.objects.filter(name__icontains=query).order_by('-name')
+
+class FilterSurname(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('i')
+        return Census.objects.filter(surname__icontains=query).order_by('-surname')
+
+class FilterCity(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(city__icontains=query).order_by('-city')
+
+class FilterCommunity(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(a_community__icontains=query).order_by('-a_community')
+
+class FilterGender(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(gender__icontains=query).order_by('-gender')
+
+class FilterCivilState(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(civil_state__icontains=query).order_by('-civil_state')
+
+class FilterSexuality(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(sexuality__icontains=query).order_by('-sexuality')
+    
 
 def importer(request):
     if request.method == 'POST':

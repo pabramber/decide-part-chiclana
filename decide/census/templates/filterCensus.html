@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Filter Census</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    </head>
+    <body>
+        <main role="main" class="container">
+            <h1 style="text-align:center">FILTER CENSUS</h1>
+
+            <form  action="{% url 'filter_votingID' %}" method="get">
+                {% csrf_token %}
+                <div class="input-group mb-1">
+                    <input class="form-control" type="text" name="i" placeholder="Voting ID . . .">
+                    <div class="input-group-append">
+                        <button class="input-group-text" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <form  action="{% url 'filter_voterID' %}" method="get">
+                {% csrf_token %}
+                <div class="input-group mb-1">
+                    <input class="form-control" type="text" name="i" placeholder="Voter ID . . .">
+                    <div class="input-group-append">
+                        <button class="input-group-text" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <form  action="{% url 'filter_name' %}" method="get">
+                {% csrf_token %}
+                <div class="input-group mb-1">
+                    <input class="form-control" type="text" name="q" placeholder="Name . . .">
+                    <div class="input-group-append">
+                        <button class="input-group-text" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <form  action="{% url 'filter_surname' %}" method="get">
+                {% csrf_token %}
+                <div class="input-group mb-1">
+                    <input class="form-control" type="text" name="i" placeholder="Surname . . .">
+                    <div class="input-group-append">
+                        <button class="input-group-text" type="submit">Search</button>   
+                    </div>
+                </div>
+            </form>
+
+            <form  action="{% url 'filter_city' %}" method="get">
+                {% csrf_token %}
+                <div class="input-group mb-1">
+                    <input class="form-control" type="text" name="j" placeholder="City . . .">
+                    <div class="input-group-append">
+                        <button class="input-group-text" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <form  action="{% url 'filter_community' %}" method="get">
+                {% csrf_token %}
+                <div class="input-group mb-1">
+                    <input class="form-control" type="text" name="j" placeholder="Community . . .">
+                    <div class="input-group-append">
+                        <button class="input-group-text" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <form  action="{% url 'filter_gender' %}" method="get">
+                {% csrf_token %}
+                <div class="input-group mb-1">
+                    <input class="form-control" type="text" name="j" placeholder="Gender . . .">
+                    <div class="input-group-append">
+                        <button class="input-group-text" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <form  action="{% url 'filter_civil_state' %}" method="get">
+                {% csrf_token %}
+                <label for="born_year">Born year</label>
+                <div class="input-group mb-1">
+                    <input type="number" placeholder="1998" name="born_year">
+                    <div class="input-group-append">
+                        <button class="input-group-text" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <form  action="{% url 'filter_civil_state' %}" method="get">
+                {% csrf_token %}
+                <div class="input-group mb-1">
+                    <input class="form-control" type="text" name="j" placeholder="Civil state . . .">
+                    <div class="input-group-append">
+                        <button class="input-group-text" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <form  action="{% url 'filter_sexuality' %}" method="get">
+                {% csrf_token %}
+                <div class="input-group mb-1">
+                    <input class="form-control" type="text" name="j" placeholder="Sexuality . . .">
+                    <div class="input-group-append">
+                        <button class="input-group-text" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="form-group col-md-2 col-lg-2 mb-1">
+                <label for="works">Works</label>
+                <input type="number" placeholder="1" name="works">
+            </div>
+            
+            <hr />
+            <div class="row">
+                <ul>
+                    {% for censo in census %}
+                        <li>
+                        <span>Voting ID: {{censo.voting_id}}</span>
+                        <span>Voter ID: {{censo.voter_id}}</span>
+                        <span>name: {{censo.name}}</span>
+                        <span>Surname: {{censo.surname}}</span>
+                        <span>City: {{censo.city}}</span>
+                        <span>Community: {{censo.a_community}}</span>
+                        <span>Gender: {{censo.gender}}</span>
+                        <span>Born year: {{censo.born_year}}</span>
+                        <span>Civil state: {{censo.civil_state}}</span>
+                        <span>Sexuality: {{censo.sexuality}}</span>
+                        <span>Works: {{censo.works}}</span>
+                        </li>
+                        <hr />
+                    {% endfor %}
+                </ul>
+            </div>
+        </main>
+    </body>
+</html>
