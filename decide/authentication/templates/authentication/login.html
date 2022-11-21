@@ -27,6 +27,8 @@
         </form>
 
         <p>You can also sign in with: <a href="{% provider_login_url 'google' %}">Google</a>
+        <br>
+        <a href="{% url 'social:begin' 'facebook' %}">Ingresar con facebook</a>
 </div>
 
 {% endblock %}
