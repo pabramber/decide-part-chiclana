@@ -137,6 +137,8 @@ class PostProcView(APIView):
             response = self.dhondt(opts, seats)
         elif t == 'DROOP':
             response = self.droop(opts, seats)
+        elif t == 'BORDA':
+            return self.borda(opts)
         
 
         return response
