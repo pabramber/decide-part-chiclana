@@ -24,6 +24,7 @@ from django.forms.forms import Form
 import re
 from django.contrib.auth import authenticate, login
 from django.core.mail import EmailMessage
+from django.shortcuts import render
 
 
 class GetUserView(APIView):
@@ -189,4 +190,10 @@ class LoginView(CreateView):
             return HttpResponse("Username and password do not match", status=HTTP_400_BAD_REQUEST)
 
         return redirect("/")
+
+    @staticmethod     
+    def authenticated(request):
+        return render(request, 'authentication/authenticated.html', {
+                'username' : request.user
+            })
 

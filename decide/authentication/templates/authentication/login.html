@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n static %}
-
+{% load socialaccount %}
 {% block extrahead %}
     <link type="text/css" rel="stylesheet"
          href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
@@ -25,6 +25,8 @@
             </div>
             <input type="submit" class="btn btn-primary" value="Login">
         </form>
+
+        <p>You can also sign in with: <a href="{% provider_login_url 'google' %}">Google</a>
 </div>
 
 {% endblock %}
