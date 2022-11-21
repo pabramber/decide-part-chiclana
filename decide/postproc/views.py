@@ -74,6 +74,43 @@ class PostProcView(APIView):
         out.sort(key=lambda x: (-x['postproc'], -x['votes']))
         return Response(out)
 
+
+
+    def borda(self, options):
+
+        salida = {}
+        
+        boole = False
+
+        for opcion in options:
+            
+            if len(opcion['positions']) != 0:
+
+                suma_total_opcion = 0
+
+                for posicion in opcion['positions']:
+
+                    valor = len(options) - posicion + 1
+                    suma_total_opcion += valor
+
+                salida[opcion['option']] = suma_total_opcion
+                opcion['votes'] = suma_total_opcion
+
+            else:
+                salida = {}
+                boole = True
+                break
+
+        if boole == True:
+
+            for opcion in options:
+
+                opcion['votes'] = 0
+
+        return Response(options)
+
+
+
     def post(self, request):
         """
          * type: IDENTITY | DHONDT | DROOP
@@ -100,5 +137,6 @@ class PostProcView(APIView):
             response = self.dhondt(opts, seats)
         elif t == 'DROOP':
             response = self.droop(opts, seats)
+        
 
         return response
