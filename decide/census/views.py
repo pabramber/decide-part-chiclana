@@ -1,5 +1,4 @@
 from django.db.utils import IntegrityError
-from django.core.mail import send_mail
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics
 from rest_framework.response import Response
@@ -26,7 +25,7 @@ class CensusCreate(generics.ListCreateAPIView):
             for voter in voters:
                 census = Census(voting_id=voting_id, voter_id=voter)
                 census.save()
-                enviar_mail(**kwargs)
+                
         except IntegrityError:
             return Response('Error try to create census', status=ST_409)
         return Response('Census created', status=ST_201)
