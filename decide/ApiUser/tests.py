@@ -72,3 +72,23 @@ class ApiUserTestCase(TestCase):
         self.assertEqual(response.status_code, 204)
         self.assertEqual(response.data["Message"], "The user  can not be found in Decide application.")
     
+    def test_user_staff(self):
+        user=self.user2
+        username = self.user2.username.upper()
+        url = '/api/user/staff/'+str(user.id)
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["Message"], "The user "+username+" is a staff member")
+        user=self.user
+        username = self.user.username.upper()
+        url = '/api/user/staff/'+str(user.id)
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["Message"], "The user "+username+" is not a staff member")
+
+    def test_user_is_staff_negative(self):
+        
+        url = '/api/user/staff/'+str(150)
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.data["Message"], "The user  can not be found in Decide application.")
