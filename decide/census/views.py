@@ -19,6 +19,8 @@ from .resources import CensusResource
 from tablib import Dataset
 from .models import Census
 from django.views.generic import ListView
+from django.http import HttpResponse
+from django.shortcuts import render
 
 
 def filter(request):
@@ -88,6 +90,15 @@ class FilterGender(ListView):
         query = self.request.GET.get('j')
         return Census.objects.filter(gender__icontains=query).order_by('-gender')
 
+class FilterBornYear(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(born_year__icontains=query).order_by('-born_year')
+
 class FilterCivilState(ListView):
     model = Census
     template_name = 'filterCensus.html'
@@ -105,6 +116,15 @@ class FilterSexuality(ListView):
     def get_queryset(self):
         query = self.request.GET.get('j')
         return Census.objects.filter(sexuality__icontains=query).order_by('-sexuality')
+
+class FilterWorks(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(works__icontains=query).order_by('-works')
     
 
 def importer(request):
@@ -166,6 +186,7 @@ class CensusCreate(generics.ListCreateAPIView):
 
 class CensusDetail(generics.RetrieveDestroyAPIView):
 
+
     def destroy(self, request, voting_id, *args, **kwargs):
         voters = request.data.get('voters')
         census = Census.objects.filter(voting_id=voting_id, voter_id__in=voters)
@@ -179,4 +200,16 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
+
+
+
+
+def GetId(request):
+    id = request.GET['id']
+    census = Census.objects.filter(voting_id=int(id))
+    return render(request,"census_details.html",{'census':census})
+
+def hello(request):
+    return render(request,'census.html')
+
 

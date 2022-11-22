@@ -83,11 +83,11 @@
                 </div>
             </form>
 
-            <form  action="{% url 'filter_civil_state' %}" method="get">
+            <form  action="{% url 'filter_bornYear' %}" method="get">
                 {% csrf_token %}
                 <label for="born_year">Born year</label>
                 <div class="input-group mb-1">
-                    <input class="form-control" type="number" placeholder="1998" name="born_year">
+                    <input class="form-control" type="number" name="j" placeholder="1998">
                     <div class="input-group-append">
                         <button class="input-group-text" type="submit">Search</button>
                     </div>
@@ -114,11 +114,11 @@
                 </div>
             </form>
 
-            <form method="get">
+            <form  action="{% url 'filter_works' %}" method="get">
                 {% csrf_token %}
                 <label for="works">Works</label>
-                <div class="input-group form-group mb-1">
-                    <input class="form-control" type="number" placeholder="1" name="works">
+                <div class="input-group mb-1">
+                    <input class="form-control" type="number" name="j" placeholder="1">
                     <div class="input-group-append">
                         <button class="input-group-text" type="submit">Search</button>
                     </div>
