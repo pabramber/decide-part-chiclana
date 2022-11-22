@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from math import floor
 from collections import Counter
+import math
 
 class PostProcView(APIView):
 
@@ -109,6 +110,40 @@ class PostProcView(APIView):
 
         return Response(options)
 
+    def hare(self, options, seats):
+
+        out = []
+        inputData = {}
+        results = {}
+        quotient = 0
+
+        
+        for opt in options:
+            i = opt['number']
+            v = opt['votes']
+            inputData[i] = v
+
+        totalVotes = self.votesSum(inputData)
+        quotient = math.floor(totalVotes/seats)
+
+        
+        if quotient != 0:
+            results = self.residueDistribution(self.seatsAndResidues(inputData, quotient), seats)
+
+            for index, opt in enumerate(options, start = 1):
+                out.append({
+                    **opt,
+                    'escanyos': results.get(index)[0],
+                })
+
+        else:
+            for index, opt in enumerate(options, start = 1):
+                out.append({
+                    **opt,
+                    'escanyos': 0,
+                })
+
+        return Response(out)
 
 
     def post(self, request):
