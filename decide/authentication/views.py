@@ -239,8 +239,11 @@ class LoginView(CreateView):
             login(request, user)
             print("authenticate")
         else:
-            print("usuario no autenticado")
-            return HttpResponse("Username and password do not match", status=HTTP_400_BAD_REQUEST)
+            errors = ["Username and password do not match"]
+            template = loader.get_template("authentication/authentication.html")
+            context = {"errors":errors}
+
+            return HttpResponse(template.render(context, request))
 
         return redirect("/")
 

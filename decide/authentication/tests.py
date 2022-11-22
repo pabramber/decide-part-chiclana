@@ -349,6 +349,112 @@ class TestTestregisterNegativePasswordTooSimilar(TestCase):
 
 
 
+class TestLoginPositive(TestCase):
+  
+  
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
 
 
+        super().setUp()            
+            
+    def tearDown(self):           
+        super().tearDown()
 
+        self.driver.quit()
+
+        self.base.tearDown()
+  
+    def test_testlogin_positive(self):
+        
+        dt = datetime.now()
+        epoch_time = datetime(1970, 1, 1)
+        delta = (dt - epoch_time)
+        
+        username = "userLogin"+str(delta.total_seconds())
+
+        email = "testEmailLogin"+str(delta.total_seconds())+"@gm.com"
+
+        self.driver.get("http://localhost:8000/authentication/register/")
+        self.driver.set_window_size(917, 1023)
+        self.driver.find_element(By.ID, "id_username").click()
+        self.driver.find_element(By.ID, "id_username").send_keys(username)
+        self.driver.find_element(By.ID, "id_password1").click()
+        self.driver.find_element(By.ID, "id_password1").send_keys("admin12345678")
+        self.driver.find_element(By.ID, "id_password2").click()
+        self.driver.find_element(By.ID, "id_password2").send_keys("admin12345678")
+        self.driver.find_element(By.ID, "id_email").click()
+        self.driver.find_element(By.ID, "id_email").send_keys(email)
+        self.driver.find_element(By.ID, "id_first_name").click()
+        self.driver.find_element(By.ID, "id_first_name").send_keys("Jhon")
+        self.driver.find_element(By.ID, "id_last_name").click()
+        self.driver.find_element(By.ID, "id_last_name").send_keys("Doe")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.get("http://localhost:8000/authentication/login-view/")
+        self.driver.find_element(By.ID, "id_username").click()
+        self.driver.find_element(By.ID, "id_username").send_keys(username)
+        self.driver.find_element(By.ID, "id_password1").click()
+        self.driver.find_element(By.ID, "id_password1").send_keys("admin12345678")
+        self.driver.find_element(By.ID, "id_password1").send_keys(Keys.ENTER)
+        self.assertTrue(self.driver.current_url == "http://localhost:8000/")
+
+
+class TestLoginNegative(TestCase):
+  
+  
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
+
+        super().setUp()            
+            
+    def tearDown(self):           
+        super().tearDown()
+
+        self.driver.quit()
+
+        self.base.tearDown()
+  
+    def test_testlogin_negative(self):
+        
+        dt = datetime.now()
+        epoch_time = datetime(1970, 1, 1)
+        delta = (dt - epoch_time)
+        
+        username = "userLoginError"+str(delta.total_seconds())
+
+        email = "testEmailLoginError"+str(delta.total_seconds())+"@gm.com"
+
+        self.driver.get("http://localhost:8000/authentication/register/")
+        self.driver.set_window_size(917, 1023)
+        self.driver.find_element(By.ID, "id_username").click()
+        self.driver.find_element(By.ID, "id_username").send_keys(username)
+        self.driver.find_element(By.ID, "id_password1").click()
+        self.driver.find_element(By.ID, "id_password1").send_keys("admin123456789")
+        self.driver.find_element(By.ID, "id_password2").click()
+        self.driver.find_element(By.ID, "id_password2").send_keys("admin123456789")
+        self.driver.find_element(By.ID, "id_email").click()
+        self.driver.find_element(By.ID, "id_email").send_keys(email)
+        self.driver.find_element(By.ID, "id_first_name").click()
+        self.driver.find_element(By.ID, "id_first_name").send_keys("Jhon")
+        self.driver.find_element(By.ID, "id_last_name").click()
+        self.driver.find_element(By.ID, "id_last_name").send_keys("Doe")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.get("http://localhost:8000/authentication/login-view/")
+        self.driver.find_element(By.ID, "id_username").click()
+        self.driver.find_element(By.ID, "id_username").send_keys(username)
+        self.driver.find_element(By.ID, "id_password1").click()
+        self.driver.find_element(By.ID, "id_password1").send_keys("admin12345678")
+        self.driver.find_element(By.ID, "id_password1").send_keys(Keys.ENTER)
+        self.assertTrue(self.driver.current_url == "http://localhost:8000/authentication/login-view/")
+        self.assertTrue( self.driver.find_element(By.CSS_SELECTOR, ".alert").text == "Username and password do not match")
