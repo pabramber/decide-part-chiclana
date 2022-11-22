@@ -23,7 +23,7 @@ from django.views.generic import ListView
 
 def filter(request):
     censo = Census.objects.all()
-    return render(request, 'filter.html', {'census' : censo})
+    return render(request, 'filterCensus.html', {'census' : censo})
 
 class FilterVotingID(ListView):
     model = Census
