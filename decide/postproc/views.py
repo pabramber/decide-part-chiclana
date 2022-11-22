@@ -173,7 +173,7 @@ class PostProcView(APIView):
         elif t == 'DROOP':
             response = self.droop(opts, seats)
         elif t == 'BORDA':
-            return self.borda(opts)
+            response = self.borda(opts)
         elif t == 'HARE':
             response = self.hare(opts, seats)
         
