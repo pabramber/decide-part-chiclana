@@ -13,7 +13,13 @@
         <!-- Register -->
         <form action="" method="post">
             {% csrf_token %}
-            <h1>Register</h1>
+
+            {% if errors|length < 1 %}
+                <h1>Register</h1>
+            {% else %}
+                <h1>Errors detected!</h1>
+            {% endif %}
+
             <div class="fieldWrapper">
                 {{ form.username.label_tag }}
                 {{ form.username }}
@@ -40,8 +46,27 @@
                 {{ form.last_name.label_tag }}
                 {{ form.last_name }}
             </div>
-            <input type="submit" class="btn btn-primary" value="Register">
+
+            {% if errors|length < 1 %}
+
+                <input type="submit" class="btn btn-primary" value="Register">
+        
+            {% endif %}
+
         </form>
+
+        {% for error in errors %}
+            <div class="alert alert-danger">
+                {{error}}
+                <br>
+            </div>
+        {% endfor %}
+
+
+        {% if errors|length > 0 %}
+        <h3>Return back and try again.</h3>
+        {% endif %}
+
 </div>
 
 {% endblock %}
