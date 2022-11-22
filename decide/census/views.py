@@ -17,6 +17,8 @@ from django.contrib import messages
 from .resources import CensusResource
 from tablib import Dataset
 from .models import Census
+from django.http import HttpResponse
+from django.shortcuts import render
 
 
 def importer(request):
@@ -78,6 +80,7 @@ class CensusCreate(generics.ListCreateAPIView):
 
 class CensusDetail(generics.RetrieveDestroyAPIView):
 
+
     def destroy(self, request, voting_id, *args, **kwargs):
         voters = request.data.get('voters')
         census = Census.objects.filter(voting_id=voting_id, voter_id__in=voters)
@@ -91,4 +94,16 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
+
+
+
+
+def GetId(request):
+    id = request.GET['id']
+    census = Census.objects.filter(voting_id=int(id))
+    return render(request,"census_details.html",{'census':census})
+
+def hello(request):
+    return render(request,'census.html')
+
 
