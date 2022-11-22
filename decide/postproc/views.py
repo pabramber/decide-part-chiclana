@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from math import floor
 from collections import Counter
 import math
+import copy
 
 class PostProcView(APIView):
 
@@ -109,6 +110,62 @@ class PostProcView(APIView):
                 opcion['votes'] = 0
 
         return Response(options)
+
+
+    def votesSum(self, allVotes):
+
+        sum = 0
+        for x in allVotes.values():
+            sum += x
+        return sum      
+
+    def seatsAndResidues(self, data, quotient):
+
+        res = {}
+        for index, x in enumerate(data.values(), start = 0):
+            a = []
+
+            seats = math.floor(x/quotient)
+            
+            residue = x - quotient*seats
+
+            a.append(seats)
+            a.append(residue)
+
+            key_list = list(data.keys()) 
+            n = key_list[index]
+
+            res[n] = a
+
+        return res
+
+    def residueDistribution(self, initalDist, numSeats):
+
+        distSeats = 0
+        n = 0
+        residues = []
+        finalDist = copy.deepcopy(initalDist)
+        values = finalDist.values()
+
+        for x in values:
+            distSeats += x[0]
+            residues.append(x[1])
+
+        notDistributed = numSeats - distSeats
+        sortedResidues = residues.copy()
+        sortedResidues.sort(reverse = True)
+
+        while notDistributed > 0:
+            selected = sortedResidues[n]
+            pos = residues.index(selected)
+
+            notDistributed -= 1
+
+            list(values)[pos][0] += 1
+
+            n += 1
+
+        return finalDist
 
     def hare(self, options, seats):
 
