@@ -50,7 +50,25 @@ class ApiUserTestCase(TestCase):
         self.assertEqual(response.data["user"][1].get('last_name'),'last_name2')
         self.assertEqual(response.data["user"][1].get('email'),'myemail2@gmail.com')
         self.assertEqual(response.data["user"][1].get('password'),'password2')
-        
+    
+    def test_user_details_positive(self):
+        user=self.user
+        url = '/api/user/'+str(user.id)
+        response = self.client.get(url, format='json')
 
-        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["Message"], "This are the details of the searched user:")
+        self.assertEqual(response.data["user"].get('id'),user.id)
+        self.assertEqual(response.data["user"].get('username'),user.username)
+        self.assertEqual(response.data["user"].get('first_name'),user.first_name)
+        self.assertEqual(response.data["user"].get('last_name'),user.last_name)
+        self.assertEqual(response.data["user"].get('email'),user.email)
+        self.assertEqual(response.data["user"].get('password'),user.password)
+
+    def test_user_details_negative(self):
+        url = '/api/user/'+'150'
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.data["Message"], "The user  can not be found in Decide application.")
     
