@@ -13,14 +13,26 @@ from rest_framework.status import (
 # Create your views here.
 from .serializers import *
 
+
 class UserListViews(APIView):
-   
+    """
+    API endpoint that allows users to be viewed or created.
+    """
     serializer_class = UserSerializer
+    
     def get(self,request):
+       """
+        This list all users of Decide application.
+       """
        userList = User.objects.all().values()
        return Response({"Message": "New user added", "user":userList})
 
     def post(self, request):
+        """
+            This create a new user.
+            user: [ {"username": str, "first_name": str, "last_name": str, "password": str,
+            "email": str,"is_staff": bool} ]
+        """
         print("request data is: ", request.data)
         serializer_obj = UserSerializer(data=request.data)
         if(serializer_obj.is_valid()):
@@ -38,8 +50,15 @@ class UserListViews(APIView):
 
 
 class UserDetailViews(APIView):
+    """
+    API endpoint that allows users to be viewed or updated by id.
+    """
     serializer_class = UserSerializer
-
+    """
+            This update a user.
+            user: [ {"username": str, "first_name": str, "last_name": str, "password": str,
+            "email": str,"is_staff": bool} ]
+    """
     def put(self, request, id):
         print("request data in put is: ", request.data)
         serializer_obj = UserSerializer(data=request.data)
@@ -64,8 +83,12 @@ class UserDetailViews(APIView):
             data = {'Message': 'User not found.'}
             
         return  Response(data)
-
+    
     def get(self,request, id):
+        """
+            Success: This shows the details of the user.
+            Fail: This shows a status 204 not found.
+        """
         print("request data in get one user is: ", request.data)
         users = list(User.objects.filter(id=id).values())
         
@@ -78,7 +101,12 @@ class UserDetailViews(APIView):
             ,status=ST_204)
 
 class UserStaffView(APIView):
+    """
+    API endpoint that allows knows if a user is a staff member or not by id.
 
+    Success: This shows if the user is staff.
+    Fail: This shows a status 204 not found.
+    """
     def get(self,request, id):
         print("request data in is_staff user is: ", request.data)
         users = list(User.objects.filter(id=id).values())
