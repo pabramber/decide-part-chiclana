@@ -107,3 +107,6 @@ def hello(request):
     return render(request,'census.html')
 
 
+def home(request):
+    queryset = Census.objects.all()
+    return render(request, 'lista_censo.html', {'queryset':queryset})
