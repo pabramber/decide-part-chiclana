@@ -192,5 +192,163 @@ class TestTestregisterPositive(TestCase):
 
 
 
+class TestTestregisterNegativePassword(TestCase):
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
+
+        super().setUp()            
+            
+    def tearDown(self):           
+        super().tearDown()
+
+        self.driver.quit()
+
+        self.base.tearDown()
+  
+    def test_testregister_negative_password_numeric(self):
+        self.driver.get("http://127.0.0.1:8000/authentication/register/")
+        self.driver.set_window_size(917, 1023)
+        self.driver.find_element(By.ID, "id_username").click()
+
+        dt = datetime.now()
+        epoch_time = datetime(1970, 1, 1)
+        delta = (dt - epoch_time)
+        
+        username = "user"+str(delta.total_seconds()) 
+
+        self.driver.find_element(By.ID, "id_username").send_keys(username)
+        self.driver.find_element(By.ID, "id_password1").click()
+        self.driver.find_element(By.ID, "id_password1").send_keys("12345678")
+        self.driver.find_element(By.ID, "id_password2").click()
+        self.driver.find_element(By.ID, "id_password2").send_keys("12345678")
+        self.driver.find_element(By.ID, "id_email").click()
+
+        email = "test"+str(delta.total_seconds())+"@gm.com"
+
+        self.driver.find_element(By.ID, "id_email").send_keys(email)
+        self.driver.find_element(By.ID, "id_first_name").click()
+        self.driver.find_element(By.ID, "id_first_name").send_keys("Jhon")
+        self.driver.find_element(By.ID, "id_last_name").click()
+        self.driver.find_element(By.ID, "id_last_name").send_keys("Doe")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+
+        self.assertTrue(self.driver.current_url == "http://127.0.0.1:8000/authentication/register/")
+        self.assertTrue( self.driver.find_element(By.CSS_SELECTOR, ".alert").text == "This password is entirely numeric")
+
+
+
+class TestTestregisterNegativePasswordCommonly(TestCase):
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
+
+        super().setUp()            
+            
+    def tearDown(self):           
+        super().tearDown()
+
+        self.driver.quit()
+
+        self.base.tearDown()
+
+
+    def test_testregister_negative_password_commonly(self):
+        self.driver.get("http://127.0.0.1:8000/authentication/register/")
+        self.driver.set_window_size(917, 1023)
+        self.driver.find_element(By.ID, "id_username").click()
+
+        dt = datetime.now()
+        epoch_time = datetime(1970, 1, 1)
+        delta = (dt - epoch_time)
+        
+        username = "user"+str(delta.total_seconds()) 
+
+        self.driver.find_element(By.ID, "id_username").send_keys(username)
+        self.driver.find_element(By.ID, "id_password1").click()
+        self.driver.find_element(By.ID, "id_password1").send_keys("qwertyui")
+        self.driver.find_element(By.ID, "id_password2").click()
+        self.driver.find_element(By.ID, "id_password2").send_keys("qwertyui")
+        self.driver.find_element(By.ID, "id_email").click()
+
+        email = "test"+str(delta.total_seconds())+"@gm.com"
+
+        self.driver.find_element(By.ID, "id_email").send_keys(email)
+        self.driver.find_element(By.ID, "id_first_name").click()
+        self.driver.find_element(By.ID, "id_first_name").send_keys("Jhon")
+        self.driver.find_element(By.ID, "id_last_name").click()
+        self.driver.find_element(By.ID, "id_last_name").send_keys("Doe")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+
+        self.assertTrue(self.driver.current_url == "http://127.0.0.1:8000/authentication/register/")
+        self.assertTrue( self.driver.find_element(By.CSS_SELECTOR, ".alert").text == "This password is a commonly password")
+
+
+
+
+
+class TestTestregisterNegativePasswordTooSimilar(TestCase):
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
+
+        super().setUp()            
+            
+    def tearDown(self):           
+        super().tearDown()
+
+        self.driver.quit()
+
+        self.base.tearDown()
+
+
+    def test_testregister_negative_password_too_similar(self):
+        self.driver.get("http://127.0.0.1:8000/authentication/register/")
+        self.driver.set_window_size(917, 1023)
+        self.driver.find_element(By.ID, "id_username").click()
+
+        dt = datetime.now()
+        epoch_time = datetime(1970, 1, 1)
+        delta = (dt - epoch_time)
+        
+        username = "antonio"+str(delta.total_seconds()) 
+
+        self.driver.find_element(By.ID, "id_username").send_keys(username)
+        self.driver.find_element(By.ID, "id_password1").click()
+        self.driver.find_element(By.ID, "id_password1").send_keys("antonio"+str(delta.total_seconds()) )
+        self.driver.find_element(By.ID, "id_password2").click()
+        self.driver.find_element(By.ID, "id_password2").send_keys("antonio"+str(delta.total_seconds()) )
+        self.driver.find_element(By.ID, "id_email").click()
+
+        email = "test"+str(delta.total_seconds())+"@gm.com"
+
+        self.driver.find_element(By.ID, "id_email").send_keys(email)
+        self.driver.find_element(By.ID, "id_first_name").click()
+        self.driver.find_element(By.ID, "id_first_name").send_keys("Jhon")
+        self.driver.find_element(By.ID, "id_last_name").click()
+        self.driver.find_element(By.ID, "id_last_name").send_keys("Doe")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+
+        self.assertTrue(self.driver.current_url == "http://127.0.0.1:8000/authentication/register/")
+        self.assertTrue( self.driver.find_element(By.CSS_SELECTOR, ".alert").text == "This password is too similar to your personal data")
+
+
+
+
 
 
