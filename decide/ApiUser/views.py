@@ -2,7 +2,13 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.models import User
-
+from rest_framework.status import (
+        HTTP_201_CREATED as ST_201,
+        HTTP_204_NO_CONTENT as ST_204,
+        HTTP_400_BAD_REQUEST as ST_400,
+        HTTP_401_UNAUTHORIZED as ST_401,
+        HTTP_409_CONFLICT as ST_409
+)
 
 # Create your views here.
 from .serializers import *
@@ -59,5 +65,36 @@ class UserDetailViews(APIView):
             
         return  Response(data)
 
+    def get(self,request, id):
+        print("request data in get one user is: ", request.data)
+        users = list(User.objects.filter(id=id).values())
+        
+        if len(users)>0:
+            user = users[0]
+            return Response({"Message": "This are the details of the searched user:",
+            "user":user})
+        else:
+            return Response({"Message": "The user  can not be found in Decide application."}
+            ,status=ST_204)
+
+class UserStaffView(APIView):
+
+    def get(self,request, id):
+        print("request data in is_staff user is: ", request.data)
+        users = list(User.objects.filter(id=id).values())
+        if len(users)>0:
+            user = users[0]
+            is_staff = user.get('is_staff')
+            username = (user.get('username')).upper()
+            
+            if(is_staff):
+                return Response({"Message": "The user "+username+" is a staff member"})
+            else:
+                return Response({"Message": "The user "+username+" is not a staff member"})
+        else:
+            return Response({"Message": "The user  can not be found in Decide application."}
+            ,status=ST_204)
+            
+       
 
         
