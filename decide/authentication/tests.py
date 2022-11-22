@@ -5,6 +5,16 @@ from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+
+from base.tests import BaseTestCase
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+
+
 from base import mods
 
 
@@ -90,9 +100,10 @@ class AuthTestCase(APITestCase):
         response = self.client.post('/authentication/login/', data, format='json')
         self.assertEqual(response.status_code, 200)
         token = response.json()
-
+        print(token)
         token.update({'username': 'user1'})
-        response = self.client.post('/authentication/register/', token, format='json')
+        print(token)
+        response = self.client.post('/authentication/register-api/', token, format='json')
         self.assertEqual(response.status_code, 401)
 
     def test_register_bad_request(self):
@@ -102,7 +113,7 @@ class AuthTestCase(APITestCase):
         token = response.json()
 
         token.update({'username': 'user1'})
-        response = self.client.post('/authentication/register/', token, format='json')
+        response = self.client.post('/authentication/register-api/', token, format='json')
         self.assertEqual(response.status_code, 400)
 
     def test_register_user_already_exist(self):
@@ -112,7 +123,7 @@ class AuthTestCase(APITestCase):
         token = response.json()
 
         token.update(data)
-        response = self.client.post('/authentication/register/', token, format='json')
+        response = self.client.post('/authentication/register-api/', token, format='json')
         self.assertEqual(response.status_code, 400)
 
     def test_register(self):
@@ -122,9 +133,12 @@ class AuthTestCase(APITestCase):
         token = response.json()
 
         token.update({'username': 'user1', 'password': 'pwd1'})
-        response = self.client.post('/authentication/register/', token, format='json')
+        response = self.client.post('/authentication/register-api/', token, format='json')
         self.assertEqual(response.status_code, 201)
         self.assertEqual(
             sorted(list(response.json().keys())),
             ['token', 'user_pk']
         )
+    
+
+

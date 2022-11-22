@@ -1,5 +1,4 @@
 from django.db.utils import IntegrityError
-from django.core.mail import send_mail
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics
 from rest_framework.response import Response

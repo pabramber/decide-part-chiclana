@@ -13,6 +13,14 @@ class Question(models.Model):
     TYPES = [('O', 'Options'),
             ('S','Score')]
     tipo = models.CharField(max_length=1, choices=TYPES, default='O')  
+    yes_no_question = models.BooleanField(verbose_name='Yes/No question', default=False)
+
+    def save(self):
+        super().save()
+        if self.yes_no_question:
+            import voting.views # Importo aquí porque si lo hago arriba da error por importacion circular
+            voting.views.create_yes_no_question(self)
+
     def __str__(self):
         return self.desc
 @receiver(post_save, sender=Question)
@@ -37,8 +45,12 @@ class QuestionOption(models.Model):
     option = models.TextField()
 
     def save(self, *args, **kwargs):
-        if not self.number:
-            self.number = self.question.options.count() + 2
+        if self.question.yes_no_question:
+            if not self.option == 'Sí' and not self.option == 'No':
+                return ""
+        else:
+            if not self.number:
+                self.number = self.question.options.count() + 2
         return super().save()
 
     def __str__(self):
