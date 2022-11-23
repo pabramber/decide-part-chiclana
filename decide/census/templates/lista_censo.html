@@ -20,7 +20,7 @@
                     <td>a_community</td>  
                     <td>gender</td> 
                     <td>born_year</td> 
-                    <td>city_state</td> 
+                    <td>civil_state</td> 
                     <td>sexuality</td> 
                     <td>works</td> 
 
@@ -57,5 +57,7 @@
     {% else %}
         <h1>No hay datos registrados</h1>
     {% endif %}
+
+    <a href="{% url 'reporte' %}">Exportar en Excel</a>
 </body>>
 </html>
