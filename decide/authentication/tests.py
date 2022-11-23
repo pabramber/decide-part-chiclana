@@ -142,7 +142,7 @@ class AuthTestCase(APITestCase):
             ['token', 'user_pk']
         )
     
-class TestTestregisterPositive(TestCase):
+class TestTestregisterPositive(StaticLiveServerTestCase):
     def setUp(self):
         self.base = BaseTestCase()
         self.base.setUp()
@@ -162,7 +162,7 @@ class TestTestregisterPositive(TestCase):
         self.base.tearDown()
   
     def test_testregisterpositive(self):
-        self.cleaner.get("http://127.0.0.1:8000/authentication/register/")
+        self.cleaner.get(self.live_server_url+"/authentication/register/")
         self.cleaner.set_window_size(917, 1023)
         self.cleaner.find_element(By.ID, "id_username").click()
 
@@ -188,12 +188,12 @@ class TestTestregisterPositive(TestCase):
         self.cleaner.find_element(By.ID, "id_last_name").send_keys("Doe")
         self.cleaner.find_element(By.CSS_SELECTOR, ".btn").click()
 
-        self.assertTrue(self.cleaner.current_url == "http://127.0.0.1:8000/")
+        self.assertTrue(self.cleaner.current_url == self.live_server_url+"/")
 
 
 
 
-class TestTestregisterNegativePassword(TestCase):
+class TestTestregisterNegativePassword(StaticLiveServerTestCase):
     def setUp(self):
         self.base = BaseTestCase()
         self.base.setUp()
@@ -213,7 +213,7 @@ class TestTestregisterNegativePassword(TestCase):
         self.base.tearDown()
   
     def test_testregister_negative_password_numeric(self):
-        self.cleaner.get("http://127.0.0.1:8000/authentication/register/")
+        self.cleaner.get(self.live_server_url+"/authentication/register/")
         self.cleaner.set_window_size(917, 1023)
         self.cleaner.find_element(By.ID, "id_username").click()
 
@@ -239,12 +239,12 @@ class TestTestregisterNegativePassword(TestCase):
         self.cleaner.find_element(By.ID, "id_last_name").send_keys("Doe")
         self.cleaner.find_element(By.CSS_SELECTOR, ".btn").click()
 
-        self.assertTrue(self.cleaner.current_url == "http://127.0.0.1:8000/authentication/register/")
+        self.assertTrue(self.cleaner.current_url == self.live_server_url+"/authentication/register/")
         self.assertTrue( self.cleaner.find_element(By.CSS_SELECTOR, ".alert").text == "This password is entirely numeric")
 
 
 
-class TestTestregisterNegativePasswordCommonly(TestCase):
+class TestTestregisterNegativePasswordCommonly(StaticLiveServerTestCase):
     def setUp(self):
         self.base = BaseTestCase()
         self.base.setUp()
@@ -265,7 +265,7 @@ class TestTestregisterNegativePasswordCommonly(TestCase):
 
 
     def test_testregister_negative_password_commonly(self):
-        self.cleaner.get("http://127.0.0.1:8000/authentication/register/")
+        self.cleaner.get(self.live_server_url+"/authentication/register/")
         self.cleaner.set_window_size(917, 1023)
         self.cleaner.find_element(By.ID, "id_username").click()
 
@@ -291,14 +291,14 @@ class TestTestregisterNegativePasswordCommonly(TestCase):
         self.cleaner.find_element(By.ID, "id_last_name").send_keys("Doe")
         self.cleaner.find_element(By.CSS_SELECTOR, ".btn").click()
 
-        self.assertTrue(self.cleaner.current_url == "http://127.0.0.1:8000/authentication/register/")
+        self.assertTrue(self.cleaner.current_url == self.live_server_url+"/authentication/register/")
         self.assertTrue( self.cleaner.find_element(By.CSS_SELECTOR, ".alert").text == "This password is a commonly password")
 
 
 
 
 
-class TestTestregisterNegativePasswordTooSimilar(TestCase):
+class TestTestregisterNegativePasswordTooSimilar(StaticLiveServerTestCase):
     def setUp(self):
         self.base = BaseTestCase()
         self.base.setUp()
@@ -319,7 +319,7 @@ class TestTestregisterNegativePasswordTooSimilar(TestCase):
 
 
     def test_testregister_negative_password_too_similar(self):
-        self.cleaner.get("http://127.0.0.1:8000/authentication/register/")
+        self.cleaner.get(self.live_server_url+"/authentication/register/")
         self.cleaner.set_window_size(917, 1023)
         self.cleaner.find_element(By.ID, "id_username").click()
 
@@ -345,12 +345,12 @@ class TestTestregisterNegativePasswordTooSimilar(TestCase):
         self.cleaner.find_element(By.ID, "id_last_name").send_keys("Doe")
         self.cleaner.find_element(By.CSS_SELECTOR, ".btn").click()
 
-        self.assertTrue(self.cleaner.current_url == "http://127.0.0.1:8000/authentication/register/")
+        self.assertTrue(self.cleaner.current_url == self.live_server_url+"/authentication/register/")
         self.assertTrue( self.cleaner.find_element(By.CSS_SELECTOR, ".alert").text == "This password is too similar to your personal data")
 
 
 
-class TestLoginPositive(TestCase):
+class TestLoginPositive(StaticLiveServerTestCase):
   
   
     def setUp(self):
@@ -381,7 +381,7 @@ class TestLoginPositive(TestCase):
 
         email = "testEmailLogin"+str(delta.total_seconds())+"@gm.com"
 
-        self.cleaner.get("http://localhost:8000/authentication/register/")
+        self.cleaner.get(self.live_server_url+"/authentication/register/")
         self.cleaner.set_window_size(917, 1023)
         self.cleaner.find_element(By.ID, "id_username").click()
         self.cleaner.find_element(By.ID, "id_username").send_keys(username)
@@ -396,16 +396,16 @@ class TestLoginPositive(TestCase):
         self.cleaner.find_element(By.ID, "id_last_name").click()
         self.cleaner.find_element(By.ID, "id_last_name").send_keys("Doe")
         self.cleaner.find_element(By.CSS_SELECTOR, ".btn").click()
-        self.cleaner.get("http://localhost:8000/authentication/login-view/")
+        self.cleaner.get(self.live_server_url+"/authentication/login-view/")
         self.cleaner.find_element(By.ID, "id_username").click()
         self.cleaner.find_element(By.ID, "id_username").send_keys(username)
         self.cleaner.find_element(By.ID, "id_password1").click()
         self.cleaner.find_element(By.ID, "id_password1").send_keys("admin12345678")
         self.cleaner.find_element(By.ID, "id_password1").send_keys(Keys.ENTER)
-        self.assertTrue(self.cleaner.current_url == "http://localhost:8000/")
+        self.assertTrue(self.cleaner.current_url == self.live_server_url+"/")
 
 
-class TestLoginNegative(TestCase):
+class TestLoginNegative(StaticLiveServerTestCase):
   
   
     def setUp(self):
@@ -436,7 +436,7 @@ class TestLoginNegative(TestCase):
 
         email = "testEmailLoginError"+str(delta.total_seconds())+"@gm.com"
 
-        self.cleaner.get("http://localhost:8000/authentication/register/")
+        self.cleaner.get(self.live_server_url+"/authentication/register/")
         self.cleaner.set_window_size(917, 1023)
         self.cleaner.find_element(By.ID, "id_username").click()
         self.cleaner.find_element(By.ID, "id_username").send_keys(username)
@@ -451,13 +451,13 @@ class TestLoginNegative(TestCase):
         self.cleaner.find_element(By.ID, "id_last_name").click()
         self.cleaner.find_element(By.ID, "id_last_name").send_keys("Doe")
         self.cleaner.find_element(By.CSS_SELECTOR, ".btn").click()
-        self.cleaner.get("http://localhost:8000/authentication/login-view/")
+        self.cleaner.get(self.live_server_url+"/authentication/login-view/")
         self.cleaner.find_element(By.ID, "id_username").click()
         self.cleaner.find_element(By.ID, "id_username").send_keys(username)
         self.cleaner.find_element(By.ID, "id_password1").click()
         self.cleaner.find_element(By.ID, "id_password1").send_keys("admin12345678")
         self.cleaner.find_element(By.ID, "id_password1").send_keys(Keys.ENTER)
-        self.assertTrue(self.cleaner.current_url == "http://localhost:8000/authentication/login-view/")
+        self.assertTrue(self.cleaner.current_url == self.live_server_url+"/authentication/login-view/")
         self.assertTrue( self.cleaner.find_element(By.CSS_SELECTOR, ".alert").text == "Username and password do not match")
 
 
