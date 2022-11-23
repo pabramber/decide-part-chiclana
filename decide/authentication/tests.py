@@ -485,4 +485,32 @@ class TestPositiveCleans(TestCase):
         self.assertFalse(cleaner.clean_password_commonly(pass1))
         self.assertFalse(cleaner.clean_password_too_similar(pass1, username, first_name, last_name))
         self.assertFalse(cleaner.clean_password_numeric(pass1))
+
+
+class TestNegativeCleans(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        mods.mock_query(self.client)
+        u = User(username='voter12345')
+        u.set_password('123')
+        u.email = "voter12345@gmail.com"
+        u.save()
+
+    def tearDown(self):
+        self.client = None
+
+
+    def test_negative_cleans(self):
+        cleaner = CustomUserCreationForm()
+
+        self.assertTrue(cleaner.clean_password2("admin00000", "admin1111111"))
+        self.assertTrue(cleaner.username_clean_lenght("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis pa"))
+        self.assertTrue(cleaner.username_clean_exits("voter12345"))
+        self.assertTrue(cleaner.username_clean_pattern("user~$"))
+        self.assertTrue(cleaner.email_clean("voter12345@gmail.com"))
+        self.assertTrue(cleaner.clean_password_lenght("testprq"))
+        self.assertTrue(cleaner.clean_password_commonly("qwertyui"))
+        self.assertTrue(cleaner.clean_password_too_similar("antonio2", "antonio2", "antonio", "Doe"))
+        self.assertTrue(cleaner.clean_password_numeric("1234567890123"))
         
