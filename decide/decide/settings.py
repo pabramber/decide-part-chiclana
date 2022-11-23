@@ -44,7 +44,11 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_swagger',
     'gateway',
+
     'import_export',
+
+    'ApiUser',
+
 ]
 
 REST_FRAMEWORK = {
@@ -158,6 +162,14 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'pgpig3.3@gmail.com'
+EMAIL_HOST_PASSWORD = 'lelxdtgaphtqonlr'
 
 # number of bits for the key, all auths should use the same number of bits
 KEYBITS = 256
