@@ -222,7 +222,7 @@ class RegisterView(CreateView):
 
                 "",[user.email], reply_to=[email])
 
-                 email.send()
+                email.send()
 
                 user.save()
                 token, _ = Token.objects.get_or_create(user=user)

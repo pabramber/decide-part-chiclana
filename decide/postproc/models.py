@@ -10,6 +10,7 @@ class PostprocTypeEnum(Enum):
     DROOP = 'DROOP'
     BORDA = 'BORDA'
     HARE = 'HARE'
+    
 
     @classmethod
     def choices(cls):

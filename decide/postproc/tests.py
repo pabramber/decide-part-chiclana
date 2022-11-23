@@ -117,14 +117,13 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            { 'option': 'Policital party 2', 'number': 1, 'votes': 311000, 'escanyos': 6 },
-            { 'option': 'Policital party 4', 'number': 2, 'votes': 73000, 'escanyos': 2 },
-            { 'option': 'Policital party 1', 'number': 3, 'votes': 391000, 'escanyos': 8 },
-            { 'option': 'Policital party 5', 'number': 4, 'votes': 27000, 'escanyos': 1 },
-            { 'option': 'Policital party 3', 'number': 5, 'votes': 184000, 'escanyos': 4 },
-            { 'option': 'Policital party 7', 'number': 6, 'votes': 2000, 'escanyos': 0 },    
-            { 'option': 'Policital party 6', 'number': 7, 'votes': 12000, 'escanyos': 0 },
-            
+            { 'option': 'Policital party 1', 'number': 3, 'votes': 391000, 'postproc': 8 },
+            { 'option': 'Policital party 2', 'number': 1, 'votes': 311000, 'postproc': 6 },
+            { 'option': 'Policital party 3', 'number': 5, 'votes': 184000, 'postproc': 4 },
+            { 'option': 'Policital party 4', 'number': 2, 'votes': 73000, 'postproc': 2 },
+            { 'option': 'Policital party 5', 'number': 4, 'votes': 27000, 'postproc': 1 },
+            { 'option': 'Policital party 6', 'number': 7, 'votes': 12000, 'postproc': 0 },
+            { 'option': 'Policital party 7', 'number': 6, 'votes': 2000, 'postproc': 0 },
         ]
 
         response = self.client.post('/postproc/', data, format='json')

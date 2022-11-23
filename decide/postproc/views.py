@@ -77,6 +77,33 @@ class PostProcView(APIView):
         return Response(out)
 
 
+    def hare(self, options, seats):
+        out = []
+
+        e, r = [], []
+        sum_e = 0
+        m = sum([opt['votes'] for opt in options])
+        q = round(m/seats, 3)
+
+        for i, opt in enumerate(options):
+            ei = floor(opt['votes'] / q)
+            ri = opt['votes'] - q*ei
+            e.append(ei)
+            r.append((ri, i))
+            sum_e += ei
+
+        k = seats - sum_e
+        r.sort(key = lambda x: -x[0])
+        best_r_index = Counter(i for _, i in (r*k)[:k])
+        
+        for i, opt in enumerate(options):
+            out.append({
+                **opt,
+                'postproc': e[i] + best_r_index[i] if i in best_r_index else e[i],
+            })
+
+        out.sort(key=lambda x: (-x['postproc'], -x['votes']))
+        return Response(out)
 
     def borda(self, options):
 
@@ -112,97 +139,6 @@ class PostProcView(APIView):
         return Response(options)
 
 
-    def votesSum(self, allVotes):
-
-        sum = 0
-        for x in allVotes.values():
-            sum += x
-        return sum      
-
-    def seatsAndResidues(self, data, quotient):
-
-        res = {}
-        for index, x in enumerate(data.values(), start = 0):
-            a = []
-
-            seats = math.floor(x/quotient)
-            
-            residue = x - quotient*seats
-
-            a.append(seats)
-            a.append(residue)
-
-            key_list = list(data.keys()) 
-            n = key_list[index]
-
-            res[n] = a
-
-        return res
-
-    def residueDistribution(self, initalDist, numSeats):
-
-        distSeats = 0
-        n = 0
-        residues = []
-        finalDist = copy.deepcopy(initalDist)
-        values = finalDist.values()
-
-        for x in values:
-            distSeats += x[0]
-            residues.append(x[1])
-
-        notDistributed = numSeats - distSeats
-        sortedResidues = residues.copy()
-        sortedResidues.sort(reverse = True)
-
-        while notDistributed > 0:
-            selected = sortedResidues[n]
-            pos = residues.index(selected)
-
-            notDistributed -= 1
-
-            list(values)[pos][0] += 1
-
-            n += 1
-
-        return finalDist
-
-    def hare(self, options, seats):
-
-        out = []
-        inputData = {}
-        results = {}
-        quotient = 0
-
-        
-        for opt in options:
-            i = opt['number']
-            v = opt['votes']
-            inputData[i] = v
-
-        totalVotes = self.votesSum(inputData)
-        quotient = math.floor(totalVotes/seats)
-
-        
-        if quotient != 0:
-            results = self.residueDistribution(self.seatsAndResidues(inputData, quotient), seats)
-
-            for index, opt in enumerate(options, start = 1):
-                out.append({
-                    **opt,
-                    'escanyos': results.get(index)[0],
-                })
-
-        else:
-            for index, opt in enumerate(options, start = 1):
-                out.append({
-                    **opt,
-                    'escanyos': 0,
-                })
-
-        return Response(out)
-
-
     def post(self, request):
         """
          * type: IDENTITY | DHONDT | DROOP | BORDA | HARE
@@ -233,6 +169,8 @@ class PostProcView(APIView):
             response = self.borda(opts)
         elif t == 'HARE':
             response = self.hare(opts, seats)
+    
+        
         
 
         return response
