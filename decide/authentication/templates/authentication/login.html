@@ -26,9 +26,23 @@
             <input type="submit" class="btn btn-primary" value="Login">
         </form>
 
+
         <p>You can also sign in with: <a href="{% provider_login_url 'google' %}">Google</a>
-        <br>
+            <br>
         <a href="{% url 'social:begin' 'facebook' %}">Ingresar con facebook</a>
+  
+        {% for error in errors %}
+        <div class="alert alert-danger">
+            {{error}}
+            <br>
+        </div>
+        {% endfor %}
+
+        
+        {% if errors|length > 0 %}
+        <h3>Return back and try again.</h3>
+        {% endif %}
+
 </div>
 
 {% endblock %}
