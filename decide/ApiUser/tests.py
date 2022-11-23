@@ -1,7 +1,7 @@
 from django.test import TestCase
 from base.tests import BaseTestCase
 from django.contrib.auth.models import User
-
+from django.db import IntegrityError
 # Create your tests here.
 class ApiUserTestCase(TestCase):
     multi_db = True
@@ -92,3 +92,46 @@ class ApiUserTestCase(TestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 204)
         self.assertEqual(response.data["Message"], "The user  can not be found in Decide application.")
+    
+    def test_positive_post_add_new_user(self):
+        url = '/api/user/list'
+        username1= "username3"
+        password1="password4"
+        email1="myemail3@gmail.com"
+        first_name1="first_name3"
+        last_name1="last_name4"
+        is_staff1=True
+        
+        data = {'username':username1,'first_name':first_name1,'last_name':last_name1,
+        'password':password1,'email':email1,'is_staff': is_staff1}
+        response = self.client.post(url,data,format='json')
+        self.assertEqual(response.status_code, 200)
+        
+        json_response=response.json()
+        message=json_response.get('Message')
+        user_json=json_response.get('user')
+        self.assertEqual(message, 'New user added')
+        
+        self.assertEqual(user_json[0]['username'], username1)
+        self.assertEqual(user_json[0]['first_name'], first_name1)
+        self.assertEqual(user_json[0]['last_name'], last_name1)
+        self.assertEqual(user_json[0]['email'], email1)
+        self.assertEqual(user_json[0]['is_staff'], is_staff1)
+        self.assertEqual(user_json[0]['is_active'], True)
+        self.assertNotEqual(user_json[0]['password'], password1)
+
+    def test_negative_post_add_new_user(self):
+        url = '/api/user/list'
+        username1= "username1"
+        password1="password4"
+        email1="myemail3@gmail.com"
+        first_name1="first_name3"
+        last_name1="last_name4"
+        is_staff1=True
+        
+        data = {'username':username1,'first_name':first_name1,'last_name':last_name1,
+        'password':password1,'email':email1,'is_staff': is_staff1}
+        try:
+            response = self.client.post(url,data,format='json')
+        except IntegrityError as e: 
+            self.assertRaises(IntegrityError)
