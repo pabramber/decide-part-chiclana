@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+    <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+{% endblock %}
+
+{% block content %}
+    <div id="app-visualizer">
+        <!-- Navbar -->
+        <b-navbar type="dark" variant="secondary">
+            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
+        </b-navbar>
+
+        <div class="voting container">
+            <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
+
+            <h2 v-if="!voting.start_date">Votación no comenzada</h2>
+            <h2 v-else-if="!voting.end_date">Votación en curso</h2>
+            <div v-else>
+                <h2 class="heading">Resultados:</h2>
+
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Opción</th>
+                            <th>Puntuación</th>
+                            <th>Votos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="opt in voting.postproc" :key="opt.number">
+                            <th>[[opt.option]]</th>
+                            <td>[[opt.postproc]]</td>
+                            <td class="text-muted">[[opt.votes]]</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <canvas id="bar-chart"></canvas>
+                <canvas id="pie-chart"></canvas>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrabody %}
+    <!-- Vuejs -->
+    <script src="https://unpkg.com/vue@2.7.10"></script>
+    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+
+    <!-- Chartjs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+
+    <script>
+        var voting = {{voting|safe}};
+        var app = new Vue({
+            delimiters: ['[[', ']]'],
+            el: '#app-visualizer',
+            data: {
+                voting: voting
+            }
+        })
+    </script>
+
+    <script>
+        let labels = voting.postproc.map((opt) => opt.option)
+        let postproc = voting.postproc.map((opt) => opt.postproc)
+        let votes = voting.postproc.map((opt) => opt.votes)
+
+        let ctx = document.getElementById("bar-chart").getContext("2d");
+        let chart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                    label: "Post proc",
+                    backgroundColor: 'rgba(84, 153, 199, 0.5)',
+                    borderColor: "#417690",
+                    data: postproc
+                    },
+                    {
+                    label: "Votes",
+                    backgroundColor: "rgba(236, 112, 99, 0.5)",
+                    borderColor: "#417690",
+                    data: votes
+                    }
+                ]
+            },
+            options: {
+                title: {
+                    text: voting.name,
+                    display: true
+                }
+            }
+        });
+
+        ctx = document.getElementById("pie-chart").getContext("2d");
+        let randomColors = [...Array(voting.postproc.length).keys()].map(i => "#" + Math.floor(random(i*10)*16777215).toString(16));
+        console.log(randomColors)
+        var myChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                    label: 'Postproc',
+                    data: postproc,
+                    backgroundColor: randomColors,
+                    borderColor: randomColors,
+                    borderWidth: 1
+                    },
+                    {
+                    label: 'Votes',
+                    data: votes,
+                    backgroundColor: randomColors,
+                    borderColor: randomColors,
+                    borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                cutoutPercentage: 40,
+                responsive: true,
+                title: {
+                    text: voting.name,
+                    display: true
+                }
+            }
+        });
+
+        function random(seed) {
+            var x = Math.sin(seed++) * 10000;
+            return x - Math.floor(x);
+        }
+    </script>
+    
+</body>
+{% endblock %}
