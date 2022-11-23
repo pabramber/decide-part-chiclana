@@ -1,6 +1,5 @@
 from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -12,11 +11,6 @@ from rest_framework.status import (
 )
 
 from base.perms import UserIsStaff
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.contrib import messages
-from .resources import CensusResource
-from tablib import Dataset
 from .models import Census
 from django.views.generic import ListView
 from django.http import HttpResponse
@@ -193,7 +187,6 @@ class CensusCreate(generics.ListCreateAPIView):
 
 class CensusDetail(generics.RetrieveDestroyAPIView):
 
-
     def destroy(self, request, voting_id, *args, **kwargs):
         voters = request.data.get('voters')
         census = Census.objects.filter(voting_id=voting_id, voter_id__in=voters)
@@ -203,7 +196,7 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
     def retrieve(self, request, voting_id, *args, **kwargs):
         voter = request.GET.get('voter_id')
         try:
-            Census.objects.get(voting_id=voting_id)
+            Census.objects.get(voting_id=voting_id, voter_id=voter)
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')

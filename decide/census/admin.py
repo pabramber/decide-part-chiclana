@@ -1,8 +1,4 @@
 from django.contrib import admin
-
-from import_export.admin import ImportExportModelAdmin
-
-
 from django.core.mail import send_mail
 from .models import Census
 from django.contrib.auth.models import User
@@ -56,8 +52,6 @@ class CensusAdmin(admin.ModelAdmin):
         
 
      
-
-
 
 admin.site.register(Census, CensusAdmin)
 
