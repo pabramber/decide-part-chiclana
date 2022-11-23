@@ -164,6 +164,7 @@ def importer(request):
     return render(request, 'importer.html')
 
 
+
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
 
@@ -174,6 +175,7 @@ class CensusCreate(generics.ListCreateAPIView):
             for voter in voters:
                 census = Census(voting_id=voting_id, voter_id=voter)
                 census.save()
+                
         except IntegrityError:
             return Response('Error try to create census', status=ST_409)
         return Response('Census created', status=ST_201)
@@ -183,6 +185,7 @@ class CensusCreate(generics.ListCreateAPIView):
         voters = Census.objects.filter(voting_id=voting_id).values_list('voter_id', flat=True)
         return Response({'voters': voters})
 
+    
 
 class CensusDetail(generics.RetrieveDestroyAPIView):
 
@@ -202,8 +205,6 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         return Response('Valid voter')
 
 
-
-
 def GetId(request):
     id = request.GET['id']
     census = Census.objects.filter(voting_id=int(id))
@@ -211,5 +212,6 @@ def GetId(request):
 
 def hello(request):
     return render(request,'census.html')
+
 
 
