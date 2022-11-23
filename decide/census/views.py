@@ -12,6 +12,154 @@ from rest_framework.status import (
 
 from base.perms import UserIsStaff
 from .models import Census
+from django.views.generic import ListView
+from django.http import HttpResponse
+from django.http.response import HttpResponse
+from django.shortcuts import render
+from django.views.generic.base import TemplateView
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+
+
+def filter(request):
+    censo = Census.objects.all()
+    return render(request, 'filterCensus.html', {'census' : censo})
+
+class FilterVotingID(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('i')
+        return Census.objects.filter(voting_id__icontains=query).order_by('-voting_id')
+
+class FilterVoterID(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('i')
+        return Census.objects.filter(voting_id__icontains=query).order_by('-voter_id')
+
+class FilterName(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        return Census.objects.filter(name__icontains=query).order_by('-name')
+
+class FilterSurname(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('i')
+        return Census.objects.filter(surname__icontains=query).order_by('-surname')
+
+class FilterCity(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(city__icontains=query).order_by('-city')
+
+class FilterCommunity(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(a_community__icontains=query).order_by('-a_community')
+
+class FilterGender(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(gender__icontains=query).order_by('-gender')
+
+class FilterBornYear(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(born_year__icontains=query).order_by('-born_year')
+
+class FilterCivilState(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(civil_state__icontains=query).order_by('-civil_state')
+
+class FilterSexuality(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(sexuality__icontains=query).order_by('-sexuality')
+
+class FilterWorks(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(works__icontains=query).order_by('-works')
+    
+
+def importer(request):
+    if request.method == 'POST':
+        census_resource = CensusResource()
+        dataset = Dataset()
+        new_census = request.FILES['myfile']
+
+        if not new_census.name.endswith('xlsx'):
+            messages.info(request, 'formato incorrecto, debe ser .xslx')
+            return render(request, 'importer.html')
+
+        imported_data = dataset.load(new_census.read(),format='xlsx')
+        #print(imported_data)
+        for data in imported_data:
+            value = Census(
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3],
+                    data[4],
+                    data[5],
+                    data[6],
+                    data[7],
+                    data[8],
+                    data[9],
+                    data[10],
+                    data[11]
+                    ) 
+            value.save()
+        
+        #result = person_resource.import_data(dataset, dry_run=True)  # Test the data import
+
+        #if not result.has_errors():
+        #    person_resource.import_data(dataset, dry_run=False)  # Actually import now
+
+    return render(request, 'importer.html')
 
 
 
@@ -53,4 +201,89 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
 
-   
+
+def GetId(request):
+    id = request.GET['id']
+    census = Census.objects.filter(voting_id=int(id))
+    return render(request,"census_details.html",{'census':census})
+
+def hello(request):
+    return render(request,'census.html')
+
+
+
+def home(request):
+    queryset = Census.objects.all()
+    return render(request, 'lista_censo.html', {'queryset':queryset})
+'''
+class ReportePersonalizadoExcel(TemplateView):
+    def get(self,request,*args,**kwargs):
+        query = Census.objects.all()
+        wb = Workbook()
+        bandera = True
+        cont = 1
+        for q in query:
+            if bandera:
+                ws = wb.active
+                bandera = False
+            else:
+                ws = wb.create_sheet('Hoja'+str(cont))
+            cont += 1
+
+        #Establecer el nombre de mi archivo
+        nombre_archivo = "ReportePersonalizadoExcel.xlsx"
+        #Definir el tipo de respuesta que se va a dar
+        response = HttpResponse(content_type = "application/ms-excel")
+        contenido = "attachment; filename = {0}".format(nombre_archivo)
+        response["Content-Disposition"] = contenido
+        wb.save(response)
+        return response
+'''
+
+class ReporteAutorExcel(TemplateView):
+    def get(self,request,*args,**kwargs):
+        census = Census.objects.all()
+        wb = Workbook()
+        ws = wb.active
+        ws['B1'] = 'Reporte de Censos'
+
+        ws.merge_cells('B1:L1')
+
+        ws['B3'] = 'Voting_id'
+        ws['C3'] = 'Voter_id'
+        ws['D3'] = 'Name'
+        ws['E3'] = 'Surname'
+        ws['F3'] = 'City'
+        ws['G3'] = 'A_community'
+        ws['H3'] = 'Gender'
+        ws['I3'] = 'Born_year'
+        ws['J3'] = 'Civil_state'
+        ws['K3'] = 'Sexuality'
+        ws['L3'] = 'Works'
+
+        cont = 11
+
+        for censu in census:
+            ws.cell(row = cont, column = 2).value = censu.voting_id
+            ws.cell(row = cont, column = 3).value = censu.voter_id
+            ws.cell(row = cont, column = 4).value = censu.name
+            ws.cell(row = cont, column = 5).value = censu.surname
+            ws.cell(row = cont, column = 6).value = censu.city
+            ws.cell(row = cont, column = 7).value = censu.a_community
+            ws.cell(row = cont, column = 8).value = censu.gender
+            ws.cell(row = cont, column = 9).value = censu.born_year
+            ws.cell(row = cont, column = 10).value = censu.civil_state
+            ws.cell(row = cont, column = 11).value = censu.sexuality
+            ws.cell(row = cont, column = 12).value = censu.works
+            cont+=1
+
+        nombre_archivo = "ReporteAutorExcel.xlsx"
+        response = HttpResponse(content_type = "application/ms-excel")
+
+        contenido = "attachment; filename = {0}".format(nombre_archivo)
+        response["Content-Disposition"] = contenido
+        wb.save(response)
+        return response
+
+       
+
