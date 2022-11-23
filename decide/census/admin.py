@@ -1,4 +1,8 @@
 from django.contrib import admin
+
+from import_export.admin import ImportExportModelAdmin
+
+
 from django.core.mail import send_mail
 from .models import Census
 from django.contrib.auth.models import User
@@ -28,6 +32,13 @@ def enviar_mail(modeladmin, request, queryset):
 
         })
 
+
+@admin.register(Census)
+class CensusAdmin(ImportExportModelAdmin):
+    list_display = ('voting_id','voter_id','name','surname','city',
+                    'a_community','gender','born_year','civil_state',
+                    'sexuality','works')
+
         asunto = "Ya puede realizar su voto en la aplicacion Decide"
         mensaje_texto = strip_tags(mensaje)
 
@@ -43,6 +54,7 @@ class CensusAdmin(admin.ModelAdmin):
     
 
      
+
 
 
 admin.site.register(Census, CensusAdmin)
