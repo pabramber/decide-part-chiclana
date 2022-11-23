@@ -14,6 +14,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from datetime import datetime
+from .views import CustomUserCreationForm
 
 
 from base import mods
@@ -148,7 +149,7 @@ class TestTestregisterPositive(TestCase):
 
         options = webdriver.ChromeOptions()
         options.headless = True
-        self.driver = webdriver.Chrome(options=options)
+        self.cleaner = webdriver.Chrome(options=options)
 
 
         super().setUp()            
@@ -156,14 +157,14 @@ class TestTestregisterPositive(TestCase):
     def tearDown(self):           
         super().tearDown()
 
-        self.driver.quit()
+        self.cleaner.quit()
 
         self.base.tearDown()
   
     def test_testregisterpositive(self):
-        self.driver.get("http://127.0.0.1:8000/authentication/register/")
-        self.driver.set_window_size(917, 1023)
-        self.driver.find_element(By.ID, "id_username").click()
+        self.cleaner.get("http://127.0.0.1:8000/authentication/register/")
+        self.cleaner.set_window_size(917, 1023)
+        self.cleaner.find_element(By.ID, "id_username").click()
 
         dt = datetime.now()
         epoch_time = datetime(1970, 1, 1)
@@ -171,23 +172,23 @@ class TestTestregisterPositive(TestCase):
         
         username = "user"+str(delta.total_seconds()) 
 
-        self.driver.find_element(By.ID, "id_username").send_keys(username)
-        self.driver.find_element(By.ID, "id_password1").click()
-        self.driver.find_element(By.ID, "id_password1").send_keys("contrasenia12345")
-        self.driver.find_element(By.ID, "id_password2").click()
-        self.driver.find_element(By.ID, "id_password2").send_keys("contrasenia12345")
-        self.driver.find_element(By.ID, "id_email").click()
+        self.cleaner.find_element(By.ID, "id_username").send_keys(username)
+        self.cleaner.find_element(By.ID, "id_password1").click()
+        self.cleaner.find_element(By.ID, "id_password1").send_keys("contrasenia12345")
+        self.cleaner.find_element(By.ID, "id_password2").click()
+        self.cleaner.find_element(By.ID, "id_password2").send_keys("contrasenia12345")
+        self.cleaner.find_element(By.ID, "id_email").click()
 
         email = "test"+str(delta.total_seconds())+"@gm.com"
 
-        self.driver.find_element(By.ID, "id_email").send_keys(email)
-        self.driver.find_element(By.ID, "id_first_name").click()
-        self.driver.find_element(By.ID, "id_first_name").send_keys("Jhon")
-        self.driver.find_element(By.ID, "id_last_name").click()
-        self.driver.find_element(By.ID, "id_last_name").send_keys("Doe")
-        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.cleaner.find_element(By.ID, "id_email").send_keys(email)
+        self.cleaner.find_element(By.ID, "id_first_name").click()
+        self.cleaner.find_element(By.ID, "id_first_name").send_keys("Jhon")
+        self.cleaner.find_element(By.ID, "id_last_name").click()
+        self.cleaner.find_element(By.ID, "id_last_name").send_keys("Doe")
+        self.cleaner.find_element(By.CSS_SELECTOR, ".btn").click()
 
-        self.assertTrue(self.driver.current_url == "http://127.0.0.1:8000/")
+        self.assertTrue(self.cleaner.current_url == "http://127.0.0.1:8000/")
 
 
 
@@ -199,7 +200,7 @@ class TestTestregisterNegativePassword(TestCase):
 
         options = webdriver.ChromeOptions()
         options.headless = True
-        self.driver = webdriver.Chrome(options=options)
+        self.cleaner = webdriver.Chrome(options=options)
 
 
         super().setUp()            
@@ -207,14 +208,14 @@ class TestTestregisterNegativePassword(TestCase):
     def tearDown(self):           
         super().tearDown()
 
-        self.driver.quit()
+        self.cleaner.quit()
 
         self.base.tearDown()
   
     def test_testregister_negative_password_numeric(self):
-        self.driver.get("http://127.0.0.1:8000/authentication/register/")
-        self.driver.set_window_size(917, 1023)
-        self.driver.find_element(By.ID, "id_username").click()
+        self.cleaner.get("http://127.0.0.1:8000/authentication/register/")
+        self.cleaner.set_window_size(917, 1023)
+        self.cleaner.find_element(By.ID, "id_username").click()
 
         dt = datetime.now()
         epoch_time = datetime(1970, 1, 1)
@@ -222,24 +223,24 @@ class TestTestregisterNegativePassword(TestCase):
         
         username = "user"+str(delta.total_seconds()) 
 
-        self.driver.find_element(By.ID, "id_username").send_keys(username)
-        self.driver.find_element(By.ID, "id_password1").click()
-        self.driver.find_element(By.ID, "id_password1").send_keys("12345678")
-        self.driver.find_element(By.ID, "id_password2").click()
-        self.driver.find_element(By.ID, "id_password2").send_keys("12345678")
-        self.driver.find_element(By.ID, "id_email").click()
+        self.cleaner.find_element(By.ID, "id_username").send_keys(username)
+        self.cleaner.find_element(By.ID, "id_password1").click()
+        self.cleaner.find_element(By.ID, "id_password1").send_keys("12345678")
+        self.cleaner.find_element(By.ID, "id_password2").click()
+        self.cleaner.find_element(By.ID, "id_password2").send_keys("12345678")
+        self.cleaner.find_element(By.ID, "id_email").click()
 
         email = "test"+str(delta.total_seconds())+"@gm.com"
 
-        self.driver.find_element(By.ID, "id_email").send_keys(email)
-        self.driver.find_element(By.ID, "id_first_name").click()
-        self.driver.find_element(By.ID, "id_first_name").send_keys("Jhon")
-        self.driver.find_element(By.ID, "id_last_name").click()
-        self.driver.find_element(By.ID, "id_last_name").send_keys("Doe")
-        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.cleaner.find_element(By.ID, "id_email").send_keys(email)
+        self.cleaner.find_element(By.ID, "id_first_name").click()
+        self.cleaner.find_element(By.ID, "id_first_name").send_keys("Jhon")
+        self.cleaner.find_element(By.ID, "id_last_name").click()
+        self.cleaner.find_element(By.ID, "id_last_name").send_keys("Doe")
+        self.cleaner.find_element(By.CSS_SELECTOR, ".btn").click()
 
-        self.assertTrue(self.driver.current_url == "http://127.0.0.1:8000/authentication/register/")
-        self.assertTrue( self.driver.find_element(By.CSS_SELECTOR, ".alert").text == "This password is entirely numeric")
+        self.assertTrue(self.cleaner.current_url == "http://127.0.0.1:8000/authentication/register/")
+        self.assertTrue( self.cleaner.find_element(By.CSS_SELECTOR, ".alert").text == "This password is entirely numeric")
 
 
 
@@ -250,7 +251,7 @@ class TestTestregisterNegativePasswordCommonly(TestCase):
 
         options = webdriver.ChromeOptions()
         options.headless = True
-        self.driver = webdriver.Chrome(options=options)
+        self.cleaner = webdriver.Chrome(options=options)
 
 
         super().setUp()            
@@ -258,15 +259,15 @@ class TestTestregisterNegativePasswordCommonly(TestCase):
     def tearDown(self):           
         super().tearDown()
 
-        self.driver.quit()
+        self.cleaner.quit()
 
         self.base.tearDown()
 
 
     def test_testregister_negative_password_commonly(self):
-        self.driver.get("http://127.0.0.1:8000/authentication/register/")
-        self.driver.set_window_size(917, 1023)
-        self.driver.find_element(By.ID, "id_username").click()
+        self.cleaner.get("http://127.0.0.1:8000/authentication/register/")
+        self.cleaner.set_window_size(917, 1023)
+        self.cleaner.find_element(By.ID, "id_username").click()
 
         dt = datetime.now()
         epoch_time = datetime(1970, 1, 1)
@@ -274,24 +275,24 @@ class TestTestregisterNegativePasswordCommonly(TestCase):
         
         username = "user"+str(delta.total_seconds()) 
 
-        self.driver.find_element(By.ID, "id_username").send_keys(username)
-        self.driver.find_element(By.ID, "id_password1").click()
-        self.driver.find_element(By.ID, "id_password1").send_keys("qwertyui")
-        self.driver.find_element(By.ID, "id_password2").click()
-        self.driver.find_element(By.ID, "id_password2").send_keys("qwertyui")
-        self.driver.find_element(By.ID, "id_email").click()
+        self.cleaner.find_element(By.ID, "id_username").send_keys(username)
+        self.cleaner.find_element(By.ID, "id_password1").click()
+        self.cleaner.find_element(By.ID, "id_password1").send_keys("qwertyui")
+        self.cleaner.find_element(By.ID, "id_password2").click()
+        self.cleaner.find_element(By.ID, "id_password2").send_keys("qwertyui")
+        self.cleaner.find_element(By.ID, "id_email").click()
 
         email = "test"+str(delta.total_seconds())+"@gm.com"
 
-        self.driver.find_element(By.ID, "id_email").send_keys(email)
-        self.driver.find_element(By.ID, "id_first_name").click()
-        self.driver.find_element(By.ID, "id_first_name").send_keys("Jhon")
-        self.driver.find_element(By.ID, "id_last_name").click()
-        self.driver.find_element(By.ID, "id_last_name").send_keys("Doe")
-        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.cleaner.find_element(By.ID, "id_email").send_keys(email)
+        self.cleaner.find_element(By.ID, "id_first_name").click()
+        self.cleaner.find_element(By.ID, "id_first_name").send_keys("Jhon")
+        self.cleaner.find_element(By.ID, "id_last_name").click()
+        self.cleaner.find_element(By.ID, "id_last_name").send_keys("Doe")
+        self.cleaner.find_element(By.CSS_SELECTOR, ".btn").click()
 
-        self.assertTrue(self.driver.current_url == "http://127.0.0.1:8000/authentication/register/")
-        self.assertTrue( self.driver.find_element(By.CSS_SELECTOR, ".alert").text == "This password is a commonly password")
+        self.assertTrue(self.cleaner.current_url == "http://127.0.0.1:8000/authentication/register/")
+        self.assertTrue( self.cleaner.find_element(By.CSS_SELECTOR, ".alert").text == "This password is a commonly password")
 
 
 
@@ -304,7 +305,7 @@ class TestTestregisterNegativePasswordTooSimilar(TestCase):
 
         options = webdriver.ChromeOptions()
         options.headless = True
-        self.driver = webdriver.Chrome(options=options)
+        self.cleaner = webdriver.Chrome(options=options)
 
 
         super().setUp()            
@@ -312,15 +313,15 @@ class TestTestregisterNegativePasswordTooSimilar(TestCase):
     def tearDown(self):           
         super().tearDown()
 
-        self.driver.quit()
+        self.cleaner.quit()
 
         self.base.tearDown()
 
 
     def test_testregister_negative_password_too_similar(self):
-        self.driver.get("http://127.0.0.1:8000/authentication/register/")
-        self.driver.set_window_size(917, 1023)
-        self.driver.find_element(By.ID, "id_username").click()
+        self.cleaner.get("http://127.0.0.1:8000/authentication/register/")
+        self.cleaner.set_window_size(917, 1023)
+        self.cleaner.find_element(By.ID, "id_username").click()
 
         dt = datetime.now()
         epoch_time = datetime(1970, 1, 1)
@@ -328,24 +329,24 @@ class TestTestregisterNegativePasswordTooSimilar(TestCase):
         
         username = "antonio"+str(delta.total_seconds()) 
 
-        self.driver.find_element(By.ID, "id_username").send_keys(username)
-        self.driver.find_element(By.ID, "id_password1").click()
-        self.driver.find_element(By.ID, "id_password1").send_keys("antonio"+str(delta.total_seconds()) )
-        self.driver.find_element(By.ID, "id_password2").click()
-        self.driver.find_element(By.ID, "id_password2").send_keys("antonio"+str(delta.total_seconds()) )
-        self.driver.find_element(By.ID, "id_email").click()
+        self.cleaner.find_element(By.ID, "id_username").send_keys(username)
+        self.cleaner.find_element(By.ID, "id_password1").click()
+        self.cleaner.find_element(By.ID, "id_password1").send_keys("antonio"+str(delta.total_seconds()) )
+        self.cleaner.find_element(By.ID, "id_password2").click()
+        self.cleaner.find_element(By.ID, "id_password2").send_keys("antonio"+str(delta.total_seconds()) )
+        self.cleaner.find_element(By.ID, "id_email").click()
 
         email = "test"+str(delta.total_seconds())+"@gm.com"
 
-        self.driver.find_element(By.ID, "id_email").send_keys(email)
-        self.driver.find_element(By.ID, "id_first_name").click()
-        self.driver.find_element(By.ID, "id_first_name").send_keys("Jhon")
-        self.driver.find_element(By.ID, "id_last_name").click()
-        self.driver.find_element(By.ID, "id_last_name").send_keys("Doe")
-        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.cleaner.find_element(By.ID, "id_email").send_keys(email)
+        self.cleaner.find_element(By.ID, "id_first_name").click()
+        self.cleaner.find_element(By.ID, "id_first_name").send_keys("Jhon")
+        self.cleaner.find_element(By.ID, "id_last_name").click()
+        self.cleaner.find_element(By.ID, "id_last_name").send_keys("Doe")
+        self.cleaner.find_element(By.CSS_SELECTOR, ".btn").click()
 
-        self.assertTrue(self.driver.current_url == "http://127.0.0.1:8000/authentication/register/")
-        self.assertTrue( self.driver.find_element(By.CSS_SELECTOR, ".alert").text == "This password is too similar to your personal data")
+        self.assertTrue(self.cleaner.current_url == "http://127.0.0.1:8000/authentication/register/")
+        self.assertTrue( self.cleaner.find_element(By.CSS_SELECTOR, ".alert").text == "This password is too similar to your personal data")
 
 
 
@@ -358,7 +359,7 @@ class TestLoginPositive(TestCase):
 
         options = webdriver.ChromeOptions()
         options.headless = True
-        self.driver = webdriver.Chrome(options=options)
+        self.cleaner = webdriver.Chrome(options=options)
 
 
         super().setUp()            
@@ -366,7 +367,7 @@ class TestLoginPositive(TestCase):
     def tearDown(self):           
         super().tearDown()
 
-        self.driver.quit()
+        self.cleaner.quit()
 
         self.base.tearDown()
   
@@ -380,28 +381,28 @@ class TestLoginPositive(TestCase):
 
         email = "testEmailLogin"+str(delta.total_seconds())+"@gm.com"
 
-        self.driver.get("http://localhost:8000/authentication/register/")
-        self.driver.set_window_size(917, 1023)
-        self.driver.find_element(By.ID, "id_username").click()
-        self.driver.find_element(By.ID, "id_username").send_keys(username)
-        self.driver.find_element(By.ID, "id_password1").click()
-        self.driver.find_element(By.ID, "id_password1").send_keys("admin12345678")
-        self.driver.find_element(By.ID, "id_password2").click()
-        self.driver.find_element(By.ID, "id_password2").send_keys("admin12345678")
-        self.driver.find_element(By.ID, "id_email").click()
-        self.driver.find_element(By.ID, "id_email").send_keys(email)
-        self.driver.find_element(By.ID, "id_first_name").click()
-        self.driver.find_element(By.ID, "id_first_name").send_keys("Jhon")
-        self.driver.find_element(By.ID, "id_last_name").click()
-        self.driver.find_element(By.ID, "id_last_name").send_keys("Doe")
-        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-        self.driver.get("http://localhost:8000/authentication/login-view/")
-        self.driver.find_element(By.ID, "id_username").click()
-        self.driver.find_element(By.ID, "id_username").send_keys(username)
-        self.driver.find_element(By.ID, "id_password1").click()
-        self.driver.find_element(By.ID, "id_password1").send_keys("admin12345678")
-        self.driver.find_element(By.ID, "id_password1").send_keys(Keys.ENTER)
-        self.assertTrue(self.driver.current_url == "http://localhost:8000/")
+        self.cleaner.get("http://localhost:8000/authentication/register/")
+        self.cleaner.set_window_size(917, 1023)
+        self.cleaner.find_element(By.ID, "id_username").click()
+        self.cleaner.find_element(By.ID, "id_username").send_keys(username)
+        self.cleaner.find_element(By.ID, "id_password1").click()
+        self.cleaner.find_element(By.ID, "id_password1").send_keys("admin12345678")
+        self.cleaner.find_element(By.ID, "id_password2").click()
+        self.cleaner.find_element(By.ID, "id_password2").send_keys("admin12345678")
+        self.cleaner.find_element(By.ID, "id_email").click()
+        self.cleaner.find_element(By.ID, "id_email").send_keys(email)
+        self.cleaner.find_element(By.ID, "id_first_name").click()
+        self.cleaner.find_element(By.ID, "id_first_name").send_keys("Jhon")
+        self.cleaner.find_element(By.ID, "id_last_name").click()
+        self.cleaner.find_element(By.ID, "id_last_name").send_keys("Doe")
+        self.cleaner.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.cleaner.get("http://localhost:8000/authentication/login-view/")
+        self.cleaner.find_element(By.ID, "id_username").click()
+        self.cleaner.find_element(By.ID, "id_username").send_keys(username)
+        self.cleaner.find_element(By.ID, "id_password1").click()
+        self.cleaner.find_element(By.ID, "id_password1").send_keys("admin12345678")
+        self.cleaner.find_element(By.ID, "id_password1").send_keys(Keys.ENTER)
+        self.assertTrue(self.cleaner.current_url == "http://localhost:8000/")
 
 
 class TestLoginNegative(TestCase):
@@ -413,7 +414,7 @@ class TestLoginNegative(TestCase):
 
         options = webdriver.ChromeOptions()
         options.headless = True
-        self.driver = webdriver.Chrome(options=options)
+        self.cleaner = webdriver.Chrome(options=options)
 
 
         super().setUp()            
@@ -421,7 +422,7 @@ class TestLoginNegative(TestCase):
     def tearDown(self):           
         super().tearDown()
 
-        self.driver.quit()
+        self.cleaner.quit()
 
         self.base.tearDown()
   
@@ -435,26 +436,53 @@ class TestLoginNegative(TestCase):
 
         email = "testEmailLoginError"+str(delta.total_seconds())+"@gm.com"
 
-        self.driver.get("http://localhost:8000/authentication/register/")
-        self.driver.set_window_size(917, 1023)
-        self.driver.find_element(By.ID, "id_username").click()
-        self.driver.find_element(By.ID, "id_username").send_keys(username)
-        self.driver.find_element(By.ID, "id_password1").click()
-        self.driver.find_element(By.ID, "id_password1").send_keys("admin123456789")
-        self.driver.find_element(By.ID, "id_password2").click()
-        self.driver.find_element(By.ID, "id_password2").send_keys("admin123456789")
-        self.driver.find_element(By.ID, "id_email").click()
-        self.driver.find_element(By.ID, "id_email").send_keys(email)
-        self.driver.find_element(By.ID, "id_first_name").click()
-        self.driver.find_element(By.ID, "id_first_name").send_keys("Jhon")
-        self.driver.find_element(By.ID, "id_last_name").click()
-        self.driver.find_element(By.ID, "id_last_name").send_keys("Doe")
-        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-        self.driver.get("http://localhost:8000/authentication/login-view/")
-        self.driver.find_element(By.ID, "id_username").click()
-        self.driver.find_element(By.ID, "id_username").send_keys(username)
-        self.driver.find_element(By.ID, "id_password1").click()
-        self.driver.find_element(By.ID, "id_password1").send_keys("admin12345678")
-        self.driver.find_element(By.ID, "id_password1").send_keys(Keys.ENTER)
-        self.assertTrue(self.driver.current_url == "http://localhost:8000/authentication/login-view/")
-        self.assertTrue( self.driver.find_element(By.CSS_SELECTOR, ".alert").text == "Username and password do not match")
+        self.cleaner.get("http://localhost:8000/authentication/register/")
+        self.cleaner.set_window_size(917, 1023)
+        self.cleaner.find_element(By.ID, "id_username").click()
+        self.cleaner.find_element(By.ID, "id_username").send_keys(username)
+        self.cleaner.find_element(By.ID, "id_password1").click()
+        self.cleaner.find_element(By.ID, "id_password1").send_keys("admin123456789")
+        self.cleaner.find_element(By.ID, "id_password2").click()
+        self.cleaner.find_element(By.ID, "id_password2").send_keys("admin123456789")
+        self.cleaner.find_element(By.ID, "id_email").click()
+        self.cleaner.find_element(By.ID, "id_email").send_keys(email)
+        self.cleaner.find_element(By.ID, "id_first_name").click()
+        self.cleaner.find_element(By.ID, "id_first_name").send_keys("Jhon")
+        self.cleaner.find_element(By.ID, "id_last_name").click()
+        self.cleaner.find_element(By.ID, "id_last_name").send_keys("Doe")
+        self.cleaner.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.cleaner.get("http://localhost:8000/authentication/login-view/")
+        self.cleaner.find_element(By.ID, "id_username").click()
+        self.cleaner.find_element(By.ID, "id_username").send_keys(username)
+        self.cleaner.find_element(By.ID, "id_password1").click()
+        self.cleaner.find_element(By.ID, "id_password1").send_keys("admin12345678")
+        self.cleaner.find_element(By.ID, "id_password1").send_keys(Keys.ENTER)
+        self.assertTrue(self.cleaner.current_url == "http://localhost:8000/authentication/login-view/")
+        self.assertTrue( self.cleaner.find_element(By.CSS_SELECTOR, ".alert").text == "Username and password do not match")
+
+
+
+
+
+class TestPositiveCleans(TestCase):
+
+    def test_positive_cleans(self):
+        username = "antonio123456"
+        pass1 = "admin00000"
+        pass2 = "admin00000"
+        email = "antonio12346@gmail.com"
+        first_name = "Jhon"
+        last_name = "Doe"
+
+        cleaner = CustomUserCreationForm()
+
+        self.assertFalse(cleaner.clean_password2(pass1, pass2))
+        self.assertFalse(cleaner.username_clean_lenght(username))
+        self.assertFalse(cleaner.username_clean_exits(username))
+        self.assertFalse(cleaner.username_clean_pattern(username))
+        self.assertFalse(cleaner.email_clean(email))
+        self.assertFalse(cleaner.clean_password_lenght(pass1))
+        self.assertFalse(cleaner.clean_password_commonly(pass1))
+        self.assertFalse(cleaner.clean_password_too_similar(pass1, username, first_name, last_name))
+        self.assertFalse(cleaner.clean_password_numeric(pass1))
+        
