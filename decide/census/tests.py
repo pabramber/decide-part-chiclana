@@ -8,7 +8,7 @@ from base import mods
 from base.tests import BaseTestCase
 
 
-class CensusTestCase(BaseTestCase):
+#class CensusTestCase(BaseTestCase):
 
     # def setUp(self):
     #     super().setUp()
