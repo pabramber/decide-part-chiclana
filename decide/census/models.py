@@ -14,7 +14,9 @@ class Census(models.Model):
     sexuality = models.CharField(max_length=20, null=True)
     works = models.PositiveIntegerField(null=True)
 
-    class Meta:
+class Meta:
         unique_together = (('voting_id','voter_id','name','surname','city',
                             'a_community','gender','born_year','civil_state',
                             'sexuality','works'),)
+
+

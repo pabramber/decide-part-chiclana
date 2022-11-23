@@ -1,5 +1,9 @@
 from django.urls import path, include
 from . import views
+from django.conf.urls import url
+from django.contrib.auth.decorators import login_required
+from .views import ReporteAutorExcel
+
 
 
 urlpatterns = [
@@ -8,6 +12,10 @@ urlpatterns = [
     path('detalles/',views.GetId),
     path('',views.hello, name="hello"),
     path('importer/', views.importer, name='importer'),
+
+    path('lista_censo/', views.home, name = 'lista_censo'),
+    url(r'^reporte/', login_required(ReporteAutorExcel.as_view()), name = "reporte"),
+
     path('filter/', views.filter, name='filter'),
     path('filter-votingID/', views.FilterVotingID.as_view(), name='filter_votingID'),
     path('filter-voterID/', views.FilterVoterID.as_view(), name='filter_voterID'),
@@ -20,6 +28,7 @@ urlpatterns = [
     path('filter-civilstate/', views.FilterCivilState.as_view(), name='filter_civil_state'),
     path('filter-sexuality/', views.FilterSexuality.as_view(), name='filter_sexuality'),
     path('filter-works/', views.FilterWorks.as_view(), name='filter_works'),
+
 
 
 ]
