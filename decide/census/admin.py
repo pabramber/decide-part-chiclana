@@ -39,19 +39,21 @@ class CensusAdmin(ImportExportModelAdmin):
                     'a_community','gender','born_year','civil_state',
                     'sexuality','works')
 
-        asunto = "Ya puede realizar su voto en la aplicacion Decide"
-        mensaje_texto = strip_tags(mensaje)
+    asunto = "Ya puede realizar su voto en la aplicacion Decide"
+    mensaje_texto = strip_tags(mensaje)
 
-        from_mail = "pgpig3.3@gmail.com"
-        to_email = user.email
-        send_mail(asunto,mensaje,from_mail,[to_email], html_message=mensaje)
+    from_mail = "pgpig3.3@gmail.com"
+    to_email = user.email
+    send_mail(asunto,mensaje,from_mail,[to_email], html_message=mensaje)
+
+
 
 class CensusAdmin(admin.ModelAdmin):
-    actions = [enviar_mail]
-    list_display = ('voting_id', 'voter_id')
-    list_filter = ('voting_id', )
-    search_fields = ('voter_id', )
-    
+        actions = [enviar_mail]
+        list_display = ('voting_id', 'voter_id')
+        list_filter = ('voting_id', )
+        search_fields = ('voter_id', )
+        
 
      
 
