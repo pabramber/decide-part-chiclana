@@ -74,6 +74,35 @@ class PostProcView(APIView):
         out.sort(key=lambda x: (-x['postproc'], -x['votes']))
         return Response(out)
 
+    def reinforced_imperial(self, options, seats):
+        out = []
+
+        seats_quotient = []
+        remainder = []
+        sum_e = 0
+        total_votes = sum([option['votes'] for option in options])
+        quotient = round(1 + total_votes / (seats + 3))
+
+        for num, option in enumerate(options):
+            ei = floor(option['votes'] / quotient)
+            ri = opt['votes'] - quotient*ei
+            seats_quotient.append(ei)
+            remainder.append((ri, num))
+            sum_e += ei
+
+        k = seats - sum_e
+        remainder.sort(key = lambda x: -x[0])
+        best_r_index = Counter(num for _, num in (remainder*k)[:k])
+        
+        for num, option in enumerate(options):
+            out.append({
+                **option,
+                'postproc': seats_quotient[num] + best_r_index[num] if num in best_r_index else seats_quotient[num],
+            })
+
+        out.sort(key=lambda x: (-x['postproc'], -x['votes']))
+        return Response(out)
+    
     def post(self, request):
         """
          * type: IDENTITY | DHONDT | DROOP
