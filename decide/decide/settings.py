@@ -204,4 +204,4 @@ if os.path.exists("config.jsonnet"):
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
 
-PYTHON_VERSION = '3.8.10'
+PYTHON_VERSION = '3.7.10'
