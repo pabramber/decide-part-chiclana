@@ -8,6 +8,7 @@ class PostprocTypeEnum(Enum):
     IDENTITY = 'IDENTITY'
     DHONDT = 'DHONDT'
     DROOP = 'DROOP'
+    IMPERIALI = 'IMPERIALI'
 
     @classmethod
     def choices(cls):
