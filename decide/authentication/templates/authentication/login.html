@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n static %}
-
+{% load socialaccount %}
 {% block extrahead %}
     <link type="text/css" rel="stylesheet"
          href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
@@ -27,6 +27,10 @@
         </form>
 
 
+        <p>You can also sign in with: <a href="{% provider_login_url 'google' %}">Google</a>
+            <br>
+        <a href="{% url 'social:begin' 'facebook' %}">Ingresar con facebook</a>
+  
         {% for error in errors %}
         <div class="alert alert-danger">
             {{error}}
@@ -38,6 +42,7 @@
         {% if errors|length > 0 %}
         <h3>Return back and try again.</h3>
         {% endif %}
+
 </div>
 
 {% endblock %}

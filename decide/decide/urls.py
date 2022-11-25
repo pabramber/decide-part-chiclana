@@ -25,8 +25,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('doc/', schema_view),
     path('gateway/', include('gateway.urls')),
+    path('social-auth/', include('social_django.urls', namespace="social")),
     path('api/', include('ApiUser.urls')),
-
 ]
 
 for module in settings.MODULES:
