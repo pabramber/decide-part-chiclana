@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from rest_framework.status import (
         HTTP_201_CREATED as ST_201,
         HTTP_204_NO_CONTENT as ST_204,
@@ -102,7 +103,7 @@ class UserDetailViews(APIView):
             
     def delete(self, request, id):
 
-        user = User.objects.get(id=id)
+        user = get_object_or_404(User, pk=id)
         if(user is None):
             message={"Message": "The user  can not be found in Decide application."}
             return Response(message)
