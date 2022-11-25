@@ -135,3 +135,19 @@ class ApiUserTestCase(TestCase):
             response = self.client.post(url,data,format='json')
         except IntegrityError as e: 
             self.assertRaises(IntegrityError)
+
+    def test_update_user(self):
+        userList = User.objects.all().values()
+        user=userList[0]
+        url = '/api/user/'+str(user.get('id'))
+        new_username= "new_username"
+        new_password="new_password"
+        new_email="newemail@gmail.com"
+        new_firstname="new_firstname"
+        new_lastname="new_lastname"
+        new_is_staff=True
+        data = {'username':new_username,'first_name':new_firstname,'last_name':new_lastname,
+        'password':new_password,'email':new_email,'is_staff': new_is_staff}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, 415)
+        
