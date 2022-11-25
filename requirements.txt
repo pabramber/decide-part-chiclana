@@ -12,3 +12,4 @@ jsonnet==0.12.1
 selenium
 django-import-export==2.0
 tablib==3.2
+social-auth-app-django
