@@ -2,7 +2,7 @@ from django.test import TestCase
 from base.tests import BaseTestCase
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-# Create your tests here.
+from django.db import models
 class ApiUserTestCase(TestCase):
     multi_db = True
     def setUp(self):
@@ -150,4 +150,23 @@ class ApiUserTestCase(TestCase):
         'password':new_password,'email':new_email,'is_staff': new_is_staff}
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, 415)
-        
+    
+    def test_positive_delete_user(self):
+        code=204
+        userList = User.objects.all().values()
+        user=userList[0]
+        url = '/api/user/'+str(user.get('id'))
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, code)
+        userDeleted = User.objects.all().filter(id=user.get('id')).values()
+        self.assertEqual(len(userDeleted),0)
+
+    def test_negative_delete_user(self):
+        code=404
+        userList = User.objects.all().values()
+        user=userList[0]
+        url = '/api/user/'+str(100)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, code)
+
+            
