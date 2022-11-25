@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from rest_framework.status import (
+        HTTP_200_OK as ST_200,
         HTTP_201_CREATED as ST_201,
         HTTP_204_NO_CONTENT as ST_204,
         HTTP_400_BAD_REQUEST as ST_400,
@@ -13,6 +14,7 @@ from rest_framework.status import (
 
 # Create your views here.
 from .serializers import *
+from django.contrib.auth import authenticate, login
 
 
 class UserListViews(APIView):
@@ -136,9 +138,27 @@ class UserStaffView(APIView):
         else:
             return Response({"Message": "The user  can not be found in Decide application."}
             ,status=ST_204)
-    
 
-    
+class UserExistsView(APIView):
+    serializer_class = UserLoginSerializer
+
+    def post (self, request):
+        serializer_obj = UserLoginSerializer(data=request.data)
+       
+        if(serializer_obj.is_valid()):
+            user = authenticate(request, username=serializer_obj.data.get("username"), password=serializer_obj.data.get("password"))
+            if user is not None:
+                loged=login(request, user)
+                print(loged)
+                return Response({"Message": "The searched user exist"}
+                ,status=ST_200)
+            else:
+                
+                return Response({"Message": "the searched user does not exist"}
+                ,status=ST_204)
+        else:
+            return Response({"Message": "Incorrect input data."}
+            ,status=ST_204)
        
 
         
