@@ -99,6 +99,19 @@ class UserDetailViews(APIView):
         else:
             return Response({"Message": "The user  can not be found in Decide application."}
             ,status=ST_204)
+            
+    def delete(self, request, id):
+
+        user = User.objects.get(id=id)
+        if(user is None):
+            message={"Message": "The user  can not be found in Decide application."}
+            return Response(message)
+            
+        else:
+            message={"Message": "The user  has been deleted."}
+            user.delete()
+            return Response(message, status=ST_204)
+
 
 class UserStaffView(APIView):
     """
@@ -122,7 +135,9 @@ class UserStaffView(APIView):
         else:
             return Response({"Message": "The user  can not be found in Decide application."}
             ,status=ST_204)
-            
+    
+
+    
        
 
         
