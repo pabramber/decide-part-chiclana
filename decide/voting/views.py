@@ -9,6 +9,7 @@ from .models import Question, QuestionOption, Voting
 from .serializers import SimpleVotingSerializer, VotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
+import itertools
 
 
 class VotingView(generics.ListCreateAPIView):
@@ -127,3 +128,26 @@ def create_yes_no_question(self):
         if not option_no:
             option_no = QuestionOption(option='No', number=2, question=self)
             option_no.save()
+
+
+def create_preference_question(self):
+    try:
+        options = QuestionOption.objects.all().filter(question=self)
+        num_options = len(options)
+        list_options = []
+
+        for o in options:
+            list_options.append(o.option)
+                
+        for iter in itertools.permutations(list_options, num_options):
+            option = QuestionOption(option=''.join(iter), question=self)
+            option.save()
+
+        for o in options:
+            o.delete()
+
+        self.create_ordination = False
+        self.save()
+        
+    except:
+        pass
