@@ -170,3 +170,21 @@ class ApiUserTestCase(TestCase):
         self.assertEqual(response.status_code, code)
 
             
+    def test_positive_user_exist(self):
+        user=self.user2
+        url = '/api/user/exists/'+user.username
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["Message"], "The user with username = "+user.username+" exist in our database.")
+        userObtained=response.data["user"]
+        self.assertEqual(user.username, userObtained["username"])
+        self.assertEqual(user.first_name, userObtained["first_name"])
+
+    def test_negative_user_exist(self):
+        user=self.user2
+        username=user.username+"notexist"
+        url = '/api/user/exists/'+username
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 204)
+        message="The user with username = "+username+" does NOT exist in our database."
+        self.assertEqual(response.data["Message"], message)
