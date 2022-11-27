@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     'gateway',
     'ApiUser',
+    'import_export',
 ]
 
 REST_FRAMEWORK = {

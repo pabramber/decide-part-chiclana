@@ -10,16 +10,23 @@ from postproc.models import PostprocTypeEnum
 
 class Question(models.Model):
     desc = models.TextField()
-    TYPES = [('O', 'Options'),
-            ('S','Score')]
+    TYPES = [
+            ('O', 'Options'),
+            ('S', 'Score'),
+            ('P', 'Preference'),
+            ]
     tipo = models.CharField(max_length=1, choices=TYPES, default='O')  
     yes_no_question = models.BooleanField(verbose_name='Yes/No question', default=False)
+    create_ordination = models.BooleanField(verbose_name='Create ordination', default=False)
 
     def save(self):
         super().save()
         if self.yes_no_question:
             import voting.views # Importo aquí porque si lo hago arriba da error por importacion circular
             voting.views.create_yes_no_question(self)
+        elif self.tipo == 'P' and self.create_ordination:
+            import voting.views
+            voting.views.create_preference_question(self)
 
     def __str__(self):
         return self.desc
@@ -61,6 +68,15 @@ class Voting(models.Model):
     name = models.CharField(max_length=200)
     desc = models.TextField(blank=True, null=True)
     question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE)
+
+    voting_types = (
+        ('CV', 'CLASSIC VOTING'),
+        ('PV', 'PREFERENCE VOTING'),
+        ('BV', 'BINARY VOTING'),
+        ('SV', 'SCORE VOTING'),)
+
+    voting_type = models.CharField(max_length=2, choices=voting_types, default='CV')
+
     postproc_type = models.CharField(max_length=255, choices=PostprocTypeEnum.choices(), default='IDENTITY')
     number_seats = models.PositiveIntegerField(default=1)
 
