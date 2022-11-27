@@ -142,22 +142,17 @@ class UserStaffView(APIView):
 class UserExistsView(APIView):
     serializer_class = UserLoginSerializer
 
-    def post (self, request):
-        serializer_obj = UserLoginSerializer(data=request.data)
-       
-        if(serializer_obj.is_valid()):
-            user = authenticate(request, username=serializer_obj.data.get("username"), password=serializer_obj.data.get("password"))
-            if user is not None:
-                loged=login(request, user)
-                print(loged)
-                return Response({"Message": "The searched user exist"}
-                ,status=ST_200)
-            else:
-                
-                return Response({"Message": "the searched user does not exist"}
-                ,status=ST_204)
+    def get (self, request, username):
+        print("request data in exist user is: ", request.data)
+        users = list(User.objects.filter(username=username).values())
+        if len(users)>0:
+            user = users[0]
+            message="The user with username = "+username+" exist in our database."
+            return Response({"Message": message,
+            "user":{"username": user.get('username'), "first_name": user.get('first_name')}}, status=ST_200)
         else:
-            return Response({"Message": "Incorrect input data."}
+            message="The user with username = "+username+" does NOT exist in our database."
+            return Response({"Message": message}
             ,status=ST_204)
        
 
