@@ -15,6 +15,8 @@ from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
 from voting.models import Voting, Question, QuestionOption
 
+import urllib.request
+
 
 class VotingTestCase(BaseTestCase):
 
@@ -241,3 +243,62 @@ class VotingTestCase(BaseTestCase):
         self.assertEquals(q.options.all()[1].option, 'No')
         self.assertEquals(q.options.all()[0].number, 1)
         self.assertEquals(q.options.all()[1].number, 2)
+    
+    # Testing save voting file
+    def test_save_voting_file(self):
+        self.login()
+        voting = self.create_voting()
+        
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')       
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+
+        data = {'action': 'save'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Saved voting file')
+
+    def test_save_voting_file_not_started(self):
+        self.login()
+        voting = self.create_voting()
+
+        data = {'action': 'save'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting is not started')
+
+    def test_save_voting_file_not_stopped(self):
+        self.login()
+        voting = self.create_voting()
+
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')       
+
+        data = {'action': 'save'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting is not stopped')
+
+    def test_save_voting_file_not_tallied(self):
+        self.login()
+        voting = self.create_voting()
+
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')       
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+
+        data = {'action': 'save'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting has not being tallied')
