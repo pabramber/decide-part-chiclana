@@ -107,8 +107,6 @@ class PostProcView(APIView):
         out.sort(key=lambda x: (-x['postproc'], -x['votes']))
         return Response(out)
 
-
-
     def hare(self, options, seats):
         out = []
 
@@ -132,6 +130,37 @@ class PostProcView(APIView):
             out.append({
                 **opt,
                 'postproc': e[i] + best_r_index[i] if i in best_r_index else e[i],
+            })
+
+        out.sort(key=lambda x: (-x['postproc'], -x['votes']))
+        return Response(out)
+
+    def hagenbach_bischoff(sel, options, seats):
+        out = []
+
+        seats_per_quotien = []
+        residues = []
+        sum_e = 0
+        votes = 0
+        for option in options:
+            votes += option['votes']
+        quotient = votes / (seats + 1)
+
+        for i, option, in enumerate(options):
+            ei = floor(option['votes']/quotient)
+            ri = option['votes'] - quotient * ei
+            seats_per_quotien.append(ei)
+            residues.append((ri,i))
+            sum_e += ei
+
+        free_seats = seats - sum_e
+        residues.sort(key = lambda x: -x[0])
+        best_r_index = Counter(i for _, i in (residues*free_seats)[:free_seats])
+        
+        for i, option in enumerate(options):
+            out.append({
+                **option,
+                'postproc': seats_per_quotien[i] + best_r_index[i] if i in best_r_index else seats_per_quotien[i],
             })
 
         out.sort(key=lambda x: (-x['postproc'], -x['votes']))
