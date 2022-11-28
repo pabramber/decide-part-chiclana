@@ -265,4 +265,6 @@ class PostProcView(APIView):
             response = self.hare(opts, seats)
         elif t == 'HAGENBACH_BISCHOFF':
             response = self.hagenbach_bischoff(opts, seats)
+        elif t == 'SAINTE_LAGUE':
+            response = self.sainte_lague(opts, seats)
         return response
