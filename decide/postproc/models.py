@@ -12,6 +12,7 @@ class PostprocTypeEnum(Enum):
     BORDA = 'BORDA'
     HARE = 'HARE'
     HAGENBACH_BISCHOFF = 'HAGENBACH_BISCHOFF'
+    SAINTE_LAGUE = 'SAINTE_LAGUE'
 
     @classmethod
     def choices(cls):
