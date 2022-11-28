@@ -166,5 +166,27 @@ class Voting(models.Model):
         self.postproc = postp
         self.save()
 
+    def save_file(self):
+        if self.tally:
+            file_name = "[" + str(self.id) + "]" + self.name + ".txt"
+            path = "voting/files/" + file_name
+            file = open(path, "w")
+            file.write("Id: " + str(self.id) + "\n")
+            file.write("Nombre: " + self.name + "\n")
+            file.write("Tipo de votación: " + self.get_voting_type_display()  + "\n")
+            if len(self.desc):
+                file.write("Descripción: " + self.desc + "\n")
+            file.write("Fecha de inicio: " + self.start_date.strftime('%d/%m/%y %H:%M:%S') + "\n")
+            file.write("Fecha de fin: " + self.end_date.strftime('%d/%m/%y %H:%M:%S') + "\n\n")
+            file.write("Pregunta: " + str(self.question) + "\n")
+            file.write("Resultado: \n")
+            for opt in self.postproc:
+                file.write("    - Opción: " + str(opt.get('option')))
+                file.write("    Puntuación: " + str(opt.get('postproc')))
+                file.write("    Votos: " + str(opt.get('votes')) + "\n")
+            file.close()
+            self.file = path
+            self.save()    
+
     def __str__(self):
         return self.name
