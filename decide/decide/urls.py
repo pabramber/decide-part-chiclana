@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework_swagger.views import get_swagger_view
 from ApiUser import views
+from django.conf.urls.static import static
 
 schema_view = get_swagger_view(title='Decide API')
 
@@ -27,7 +28,7 @@ urlpatterns = [
     path('gateway/', include('gateway.urls')),
     path('social-auth/', include('social_django.urls', namespace="social")),
     path('api/', include('ApiUser.urls')),
-]
+]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 for module in settings.MODULES:
     urlpatterns += [
