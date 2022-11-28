@@ -233,8 +233,8 @@ class PostProcView(APIView):
 
     def post(self, request):
         """
-         * type: IDENTITY | DHONDT | DROOP | BORDA | HARE | IMPERIALI | HAGENBACH_BISCHOFF
-         * seats: int (just in case type is DHONDT, DROOP, HARE, IMPERIALI or HAGENBACH_BISCHOFF)
+         * type: IDENTITY | DHONDT | DROOP | BORDA | HARE | IMPERIALI | HAGENBACH_BISCHOFF | SAINTE_LAGUE
+         * seats: int (just in case type is DHONDT, DROOP, HARE, IMPERIALI, HAGENBACH_BISCHOFF or SAINTE_LAGUE)
          * options: [
             {
              option: str,
