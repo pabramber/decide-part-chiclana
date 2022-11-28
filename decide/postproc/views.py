@@ -202,8 +202,8 @@ class PostProcView(APIView):
 
     def post(self, request):
         """
-         * type: IDENTITY | DHONDT | DROOP | BORDA | HARE | IMPERIALI
-         * seats: int (just in case type is DHONDT, DROOP, HARE or IMPERIALI)
+         * type: IDENTITY | DHONDT | DROOP | BORDA | HARE | IMPERIALI | HAGENBACH_BISCHOFF
+         * seats: int (just in case type is DHONDT, DROOP, HARE, IMPERIALI or HAGENBACH_BISCHOFF)
          * options: [
             {
              option: str,
@@ -232,4 +232,6 @@ class PostProcView(APIView):
             response = self.borda(opts)
         elif t == 'HARE':
             response = self.hare(opts, seats)
+        elif t == 'HAGENBACH_BISCHOFF':
+            response = self.hagenbach_bischoff(opts, seats)
         return response
