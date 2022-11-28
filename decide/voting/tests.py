@@ -24,6 +24,7 @@ class VotingTestCase(BaseTestCase):
     def tearDown(self):
         super().tearDown()
 
+    
     def encrypt_msg(self, msg, v, bits=settings.KEYBITS):
         pk = v.pub_key
         p, g, y = (pk.p, pk.g, pk.y)
@@ -82,7 +83,7 @@ class VotingTestCase(BaseTestCase):
                 voter = voters.pop()
                 mods.post('store', json=data)
         return clear
-
+    
     def test_complete_voting(self):
         v = self.create_voting()
         self.create_voters(v)
@@ -210,3 +211,33 @@ class VotingTestCase(BaseTestCase):
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting already tallied')
+    
+    # Testing yes/no question feature
+    def test_create_yes_no_question(self):
+        q = Question(desc='Yes/No question test', tipo='B')
+        q.save()
+
+        self.assertEquals(len(q.options.all()), 2)
+        self.assertEquals(q.tipo, 'B')
+        self.assertEquals(q.options.all()[0].option, 'Sí')
+        self.assertEquals(q.options.all()[1].option, 'No')
+        self.assertEquals(q.options.all()[0].number, 1)
+        self.assertEquals(q.options.all()[1].number, 2)
+
+    # Adding options other than yes and no manually
+    def test_create_yes_no_question_with_other_options(self):
+        q = Question(desc='Yes/No question test', tipo='B')
+        q.save()
+        qo1 = QuestionOption(question = q, option = 'First option')
+        qo1.save()
+        qo2 = QuestionOption(question = q, option = 'Second option')
+        qo2.save()
+        qo3 = QuestionOption(question = q, option = 'Third option')
+        qo3.save()
+
+        self.assertEquals(len(q.options.all()), 2)
+        self.assertEquals(q.tipo, 'B')
+        self.assertEquals(q.options.all()[0].option, 'Sí')
+        self.assertEquals(q.options.all()[1].option, 'No')
+        self.assertEquals(q.options.all()[0].number, 1)
+        self.assertEquals(q.options.all()[1].number, 2)

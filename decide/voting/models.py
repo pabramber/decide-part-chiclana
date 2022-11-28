@@ -17,7 +17,6 @@ class Question(models.Model):
             ('B', 'Yes/No question'),
             ]
     tipo = models.CharField(max_length=1, choices=TYPES, default='O')  
-    # yes_no_question = models.BooleanField(verbose_name='Yes/No question', default=False)
     create_ordination = models.BooleanField(verbose_name='Create ordination', default=False)
 
     def save(self):
@@ -177,7 +176,7 @@ class Voting(models.Model):
             file.write("Id: " + str(self.id) + "\n")
             file.write("Nombre: " + self.name + "\n")
             file.write("Tipo de votación: " + self.get_voting_type_display()  + "\n")
-            if len(self.desc):
+            if self.desc:
                 file.write("Descripción: " + self.desc + "\n")
             file.write("Fecha de inicio: " + self.start_date.strftime('%d/%m/%y %H:%M:%S') + "\n")
             file.write("Fecha de fin: " + self.end_date.strftime('%d/%m/%y %H:%M:%S') + "\n\n")
