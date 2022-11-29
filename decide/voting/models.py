@@ -178,4 +178,5 @@ def update_votings():
                 v.end_date = v.future_stop
             v.save()
     except:
-        pass
+        print("UPDATING PROCESS HAD AN ERROR")
+
