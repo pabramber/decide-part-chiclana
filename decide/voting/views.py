@@ -137,9 +137,11 @@ def create_preference_question(self):
         list_options = []
 
         for o in options:
-            list_options.append(o.option)
+            list_options.append(o.option + ', ')
+
+        permutation = itertools.permutations(list_options, num_options)
                 
-        for iter in itertools.permutations(list_options, num_options):
+        for iter in permutation:
             option = QuestionOption(option=''.join(iter), question=self)
             option.save()
 
