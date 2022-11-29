@@ -85,7 +85,7 @@ class PostProcView(APIView):
 
         for num, option in enumerate(options):
             ei = floor(option['votes'] / quotient)
-            ri = opt['votes'] - quotient*ei
+            ri = option['votes'] - quotient*ei
             seats_quotient.append(ei)
             remainder.append((ri, num))
             sum_e += ei
