@@ -161,3 +161,17 @@ class Voting(models.Model):
 
     def __str__(self):
         return self.name
+
+def update_votings():
+    
+    fecha_hora = timezone.now()
+    votaciones = list(Voting.objects.all())
+    try:
+        for v in votaciones :
+            if(v.future_start <= fecha_hora):
+                v.start_date = v.future_start
+            if(v.future_stop <= fecha_hora):
+                v.end_date = v.future_stop
+            v.save()
+    except:
+        pass
