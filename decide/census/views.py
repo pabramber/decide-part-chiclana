@@ -160,7 +160,7 @@ class ReporteAutorExcel(TemplateView):
         ws['K3'] = 'Sexuality'
         ws['L3'] = 'Works'
 
-        cont = 11
+        cont = 4
 
         for censu in census:
             ws.cell(row = cont, column = 2).value = censu.voting_id
