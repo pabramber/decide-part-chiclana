@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from store.models import Vote
 from base import mods
 from base.models import Auth, Key
+from django.utils import timezone
 from postproc.models import PostprocTypeEnum
 
 
@@ -75,6 +76,9 @@ class Voting(models.Model):
 
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
+
+    future_start = models.DateTimeField(blank=True, null=True)
+    future_stop = models.DateTimeField(blank=True, null=True)
 
     pub_key = models.OneToOneField(Key, related_name='voting', blank=True, null=True, on_delete=models.SET_NULL)
     auths = models.ManyToManyField(Auth, related_name='votings')
@@ -174,4 +178,5 @@ def update_votings():
                 v.end_date = v.future_stop
             v.save()
     except:
-        pass
+        print("UPDATING PROCESS HAD AN ERROR")
+
