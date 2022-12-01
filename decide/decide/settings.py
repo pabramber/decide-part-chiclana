@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'corsheaders',
+    'django_crontab',
     'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
@@ -47,6 +48,11 @@ INSTALLED_APPS = [
     'ApiUser',
     'import_export',
 ]
+
+CRONJOBS = [
+    ('* * * * *', 'voting.models.update_votings', '>>a.txt')
+]
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -187,6 +193,7 @@ if os.path.exists("config.jsonnet"):
     config = json.loads(evaluate_file("config.jsonnet"))
     for k, v in config.items():
         vars()[k] = v
+
 
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
