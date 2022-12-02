@@ -44,6 +44,9 @@ class VotingAdmin(admin.ModelAdmin):
     list_display = ('name', 'voting_type', 'start_date', 'end_date')
     readonly_fields = ('start_date', 'end_date', 'pub_key',
                        'tally', 'postproc', 'file')
+    list_display = ('name', 'voting_type', 'start_date', 'end_date','future_start', 'future_stop')
+    readonly_fields = ('start_date','end_date','pub_key',
+                       'tally', 'postproc', 'file')
     date_hierarchy = 'start_date'
     list_filter = (StartedFilter,)
     search_fields = ('name', )

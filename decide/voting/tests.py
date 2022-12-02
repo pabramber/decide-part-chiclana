@@ -85,7 +85,52 @@ class VotingTestCase(BaseTestCase):
                 voter = voters.pop()
                 mods.post('store', json=data)
         return clear
-    
+
+    # Test de votación por preferencia con 2 opciones
+    def test_create_question_by_preference_two_options(self):
+        question = Question(
+            desc='test question 1', 
+            tipo='P',
+        )
+        question.save()
+
+        option1 = QuestionOption(question = question, option='op1')
+        option1.save()
+        option2 = QuestionOption(question = question, option='op2')
+        option2.save()
+        question.create_ordination = True
+        question.save()
+
+        test1 = Question.objects.get(desc='test question 1').options.all()
+        self.assertEqual(test1[0].option, 'op1op2')
+        self.assertEqual(test1[1].option, 'op2op1')
+
+
+    # Test de votación por preferencia con 3 opciones
+    def test_create_question_by_preference_three_options(self):
+        question = Question(
+            desc='test question 2', 
+            tipo='P',
+        )
+        question.save()
+
+        option1 = QuestionOption(question = question, option='op1')
+        option1.save()
+        option2 = QuestionOption(question = question, option='op2')
+        option2.save()
+        option3 = QuestionOption(question = question, option='op3')
+        option3.save()
+        question.create_ordination = True
+        question.save()
+
+        test2 = Question.objects.get(desc='test question 2').options.all()
+        possible_ordenations = [ 'op1op2op3', 'op1op3op2', 'op2op1op3', 'op2op3op1', 'op3op1op2', 'op3op2op1' ]
+
+        for opcion in test2:
+            possible_ordenations.remove(opcion.option)
+            
+        self.assertEqual(len(possible_ordenations), 0)
+
     def test_complete_voting(self):
         v = self.create_voting()
         self.create_voters(v)
