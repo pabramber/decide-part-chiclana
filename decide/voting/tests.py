@@ -100,8 +100,9 @@ class VotingTestCase(BaseTestCase):
         question.save()
 
         test1 = Question.objects.get(desc='test question 1').options.all()
-        self.assertEqual(test1[0].option, 'op1op2')
-        self.assertEqual(test1[1].option, 'op2op1')
+        self.assertEqual(test1.count(), 2)
+        self.assertEqual(test1[0].option, 'op1, op2, ')
+        self.assertEqual(test1[1].option, 'op2, op1, ')
 
 
     # Test de votación por preferencia con 3 opciones
@@ -122,8 +123,10 @@ class VotingTestCase(BaseTestCase):
         question.save()
 
         test2 = Question.objects.get(desc='test question 2').options.all()
-        possible_ordenations = [ 'op1op2op3', 'op1op3op2', 'op2op1op3', 'op2op3op1', 'op3op1op2', 'op3op2op1' ]
+        possible_ordenations = ['op1, op2, op3, ', 'op1, op3, op2, ', 'op2, op1, op3, ',
+             'op2, op3, op1, ', 'op3, op1, op2, ', 'op3, op2, op1, ']
 
+        self.assertEqual(test2.count(), 6)
         for opcion in test2:
             possible_ordenations.remove(opcion.option)
             
