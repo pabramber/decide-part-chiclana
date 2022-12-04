@@ -18,3 +18,5 @@ class Census(models.Model):
         unique_together = (('voting_id','voter_id','name','surname','city',
                             'a_community','gender','born_year','civil_state',
                             'sexuality','works'),)
+
+

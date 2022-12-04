@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+    <link type="text/css" rel="stylesheet" href='{% static "booth/style.css" %}' />
+{% endblock %}
+
+{% block content %}
+        <!-- Register -->
+        <form action="" method="post">
+            {% csrf_token %}
+
+            {% if errors|length < 1 %}
+                <h1>Register</h1>
+            {% else %}
+                <h1>Errors detected!</h1>
+            {% endif %}
+
+            <div class="fieldWrapper">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+            
+            <div class="fieldWrapper">
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+            </div>
+            <div class="fieldWrapper">
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+            </div>
+            <div class="fieldWrapper">
+                {{ form.email.label_tag }}
+                {{ form.email }}
+            </div>
+            <div class="fieldWrapper">
+                {{ form.first_name.label_tag }}
+                {{ form.first_name }}
+            </div>
+            
+            <div class="fieldWrapper">
+                {{ form.last_name.label_tag }}
+                {{ form.last_name }}
+            </div>
+
+            {% if errors|length < 1 %}
+
+                <input type="submit" class="btn btn-primary" value="Register">
+        
+            {% endif %}
+
+        </form>
+
+        {% for error in errors %}
+            <div class="alert alert-danger">
+                {{error}}
+                <br>
+            </div>
+        {% endfor %}
+
+
+        {% if errors|length > 0 %}
+        <h3>Return back and try again.</h3>
+        {% endif %}
+
+</div>
+
+{% endblock %}
