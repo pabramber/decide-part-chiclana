@@ -1,11 +1,16 @@
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 import django_filters.rest_framework
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework import generics
 
 from .models import Vote
+from voting.models import Voting
+from django.contrib.auth.models import User
 from .serializers import VoteSerializer
 from base import mods
 from base.perms import UserIsStaff
@@ -68,5 +73,26 @@ class StoreView(generics.ListAPIView):
         v.b = b
 
         v.save()
+
+        user = User.objects.filter(id=uid)[0]
+        voting = Voting.objects.filter(id =vid)[0]
+
+        mensaje= render_to_string("emails/message.html",{
+            "nombre": user.username,
+            "email": user.email,
+            "description": voting.desc,
+            "fecha_inicio": voting.start_date,
+            "question": voting.question,
+            "tipo": voting.question.tipo,
+            "nombre_votacion": voting.name,
+            "votacion_id": vid
+        })
+
+        asunto = "Se ha registrado su voto"
+        mensaje_email = strip_tags(mensaje)
+
+        from_mail = "pgpig3.3@gmail.com"
+        to_email = user.email
+        send_mail(asunto,mensaje_email,from_mail,[to_email], html_message=mensaje)
 
         return  Response({})
