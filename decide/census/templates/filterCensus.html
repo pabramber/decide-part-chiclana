@@ -146,6 +146,25 @@
                     {% endfor %}
                 </ul>
             </div>
+            <div>
+                <h2>Reutilizar censo para otra votación:</h2>
+                <br>
+                <form action="{% url 'reutilizar_censo' %}" method="get">
+                    <div class="form-group col-md-4">
+                        <label for="id">ID de la votación:</label>
+                        <select id="id" class="form-control" name="id">
+                            <!-- Recorre los votings ids y los lista en un select -->
+                            <option selected>Voting ID</option>
+                            {% for censo in census %}
+                            <option value="{{ censo.voting_id }}">{{ censo.voting_id }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <br>
+                    <button class="input-group-text" type="submit">Reutilizar</button>
+                    <hr>
+                </form>
+            </div>
         </main>
     </body>
 </html>

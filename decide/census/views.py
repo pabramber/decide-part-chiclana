@@ -290,4 +290,7 @@ class ReporteAutorExcel(TemplateView):
         wb.save(response)
         return response
 
-       
+# -------------------- REUTILIZAR CENSO ------------------------
+
+def reutilizarCenso():
+    pass
