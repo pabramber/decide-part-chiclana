@@ -68,7 +68,7 @@ class QuestionOption(models.Model):
 class Voting(models.Model):
     name = models.CharField(max_length=200)
     desc = models.TextField(blank=True, null=True)
-    question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE)
+    question = models.ManyToManyField(Question, related_name='voting')
 
     voting_types = (
         ('CV', 'CLASSIC VOTING'),
