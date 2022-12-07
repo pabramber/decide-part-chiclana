@@ -7,7 +7,8 @@ from base import mods
 from base.models import Auth, Key
 from django.utils import timezone
 from postproc.models import PostprocTypeEnum
-
+from django.utils.safestring import mark_safe
+from django.core.validators import URLValidator
 
 class Question(models.Model):
     desc = models.TextField()
@@ -16,6 +17,7 @@ class Question(models.Model):
             ('S', 'Score'),
             ('P', 'Preference'),
             ('B', 'Yes/No question'),
+            ('I', 'Image'),
             ]
     tipo = models.CharField(max_length=1, choices=TYPES, default='O')  
     create_ordination = models.BooleanField(verbose_name='Create ordination', default=False)
@@ -52,6 +54,11 @@ class QuestionOption(models.Model):
     number = models.PositiveIntegerField(blank=True, null=True)
     option = models.TextField()
 
+    def clean(self):
+        if self.question.tipo == 'I':
+            validator = URLValidator()
+            validator(self.option)
+
     def save(self, *args, **kwargs):
         if self.question.tipo == 'B':
             if not self.option == 'Sí' and not self.option == 'No':
@@ -60,6 +67,15 @@ class QuestionOption(models.Model):
             if not self.number:
                 self.number = self.question.options.count() + 2
         return super().save()
+
+    def image_tag(self):
+        from django.utils.html import escape
+        if self.question.tipo == 'I':
+            return mark_safe(u'<img src="%s" width="150" height="150" />' % escape(self.option))
+        else:
+            return ""
+    image_tag.short_description = 'Image'
+    image_tag.allow_tags = True
 
     def __str__(self):
         return '{} ({})'.format(self.option, self.number)
