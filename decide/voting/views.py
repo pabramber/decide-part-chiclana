@@ -154,7 +154,7 @@ def create_yes_no_question(self):
             option_no.save()
 
 
-def create_preference_question(self):
+def create_ranked_question(self):
     try:
         options = QuestionOption.objects.all().filter(question=self)
         num_options = len(options)

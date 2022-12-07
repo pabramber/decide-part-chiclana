@@ -14,7 +14,7 @@ class Question(models.Model):
     TYPES = [
             ('O', 'Options'),
             ('S', 'Score'),
-            ('P', 'Preference'),
+            ('R', 'Ranked question'),
             ('B', 'Yes/No question'),
             ]
     tipo = models.CharField(max_length=1, choices=TYPES, default='O')  
@@ -25,9 +25,9 @@ class Question(models.Model):
         if self.tipo == 'B':
             import voting.views # Importo aquí porque si lo hago arriba da error por importacion circular
             voting.views.create_yes_no_question(self)
-        elif self.tipo == 'P' and self.create_ordination:
+        elif self.tipo == 'R' and self.create_ordination:
             import voting.views
-            voting.views.create_preference_question(self)
+            voting.views.create_ranked_question(self)
 
     def __str__(self):
         return self.desc
@@ -72,7 +72,7 @@ class Voting(models.Model):
 
     voting_types = (
         ('CV', 'CLASSIC VOTING'),
-        ('PV', 'PREFERENCE VOTING'),
+        ('RV', 'RANKED VOTING'),
         ('BV', 'BINARY VOTING'),
         ('SV', 'SCORE VOTING'),)
 
