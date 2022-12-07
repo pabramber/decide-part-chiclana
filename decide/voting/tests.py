@@ -87,10 +87,10 @@ class VotingTestCase(BaseTestCase):
         return clear
 
     # Test de votación por preferencia con 2 opciones
-    def test_create_question_by_preference_two_options(self):
+    def test_create_ranked_question_with_two_options(self):
         question = Question(
             desc='test question 1', 
-            tipo='P',
+            tipo='R',
         )
         question.save()
 
@@ -108,10 +108,10 @@ class VotingTestCase(BaseTestCase):
 
 
     # Test de votación por preferencia con 3 opciones
-    def test_create_question_by_preference_three_options(self):
+    def test_create_ranked_question_with_three_options(self):
         question = Question(
             desc='test question 2', 
-            tipo='P',
+            tipo='R',
         )
         question.save()
 
