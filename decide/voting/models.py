@@ -9,6 +9,9 @@ from django.utils import timezone
 from postproc.models import PostprocTypeEnum
 from django.utils.safestring import mark_safe
 from django.core.validators import URLValidator
+import requests
+from io import StringIO
+from django.core.exceptions import ValidationError
 
 class Question(models.Model):
     desc = models.TextField()
@@ -58,6 +61,10 @@ class QuestionOption(models.Model):
         if self.question.tipo == 'I':
             validator = URLValidator()
             validator(self.option)
+            image_formats = ("image/png", "image/jpeg", "image/jpg")
+            r = requests.get(self.option)
+            if r.headers["content-type"] not in image_formats:
+                raise ValidationError("Url does not contain a compatible image")
 
     def save(self, *args, **kwargs):
         if self.question.tipo == 'B':
