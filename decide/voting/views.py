@@ -177,3 +177,18 @@ def create_ranked_question(self):
         
     except:
         pass
+
+def create_score_question(self):
+    try:
+        options = QuestionOption.objects.all().filter(question=self)
+        list_options = [str(o.option) for o in options]
+
+        for i in range(0, 11):
+            if str(i) in list_options:
+                continue
+            else:
+                option = QuestionOption(option=str(i), question=self)
+                option.save()
+
+    except:
+        pass

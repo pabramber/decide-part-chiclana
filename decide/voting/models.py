@@ -12,12 +12,12 @@ from postproc.models import PostprocTypeEnum
 class Question(models.Model):
     desc = models.TextField()
     TYPES = [
-            ('O', 'Options'),
-            ('S', 'Score'),
+            ('C', 'Classic question'),
+            ('S', 'Score question'),
             ('R', 'Ranked question'),
             ('B', 'Yes/No question'),
             ]
-    tipo = models.CharField(max_length=1, choices=TYPES, default='O')  
+    tipo = models.CharField(max_length=1, choices=TYPES, default='C')  
     create_ordination = models.BooleanField(verbose_name='Create ordination', default=False)
 
     def save(self):
@@ -28,23 +28,12 @@ class Question(models.Model):
         elif self.tipo == 'R' and self.create_ordination:
             import voting.views
             voting.views.create_ranked_question(self)
+        elif self.tipo == 'S':
+            import voting.views
+            voting.views.create_score_question(self)
 
     def __str__(self):
         return self.desc
-@receiver(post_save, sender=Question)
-def my_handler(sender, instance, **kwargs):
-    if instance.tipo == 'S':
-        instance.options.all().delete()
-        instance.options.create(option='1')
-        instance.options.create(option='2')
-        instance.options.create(option='3')
-        instance.options.create(option='4')
-        instance.options.create(option='5')
-        instance.options.create(option='6')
-        instance.options.create(option='7')
-        instance.options.create(option='8')
-        instance.options.create(option='9')
-        instance.options.create(option='10')
 
 
 class QuestionOption(models.Model):
