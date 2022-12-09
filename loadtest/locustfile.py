@@ -2,6 +2,9 @@ import json
 
 from random import choice
 
+from datetime import datetime
+from bs4 import BeautifulSoup
+
 from locust import (
     HttpUser,
     SequentialTaskSet,
@@ -9,7 +12,6 @@ from locust import (
     task,
     between
 )
-
 
 HOST = "http://localhost:8000"
 VOTING = 1
@@ -58,9 +60,49 @@ class DefVoters(SequentialTaskSet):
             "voting": VOTING
         }), headers=headers)
 
-
     def on_quit(self):
         self.voter = None
+
+
+class DefRegister(TaskSet):
+
+    @task
+    def register(self):
+        dt = datetime.now()
+        epoch_time = datetime(1970, 1, 1)
+        delta = (dt - epoch_time)
+        
+        username = 'userLocust'+str(delta.total_seconds())
+        pwd = 'contrasenia12345'
+        email = 'test'+str(delta.total_seconds())+'@gm.com'
+        first_name = 'Jhon'
+        last_name = 'Doe'
+
+        html = self.client.get("/authentication/register/").text
+        soup = BeautifulSoup(html, 'html.parser')
+        csrf_field = soup.find('input', {'name': 'csrfmiddlewaretoken'})
+        csrf_value = csrf_field['value']
+
+        headers = {
+            'content-type': 'application/x-www-form-urlencoded',
+            "X-CSRFToken": csrf_value
+        }
+    
+        with self.client.post("/authentication/register/", {
+                'username': [username],
+                'password1': [pwd],
+                'password2': [pwd],
+                'email': [email],
+                'first_name': [first_name],
+                'last_name': [last_name],
+                'csrfmiddlewaretoken': [csrf_value],
+            }, headers=headers, catch_response=True) as response:
+
+            current_url = self.client.base_url
+
+            if response.status_code == 404 and current_url == "http://localhost:8000":
+                response.success()
+
 
 class Visualizer(HttpUser):
     host = HOST
@@ -73,3 +115,9 @@ class Voters(HttpUser):
     host = HOST
     tasks = [DefVoters]
     wait_time= between(3,5)
+
+
+class Register(HttpUser):
+    host =HOST
+    tasks = [DefRegister]
+    wait_time = between(3, 5)
