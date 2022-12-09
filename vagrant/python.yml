@@ -13,7 +13,7 @@
   pip:
     name: "gunicorn"
     virtualenv: /home/decide/venv
-    virtualenv_python: python3
+    virtualenv_python: python3.7
 
 - name: Requirements
   become: yes
@@ -21,4 +21,4 @@
   pip:
     requirements: /home/decide/decide/requirements.txt
     virtualenv: /home/decide/venv
-    virtualenv_python: python3
+    virtualenv_python: python3.7
