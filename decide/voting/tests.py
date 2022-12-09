@@ -85,7 +85,7 @@ class VotingTestCase(BaseTestCase):
                 voter = voters.pop()
                 mods.post('store', json=data)
         return clear
-
+    
     # Test de votación por preferencia con 2 opciones
     def test_create_ranked_question_with_two_options(self):
         question = Question(
@@ -291,6 +291,16 @@ class VotingTestCase(BaseTestCase):
         self.assertEquals(q.options.all()[1].option, 'No')
         self.assertEquals(q.options.all()[0].number, 1)
         self.assertEquals(q.options.all()[1].number, 2)
+
+    # Testing score question feature
+    def test_create_score_question(self):
+        q = Question(desc='Score question test', type='S')
+        q.save()
+        self.assertEquals(len(q.options.all()), 11)
+        self.assertEquals(q.type, 'S')
+        for i in range(0, 11):
+                self.assertEquals(q.options.all()[i].option, str(i))
+                self.assertEquals(q.options.all()[i].number, i+2)
     
     # Testing save voting file
     def test_save_voting_file(self):
