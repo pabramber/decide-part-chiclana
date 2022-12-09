@@ -9,6 +9,8 @@ class PostprocTypeEnum(Enum):
     DHONDT = 'DHONDT'
     DROOP = 'DROOP'
     REINFORCED_IMPERIAL = 'REINFORCED_IMPERIAL'
+    HARE = 'HARE'
+    
 
     @classmethod
     def choices(cls):

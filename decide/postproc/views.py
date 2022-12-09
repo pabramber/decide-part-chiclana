@@ -2,6 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from math import floor
 from collections import Counter
+import math
+import copy
 
 class PostProcView(APIView):
 
@@ -74,6 +76,7 @@ class PostProcView(APIView):
         out.sort(key=lambda x: (-x['postproc'], -x['votes']))
         return Response(out)
 
+<<<<<<< HEAD
     def reinforced_imperial(self, options, seats):
         out = []
 
@@ -98,15 +101,83 @@ class PostProcView(APIView):
             out.append({
                 **option,
                 'postproc': seats_quotient[num] + best_r_index[num] if num in best_r_index else seats_quotient[num],
+=======
+
+    def hare(self, options, seats):
+        out = []
+
+        e, r = [], []
+        sum_e = 0
+        m = sum([opt['votes'] for opt in options])
+        q = round(m/seats, 3)
+
+        for i, opt in enumerate(options):
+            ei = floor(opt['votes'] / q)
+            ri = opt['votes'] - q*ei
+            e.append(ei)
+            r.append((ri, i))
+            sum_e += ei
+
+        k = seats - sum_e
+        r.sort(key = lambda x: -x[0])
+        best_r_index = Counter(i for _, i in (r*k)[:k])
+        
+        for i, opt in enumerate(options):
+            out.append({
+                **opt,
+                'postproc': e[i] + best_r_index[i] if i in best_r_index else e[i],
+>>>>>>> e62646d17a1e71babf8bc70b3ac8974226561dc4
             })
 
         out.sort(key=lambda x: (-x['postproc'], -x['votes']))
         return Response(out)
+<<<<<<< HEAD
     
     def post(self, request):
         """
          * type: IDENTITY | DHONDT | DROOP | REINFORCED_IMPERIAL
          * seats: int (just in case type is DHONDT DROOP OR REINFORCED_IMPERIAL)
+=======
+
+    def borda(self, options):
+
+        salida = {}
+        
+        boole = False
+
+        for opcion in options:
+            
+            if len(opcion['positions']) != 0:
+
+                suma_total_opcion = 0
+
+                for posicion in opcion['positions']:
+
+                    valor = len(options) - posicion + 1
+                    suma_total_opcion += valor
+
+                salida[opcion['option']] = suma_total_opcion
+                opcion['votes'] = suma_total_opcion
+
+            else:
+                salida = {}
+                boole = True
+                break
+
+        if boole == True:
+
+            for opcion in options:
+
+                opcion['votes'] = 0
+
+        return Response(options)
+
+
+    def post(self, request):
+        """
+         * type: IDENTITY | DHONDT | DROOP | BORDA | HARE
+         * seats: int (just in case type is DHONDT, DROOP or HARE)
+>>>>>>> e62646d17a1e71babf8bc70b3ac8974226561dc4
          * options: [
             {
              option: str,
@@ -129,7 +200,17 @@ class PostProcView(APIView):
             response = self.dhondt(opts, seats)
         elif t == 'DROOP':
             response = self.droop(opts, seats)
+<<<<<<< HEAD
         elif t == 'REINFORCED_IMPERIAL':
             response = self.reinforced_imperial(opts, seats)
+=======
+        elif t == 'BORDA':
+            response = self.borda(opts)
+        elif t == 'HARE':
+            response = self.hare(opts, seats)
+    
+        
+        
+>>>>>>> e62646d17a1e71babf8bc70b3ac8974226561dc4
 
         return response
