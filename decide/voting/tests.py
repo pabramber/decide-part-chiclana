@@ -90,7 +90,7 @@ class VotingTestCase(BaseTestCase):
     def test_create_ranked_question_with_two_options(self):
         question = Question(
             desc='test question 1', 
-            tipo='R',
+            type='R',
         )
         question.save()
 
@@ -111,7 +111,7 @@ class VotingTestCase(BaseTestCase):
     def test_create_ranked_question_with_three_options(self):
         question = Question(
             desc='test question 2', 
-            tipo='R',
+            type='R',
         )
         question.save()
 
@@ -264,11 +264,11 @@ class VotingTestCase(BaseTestCase):
     
     # Testing yes/no question feature
     def test_create_yes_no_question(self):
-        q = Question(desc='Yes/No question test', tipo='B')
+        q = Question(desc='Yes/No question test', type='B')
         q.save()
 
         self.assertEquals(len(q.options.all()), 2)
-        self.assertEquals(q.tipo, 'B')
+        self.assertEquals(q.type, 'B')
         self.assertEquals(q.options.all()[0].option, 'Sí')
         self.assertEquals(q.options.all()[1].option, 'No')
         self.assertEquals(q.options.all()[0].number, 1)
@@ -276,7 +276,7 @@ class VotingTestCase(BaseTestCase):
 
     # Adding options other than yes and no manually
     def test_create_yes_no_question_with_other_options(self):
-        q = Question(desc='Yes/No question test', tipo='B')
+        q = Question(desc='Yes/No question test', type='B')
         q.save()
         qo1 = QuestionOption(question = q, option = 'First option')
         qo1.save()
@@ -286,7 +286,7 @@ class VotingTestCase(BaseTestCase):
         qo3.save()
 
         self.assertEquals(len(q.options.all()), 2)
-        self.assertEquals(q.tipo, 'B')
+        self.assertEquals(q.type, 'B')
         self.assertEquals(q.options.all()[0].option, 'Sí')
         self.assertEquals(q.options.all()[1].option, 'No')
         self.assertEquals(q.options.all()[0].number, 1)
