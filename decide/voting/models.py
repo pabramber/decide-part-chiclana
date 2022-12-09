@@ -59,14 +59,6 @@ class Voting(models.Model):
     desc = models.TextField(blank=True, null=True)
     question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE)
 
-    voting_types = (
-        ('CV', 'CLASSIC VOTING'),
-        ('RV', 'RANKED VOTING'),
-        ('BV', 'BINARY VOTING'),
-        ('SV', 'SCORE VOTING'),)
-
-    voting_type = models.CharField(max_length=2, choices=voting_types, default='CV')
-
     postproc_type = models.CharField(max_length=255, choices=PostprocTypeEnum.choices(), default='IDENTITY')
     number_seats = models.PositiveIntegerField(default=1)
 
@@ -168,7 +160,7 @@ class Voting(models.Model):
             file = open(path, "w")
             file.write("Id: " + str(self.id) + "\n")
             file.write("Nombre: " + self.name + "\n")
-            file.write("Tipo de votación: " + self.get_voting_type_display()  + "\n")
+            file.write("Tipo de votación: " + self.question.type+ "\n")
             if self.desc:
                 file.write("Descripción: " + self.desc + "\n")
             file.write("Fecha de inicio: " + self.start_date.strftime('%d/%m/%y %H:%M:%S') + "\n")

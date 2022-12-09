@@ -53,7 +53,7 @@
            <div v-if="!signup">
 
                 <!-- Classic Voting -->
-                <div v-if="voting.voting_type != 'PV'">
+                <div v-if="voting.question.type != 'R'">
                     <h2>[[ voting.question.desc ]]</h2>
                     <b-form-group v-for="opt in voting.question.options" :key="opt.number">
                         <b-form-radio v-model="selected"
@@ -69,7 +69,7 @@
                 </div>
 
                 <!-- Preference Voting -->
-                <div v-if="voting.voting_type == 'PV'">
+                <div v-if="voting.question.type == 'R'">
                     <h2>[[ voting.question.desc ]]</h2>
                     <h3> Seleccione la ordenación de opciones que más se ajusta a sus intereses</h3>
                     <b-form-group v-for="opt in voting.question.options" :key="opt.number">
