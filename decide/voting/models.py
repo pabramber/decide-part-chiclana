@@ -5,38 +5,35 @@ from django.dispatch import receiver
 from store.models import Vote
 from base import mods
 from base.models import Auth, Key
+from django.utils import timezone
 from postproc.models import PostprocTypeEnum
 
 
 class Question(models.Model):
     desc = models.TextField()
-    TYPES = [('O', 'Options'),
-            ('S','Score')]
-    tipo = models.CharField(max_length=1, choices=TYPES, default='O')  
-    yes_no_question = models.BooleanField(verbose_name='Yes/No question', default=False)
+    TYPES = [
+            ('C', 'Classic question'),
+            ('S', 'Score question'),
+            ('R', 'Ranked question'),
+            ('B', 'Yes/No question'),
+            ]
+    tipo = models.CharField(max_length=1, choices=TYPES, default='C')  
+    create_ordination = models.BooleanField(verbose_name='Create ordination', default=False)
 
     def save(self):
         super().save()
-        if self.yes_no_question:
+        if self.tipo == 'B':
             import voting.views # Importo aquí porque si lo hago arriba da error por importacion circular
             voting.views.create_yes_no_question(self)
+        elif self.tipo == 'R' and self.create_ordination:
+            import voting.views
+            voting.views.create_ranked_question(self)
+        elif self.tipo == 'S':
+            import voting.views
+            voting.views.create_score_question(self)
 
     def __str__(self):
         return self.desc
-@receiver(post_save, sender=Question)
-def my_handler(sender, instance, **kwargs):
-    if instance.tipo == 'S':
-        instance.options.all().delete()
-        instance.options.create(option='1')
-        instance.options.create(option='2')
-        instance.options.create(option='3')
-        instance.options.create(option='4')
-        instance.options.create(option='5')
-        instance.options.create(option='6')
-        instance.options.create(option='7')
-        instance.options.create(option='8')
-        instance.options.create(option='9')
-        instance.options.create(option='10')
 
 
 class QuestionOption(models.Model):
@@ -45,7 +42,7 @@ class QuestionOption(models.Model):
     option = models.TextField()
 
     def save(self, *args, **kwargs):
-        if self.question.yes_no_question:
+        if self.question.tipo == 'B':
             if not self.option == 'Sí' and not self.option == 'No':
                 return ""
         else:
@@ -64,7 +61,7 @@ class Voting(models.Model):
 
     voting_types = (
         ('CV', 'CLASSIC VOTING'),
-        ('PV', 'PREFERENCE VOTING'),
+        ('RV', 'RANKED VOTING'),
         ('BV', 'BINARY VOTING'),
         ('SV', 'SCORE VOTING'),)
 
@@ -76,11 +73,16 @@ class Voting(models.Model):
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
 
+    future_start = models.DateTimeField(blank=True, null=True)
+    future_stop = models.DateTimeField(blank=True, null=True)
+
     pub_key = models.OneToOneField(Key, related_name='voting', blank=True, null=True, on_delete=models.SET_NULL)
     auths = models.ManyToManyField(Auth, related_name='votings')
 
     tally = JSONField(blank=True, null=True)
     postproc = JSONField(blank=True, null=True)
+
+    file = models.FileField(blank=True)
 
     def create_pubkey(self):
         if self.pub_key or not self.auths.count():
@@ -159,5 +161,42 @@ class Voting(models.Model):
         self.postproc = postp
         self.save()
 
+    def save_file(self):
+        if self.tally:
+            file_name = "[" + str(self.id) + "]" + self.name + ".txt"
+            path = "voting/files/" + file_name
+            file = open(path, "w")
+            file.write("Id: " + str(self.id) + "\n")
+            file.write("Nombre: " + self.name + "\n")
+            file.write("Tipo de votación: " + self.get_voting_type_display()  + "\n")
+            if self.desc:
+                file.write("Descripción: " + self.desc + "\n")
+            file.write("Fecha de inicio: " + self.start_date.strftime('%d/%m/%y %H:%M:%S') + "\n")
+            file.write("Fecha de fin: " + self.end_date.strftime('%d/%m/%y %H:%M:%S') + "\n\n")
+            file.write("Pregunta: " + str(self.question) + "\n")
+            file.write("Resultado: \n")
+            for opt in self.postproc:
+                file.write("    - Opción: " + str(opt.get('option')))
+                file.write("    Puntuación: " + str(opt.get('postproc')))
+                file.write("    Votos: " + str(opt.get('votes')) + "\n")
+            file.close()
+            self.file = path
+            self.save()    
+
     def __str__(self):
         return self.name
+
+def update_votings():
+    
+    fecha_hora = timezone.now()
+    votaciones = list(Voting.objects.all())
+    try:
+        for v in votaciones :
+            if(v.future_start <= fecha_hora):
+                v.start_date = v.future_start
+            if(v.future_stop <= fecha_hora):
+                v.end_date = v.future_stop
+            v.save()
+    except:
+        print("UPDATING PROCESS HAD AN ERROR")
+
