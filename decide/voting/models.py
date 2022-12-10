@@ -154,7 +154,7 @@ class Voting(models.Model):
         self.save()
 
     def save_file(self):
-        if self.tally:
+        if self.postproc:
             file_name = "[" + str(self.id) + "]" + self.name + ".txt"
             path = "voting/files/" + file_name
             file = open(path, "w")

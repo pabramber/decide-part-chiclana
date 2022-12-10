@@ -303,7 +303,7 @@ class VotingTestCase(BaseTestCase):
                 self.assertEquals(q.options.all()[i].number, i+2)
     
     # Testing save voting file
-    def test_save_voting_file(self):
+    def test_save_voting_file_200(self):
         self.login()
         voting = self.create_voting()
         
@@ -322,7 +322,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Saved voting file')
 
-    def test_save_voting_file_not_started(self):
+    def test_save_voting_file_not_started_400(self):
         self.login()
         voting = self.create_voting()
 
@@ -332,7 +332,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting is not started')
 
-    def test_save_voting_file_not_stopped(self):
+    def test_save_voting_file_not_stopped_400(self):
         self.login()
         voting = self.create_voting()
 
@@ -345,7 +345,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting is not stopped')
 
-    def test_save_voting_file_not_tallied(self):
+    def test_save_voting_file_not_tallied_400(self):
         self.login()
         voting = self.create_voting()
 
