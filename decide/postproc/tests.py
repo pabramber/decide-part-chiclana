@@ -467,7 +467,7 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-    def test_modified_sainte_lague(self):
+    def test_modified_sainte_lague_1(self):
         data = {
             'type': 'MODIFIED_SAINTE_LAGUE',
             'seats': 13,
@@ -483,8 +483,8 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            { 'option': 'Policital party 5', 'number': 4, 'votes': 87676823, 'postproc': 13 },
-            { 'option': 'Policital party 2', 'number': 1, 'votes': 32343000, 'postproc': 0 },
+            { 'option': 'Policital party 5', 'number': 4, 'votes': 87676823, 'postproc': 9 },
+            { 'option': 'Policital party 2', 'number': 1, 'votes': 32343000, 'postproc': 4 },
             { 'option': 'Policital party 6', 'number': 7, 'votes': 923187, 'postproc': 0 },
             { 'option': 'Policital party 1', 'number': 3, 'votes': 756734, 'postproc': 0 },
             { 'option': 'Policital party 4', 'number': 2, 'votes': 732432, 'postproc': 0 },
