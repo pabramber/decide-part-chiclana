@@ -8,9 +8,12 @@ class PostprocTypeEnum(Enum):
     IDENTITY = 'IDENTITY'
     DHONDT = 'DHONDT'
     DROOP = 'DROOP'
+    IMPERIALI = 'IMPERIALI'
+    BORDA = 'BORDA'
     HARE = 'HARE'
     REINFORCED_IMPERIAL = 'REINFORCED_IMPERIAL'
-    
+    HAGENBACH_BISCHOFF = 'HAGENBACH_BISCHOFF'
+    SAINTE_LAGUE = 'SAINTE_LAGUE'
 
     @classmethod
     def choices(cls):

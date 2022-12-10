@@ -75,9 +75,37 @@ class PostProcView(APIView):
 
         out.sort(key=lambda x: (-x['postproc'], -x['votes']))
         return Response(out)
-
     
+    def imperiali(sel, options, seats):
+        out = []
 
+        seats_per_quotien = []
+        residues = []
+        sum_e = 0
+        votes = 0
+        for option in options:
+            votes += option['votes']
+        quotient = votes / (seats + 2)
+
+        for i, option, in enumerate(options):
+            ei = floor(option['votes']/quotient)
+            ri = option['votes'] - quotient * ei
+            seats_per_quotien.append(ei)
+            residues.append((ri,i))
+            sum_e += ei
+
+        free_seats = seats - sum_e
+        residues.sort(key = lambda x: -x[0])
+        best_r_index = Counter(i for _, i in (residues*free_seats)[:free_seats])
+        
+        for i, option in enumerate(options):
+            out.append({
+                **option,
+                'postproc': seats_per_quotien[i] + best_r_index[i] if i in best_r_index else seats_per_quotien[i],
+            })
+
+        out.sort(key=lambda x: (-x['postproc'], -x['votes']))
+        return Response(out)
 
     def hare(self, options, seats):
         out = []
@@ -136,6 +164,37 @@ class PostProcView(APIView):
         out.sort(key=lambda x: (-x['postproc'], -x['votes']))
         return Response(out)
 
+    def hagenbach_bischoff(sel, options, seats):
+        out = []
+
+        seats_per_quotien = []
+        residues = []
+        sum_e = 0
+        votes = 0
+        for option in options:
+            votes += option['votes']
+        quotient = votes / (seats + 1)
+
+        for i, option, in enumerate(options):
+            ei = floor(option['votes']/quotient)
+            ri = option['votes'] - quotient * ei
+            seats_per_quotien.append(ei)
+            residues.append((ri,i))
+            sum_e += ei
+
+        free_seats = seats - sum_e
+        residues.sort(key = lambda x: -x[0])
+        best_r_index = Counter(i for _, i in (residues*free_seats)[:free_seats])
+        
+        for i, option in enumerate(options):
+            out.append({
+                **option,
+                'postproc': seats_per_quotien[i] + best_r_index[i] if i in best_r_index else seats_per_quotien[i],
+            })
+
+        out.sort(key=lambda x: (-x['postproc'], -x['votes']))
+        return Response(out)
+
     def borda(self, options):
 
         salida = {}
@@ -169,11 +228,42 @@ class PostProcView(APIView):
 
         return Response(options)
 
+    def sainte_lague(self, options, seats):
+        out = []
+
+        options.sort(key=lambda x: -x['votes'])
+        for opt in options:
+            out.append({
+                **opt,
+                'postproc': 0,
+            })
+
+        for _ in range(seats):
+
+            quotients = []
+
+            for opt in out:
+                quotient = opt['votes'] / (2*opt['postproc'] + 1)
+                quotients.append(quotient)
+
+            max_value = 0
+
+            for q in quotients:
+                if(q > max_value):
+                    max_value = q
+
+            index = quotients.index(max_value)
+
+            out[index]['postproc'] += 1
+            
+        out.sort(key=lambda x: (-x['postproc'], -x['votes']))
+        return Response(out)
+
 
     def post(self, request):
         """
-         * type: IDENTITY | DHONDT | DROOP | BORDA | HARE | REINFORCED_IMPERIAL
-         * seats: int (just in case type is DHONDT, DROOP, HARE or REINFORCED_IMPERIAL)
+         * type: IDENTITY | DHONDT | DROOP | BORDA | HARE | IMPERIALI | REINFORCED_IMPERIAL | HAGENBACH_BISCHOFF | SAINTE_LAGUE
+         * seats: int (just in case type is DHONDT, DROOP, HARE, IMPERIALI, REINFORCED_IMPERIAL, HAGENBACH_BISCHOFF or SAINTE_LAGUE)
          * options: [
             {
              option: str,
@@ -196,11 +286,16 @@ class PostProcView(APIView):
             response = self.dhondt(opts, seats)
         elif t == 'DROOP':
             response = self.droop(opts, seats)
+        elif t == 'IMPERIALI':
+            response = self.imperiali(opts, seats)
         elif t == 'BORDA':
             response = self.borda(opts)
         elif t == 'HARE':
             response = self.hare(opts, seats)
         elif t == 'REINFORCED_IMPERIAL':
             response = self.reinforced_imperial(opts, seats)
-
+        elif t == 'HAGENBACH_BISCHOFF':
+            response = self.hagenbach_bischoff(opts, seats)
+        elif t == 'SAINTE_LAGUE':
+            response = self.sainte_lague(opts, seats)
         return response
