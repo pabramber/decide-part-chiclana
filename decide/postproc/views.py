@@ -76,32 +76,8 @@ class PostProcView(APIView):
         out.sort(key=lambda x: (-x['postproc'], -x['votes']))
         return Response(out)
 
-<<<<<<< HEAD
-    def reinforced_imperial(self, options, seats):
-        out = []
+    
 
-        seats_quotient = []
-        remainder = []
-        sum_e = 0
-        total_votes = sum([option['votes'] for option in options])
-        quotient = total_votes / (seats + 3)
-
-        for num, option in enumerate(options):
-            ei = floor(option['votes'] / quotient)
-            ri = option['votes'] - quotient*ei
-            seats_quotient.append(ei)
-            remainder.append((ri, num))
-            sum_e += ei
-
-        k = seats - sum_e
-        remainder.sort(key = lambda x: -x[0])
-        best_r_index = Counter(num for _, num in (remainder*k)[:k])
-        
-        for num, option in enumerate(options):
-            out.append({
-                **option,
-                'postproc': seats_quotient[num] + best_r_index[num] if num in best_r_index else seats_quotient[num],
-=======
 
     def hare(self, options, seats):
         out = []
@@ -126,18 +102,39 @@ class PostProcView(APIView):
             out.append({
                 **opt,
                 'postproc': e[i] + best_r_index[i] if i in best_r_index else e[i],
->>>>>>> e62646d17a1e71babf8bc70b3ac8974226561dc4
             })
 
         out.sort(key=lambda x: (-x['postproc'], -x['votes']))
         return Response(out)
-<<<<<<< HEAD
     
-    def post(self, request):
-        """
-         * type: IDENTITY | DHONDT | DROOP | REINFORCED_IMPERIAL
-         * seats: int (just in case type is DHONDT DROOP OR REINFORCED_IMPERIAL)
-=======
+    def reinforced_imperial(self, options, seats):
+        out = []
+
+        seats_quotient = []
+        remainder = []
+        sum_e = 0
+        total_votes = sum([option['votes'] for option in options])
+        quotient = total_votes / (seats + 3)
+
+        for num, option in enumerate(options):
+            ei = floor(option['votes'] / quotient)
+            ri = option['votes'] - quotient*ei
+            seats_quotient.append(ei)
+            remainder.append((ri, num))
+            sum_e += ei
+
+        k = seats - sum_e
+        remainder.sort(key = lambda x: -x[0])
+        best_r_index = Counter(num for _, num in (remainder*k)[:k])
+        
+        for num, option in enumerate(options):
+            out.append({
+                **option,
+                'postproc': seats_quotient[num] + best_r_index[num] if num in best_r_index else seats_quotient[num],
+            })
+
+        out.sort(key=lambda x: (-x['postproc'], -x['votes']))
+        return Response(out)
 
     def borda(self, options):
 
@@ -175,9 +172,8 @@ class PostProcView(APIView):
 
     def post(self, request):
         """
-         * type: IDENTITY | DHONDT | DROOP | BORDA | HARE
-         * seats: int (just in case type is DHONDT, DROOP or HARE)
->>>>>>> e62646d17a1e71babf8bc70b3ac8974226561dc4
+         * type: IDENTITY | DHONDT | DROOP | BORDA | HARE | REINFORCED_IMPERIAL
+         * seats: int (just in case type is DHONDT, DROOP, HARE or REINFORCED_IMPERIAL)
          * options: [
             {
              option: str,
@@ -200,17 +196,11 @@ class PostProcView(APIView):
             response = self.dhondt(opts, seats)
         elif t == 'DROOP':
             response = self.droop(opts, seats)
-<<<<<<< HEAD
-        elif t == 'REINFORCED_IMPERIAL':
-            response = self.reinforced_imperial(opts, seats)
-=======
         elif t == 'BORDA':
             response = self.borda(opts)
         elif t == 'HARE':
             response = self.hare(opts, seats)
-    
-        
-        
->>>>>>> e62646d17a1e71babf8bc70b3ac8974226561dc4
+        elif t == 'REINFORCED_IMPERIAL':
+            response = self.reinforced_imperial(opts, seats)
 
         return response

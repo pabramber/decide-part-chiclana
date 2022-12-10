@@ -61,7 +61,7 @@ class CustomUserCreationForm(UserCreationForm):
         )
 
         labels = {
-            'username':('Userame'),
+            'username':('Username'),
             'password1':('Password'),
             'password2':('Repeat the password'),
             'email':('Email'),

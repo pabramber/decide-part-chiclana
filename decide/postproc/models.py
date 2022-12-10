@@ -8,8 +8,8 @@ class PostprocTypeEnum(Enum):
     IDENTITY = 'IDENTITY'
     DHONDT = 'DHONDT'
     DROOP = 'DROOP'
-    REINFORCED_IMPERIAL = 'REINFORCED_IMPERIAL'
     HARE = 'HARE'
+    REINFORCED_IMPERIAL = 'REINFORCED_IMPERIAL'
     
 
     @classmethod
