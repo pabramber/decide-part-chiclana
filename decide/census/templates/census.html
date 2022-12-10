@@ -75,10 +75,11 @@
                   <h5 class="card-title">
                     
                     Census details </h5>
+                    <p style="color: red;">{{error_id}}</p>
                   <p class="card-text">Introduce a census id to get all details</p>
-                  <form action=" detalles " method="get">
+                  <form action="/census/detalles/ " method="get">
                   
-                    <input type="text" name="id" placeholder="Id ">
+                    <input type="text"  required = 'required' name="id" placeholder="Id ">
                     <button type="submit"> Buscar </button>
                   </form>
                 </div>
@@ -91,12 +92,13 @@
                   <h5 class="card-title">
                     
                     Delete a census </h5>
+                    <p style="color: red;">{{error}}</p>
                   <p class="card-text">Introduce a census id to get all details</p>
-                  <form action=" delete" method="get">
+                  <form action=" /census/delete/" method="get">
                   
-                    <input type="text" name="Votingid" placeholder="VotingId ">
-                    <input type="text" name="Voterid" placeholder="VoterId ">
-                    <button type="submit"> Buscar </button>
+                    <input type="text" name="Votingid" required = 'required'  placeholder="VotingId ">
+                    <input type="text"  required = 'required' name="Voterid" placeholder="VoterId ">
+                    <button type="submit"> Borrar </button>
                   </form>
                 </div>
               </div>

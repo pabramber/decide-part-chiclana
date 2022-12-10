@@ -13,6 +13,8 @@ urlpatterns = [
     path('delete/',views.deleteCensus),
     path('',views.hello, name="hello"),
     path('importer/', views.importer, name='importer'),
+    path('succeed',views.censusCreatedSucced),
+    path('deleted',views.censusDeletedSucced),
 
     path('lista_censo/', views.home, name = 'lista_censo'),
     url(r'^reporte/', login_required(ReporteAutorExcel.as_view()), name = "reporte"),
