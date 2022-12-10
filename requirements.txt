@@ -13,3 +13,6 @@ selenium
 social-auth-app-django
 django-import-export==2.0
 tablib==3.2
+django-allauth
+django-crontab
+
