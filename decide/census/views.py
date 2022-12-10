@@ -246,8 +246,8 @@ def deleteCensus(request):
     Votingid = request.GET['Votingid']
     census = Census.objects.filter(voting_id=int(Votingid),voter_id = int(Voterid))
     if len(census) == 0: 
-        return render(request,'census.html',{'error':'There is not Census.Try other census'})
-    if len(census)==0:
+        return render(request,'census.html',{'error':'Census does not exist.Try other census'})
+    if len(census)==1:
         census.delete()
         return render(request,'census_deleted.html')
     
