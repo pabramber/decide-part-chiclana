@@ -273,8 +273,8 @@ class PostProcView(APIView):
 
             quotients = []
 
-            for i, opt in enumerate(out):
-                if (i==0):
+            for opt in out:
+                if (opt['postproc'] == 0):
                     quotient = opt['votes'] / 1.4
                     quotients.append(quotient)
                 
