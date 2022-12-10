@@ -45,7 +45,7 @@ class VotingSeleniumTestCase(StaticLiveServerTestCase):
         desc_input.send_keys('Test question')
         desc_input.send_keys(Keys.ENTER)
 
-        tipo_input = self.browser.find_element_by_name("tipo")
+        tipo_input = self.browser.find_element_by_name("type")
         tipo_input.send_keys('R')
         tipo_input.send_keys(Keys.ENTER)
 
@@ -71,7 +71,7 @@ class VotingSeleniumTestCase(StaticLiveServerTestCase):
         save2.click()
 
         self.assertEquals('Test question', self.browser.find_element_by_name("desc").get_attribute('value'))
-        self.assertEquals('R', self.browser.find_element_by_name("tipo").get_attribute('value'))
+        self.assertEquals('R', self.browser.find_element_by_name("type").get_attribute('value'))
 
         self.assertIn('Option 1, Option 2, Option 3', self.browser.find_element_by_name("options-0-option").get_attribute('value'))
         self.assertIn('Option 1, Option 3, Option 2', self.browser.find_element_by_name("options-1-option").get_attribute('value'))
