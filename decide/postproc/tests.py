@@ -428,3 +428,35 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertEqual(values, expected_result)
+
+    def test_modified_sainte_lague(self):
+        data = {
+            'type': 'MODIFIED_SAINTE_LAGUE',
+            'seats': 13,
+            'options': [
+                { 'option': 'Policital party 2', 'number': 1, 'votes': 32343000 },
+                { 'option': 'Policital party 4', 'number': 2, 'votes': 732432 },
+                { 'option': 'Policital party 1', 'number': 3, 'votes': 756734 },
+                { 'option': 'Policital party 5', 'number': 4, 'votes': 87676823 },
+                { 'option': 'Policital party 3', 'number': 5, 'votes': 11232 },
+                { 'option': 'Policital party 7', 'number': 6, 'votes': 65832 },
+                { 'option': 'Policital party 6', 'number': 7, 'votes': 923187 },
+            ]
+        }
+
+        expected_result = [
+            { 'option': 'Policital party 5', 'number': 4, 'votes': 87676823, 'postproc': 13 },
+            { 'option': 'Policital party 2', 'number': 1, 'votes': 32343000, 'postproc': 0 },
+            { 'option': 'Policital party 6', 'number': 7, 'votes': 923187, 'postproc': 0 },
+            { 'option': 'Policital party 1', 'number': 3, 'votes': 756734, 'postproc': 0 },
+            { 'option': 'Policital party 4', 'number': 2, 'votes': 732432, 'postproc': 0 },
+            { 'option': 'Policital party 7', 'number': 6, 'votes': 65832, 'postproc': 0 },
+            { 'option': 'Policital party 3', 'number': 5, 'votes': 11232, 'postproc': 0 },
+            
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
