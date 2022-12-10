@@ -444,7 +444,7 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-    def test_sainte_lague(self):
+    def test_sainte_lague_1(self):
         data = {
             'type': 'SAINTE_LAGUE',
             'seats': 7,
@@ -461,6 +461,41 @@ class PostProcTestCase(APITestCase):
             { 'option': 'Policital party 2', 'number': 1, 'votes': 280000, 'postproc': 2 },
             { 'option': 'Policital party 3', 'number': 4, 'votes': 160000, 'postproc': 1 },
             { 'option': 'Policital party 4', 'number': 2, 'votes': 60000, 'postproc': 1 },
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_sainte_lague_2(self):
+        data = {
+            'type': 'SAINTE_LAGUE',
+            'seats': 47,
+            'options': [
+                { 'option': 'Policital party 2', 'number': 1, 'votes': 451000 },
+                { 'option': 'Policital party 4', 'number': 2, 'votes': 43000 },
+                { 'option': 'Policital party 1', 'number': 3, 'votes': 256000 },
+                { 'option': 'Policital party 5', 'number': 4, 'votes': 98000 },
+                { 'option': 'Policital party 3', 'number': 5, 'votes': 105000 },
+                { 'option': 'Policital party 7', 'number': 6, 'votes': 30000 },
+                { 'option': 'Policital party 6', 'number': 7, 'votes': 4500 },
+                { 'option': 'Policital party 8', 'number': 8, 'votes': 300 },
+                { 'option': 'Policital party 9', 'number': 9, 'votes': 54 },
+            ]
+        }
+
+        expected_result = [
+            { 'option': 'Policital party 2', 'number': 1, 'votes': 451000, 'postproc': 22 },
+            { 'option': 'Policital party 1', 'number': 3, 'votes': 256000, 'postproc': 12 },
+            { 'option': 'Policital party 3', 'number': 5, 'votes': 105000, 'postproc': 5 },
+            { 'option': 'Policital party 5', 'number': 4, 'votes': 98000, 'postproc': 5 },
+            { 'option': 'Policital party 4', 'number': 2, 'votes': 43000, 'postproc': 2 },
+            { 'option': 'Policital party 7', 'number': 6, 'votes': 30000, 'postproc': 1 },
+            { 'option': 'Policital party 6', 'number': 7, 'votes': 4500, 'postproc': 0 },
+            { 'option': 'Policital party 8', 'number': 8, 'votes': 300 , 'postproc': 0},
+            { 'option': 'Policital party 9', 'number': 9, 'votes': 54 , 'postproc': 0},
         ]
 
         response = self.client.post('/postproc/', data, format='json')
