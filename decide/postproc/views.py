@@ -258,6 +258,43 @@ class PostProcView(APIView):
             
         out.sort(key=lambda x: (-x['postproc'], -x['votes']))
         return Response(out)
+    
+    def modified_sainte_lague(self, options, seats):
+        out = []
+
+        options.sort(key=lambda x: -x['votes'])
+        for opt in options:
+            out.append({
+                **opt,
+                'postproc': 0,
+            })
+
+        for _ in range(seats):
+
+            quotients = []
+
+            for i, opt in enumerate(out):
+                if (i==0){
+                    quotient = opt['votes'] / 1.4
+                    quotients.append(quotient)
+                }
+                else{
+                    quotient = opt['votes'] / (2*opt['postproc'] + 1)
+                    quotients.append(quotient)
+                }
+                
+            max_value = 0
+
+            for q in quotients:
+                if(q > max_value):
+                    max_value = q
+
+            index = quotients.index(max_value)
+
+            out[index]['postproc'] += 1
+            
+        out.sort(key=lambda x: (-x['postproc'], -x['votes']))
+        return Response(out)
 
 
     def post(self, request):
