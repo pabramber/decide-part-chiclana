@@ -299,8 +299,8 @@ class PostProcView(APIView):
 
     def post(self, request):
         """
-         * type: IDENTITY | DHONDT | DROOP | BORDA | HARE | IMPERIALI | REINFORCED_IMPERIAL | HAGENBACH_BISCHOFF | SAINTE_LAGUE
-         * seats: int (just in case type is DHONDT, DROOP, HARE, IMPERIALI, REINFORCED_IMPERIAL, HAGENBACH_BISCHOFF or SAINTE_LAGUE)
+         * type: IDENTITY | DHONDT | DROOP | BORDA | HARE | IMPERIALI | REINFORCED_IMPERIAL | HAGENBACH_BISCHOFF | SAINTE_LAGUE | MODIFIED_SAINTE_LAGUE
+         * seats: int (just in case type is DHONDT, DROOP, HARE, IMPERIALI, REINFORCED_IMPERIAL, HAGENBACH_BISCHOFF, SAINTE_LAGUE or MODIFIED_SAINTE_LAGUE)
          * options: [
             {
              option: str,
@@ -335,4 +335,6 @@ class PostProcView(APIView):
             response = self.hagenbach_bischoff(opts, seats)
         elif t == 'SAINTE_LAGUE':
             response = self.sainte_lague(opts, seats)
+        elif t == 'MODIFIED_SAINTE_LAGUE':
+            response = self.modified_sainte_lague(opts, seats)
         return response
