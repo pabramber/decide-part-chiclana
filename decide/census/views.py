@@ -240,7 +240,7 @@ def createCensus(request):
         return  render(request,'census_create.html',{'form': CreationCensusForm})
 
 
-
+############BORRAR CENSOS
 def deleteCensus(request):
     Voterid = request.GET['Voterid']
     Votingid = request.GET['Votingid']
