@@ -17,18 +17,18 @@ class Question(models.Model):
             ('R', 'Ranked question'),
             ('B', 'Yes/No question'),
             ]
-    tipo = models.CharField(max_length=1, choices=TYPES, default='C')  
+    type = models.CharField(max_length=1, choices=TYPES, default='C')  
     create_ordination = models.BooleanField(verbose_name='Create ordination', default=False)
 
     def save(self):
         super().save()
-        if self.tipo == 'B':
+        if self.type == 'B':
             import voting.views # Importo aquí porque si lo hago arriba da error por importacion circular
             voting.views.create_yes_no_question(self)
-        elif self.tipo == 'R' and self.create_ordination:
+        elif self.type == 'R' and self.create_ordination:
             import voting.views
             voting.views.create_ranked_question(self)
-        elif self.tipo == 'S':
+        elif self.type == 'S':
             import voting.views
             voting.views.create_score_question(self)
 
@@ -42,7 +42,7 @@ class QuestionOption(models.Model):
     option = models.TextField()
 
     def save(self, *args, **kwargs):
-        if self.question.tipo == 'B':
+        if self.question.type == 'B':
             if not self.option == 'Sí' and not self.option == 'No':
                 return ""
         else:
@@ -58,14 +58,6 @@ class Voting(models.Model):
     name = models.CharField(max_length=200)
     desc = models.TextField(blank=True, null=True)
     question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE)
-
-    voting_types = (
-        ('CV', 'CLASSIC VOTING'),
-        ('RV', 'RANKED VOTING'),
-        ('BV', 'BINARY VOTING'),
-        ('SV', 'SCORE VOTING'),)
-
-    voting_type = models.CharField(max_length=2, choices=voting_types, default='CV')
 
     postproc_type = models.CharField(max_length=255, choices=PostprocTypeEnum.choices(), default='IDENTITY')
     number_seats = models.PositiveIntegerField(default=1)
@@ -162,13 +154,13 @@ class Voting(models.Model):
         self.save()
 
     def save_file(self):
-        if self.tally:
+        if self.postproc:
             file_name = "[" + str(self.id) + "]" + self.name + ".txt"
             path = "voting/files/" + file_name
             file = open(path, "w")
             file.write("Id: " + str(self.id) + "\n")
             file.write("Nombre: " + self.name + "\n")
-            file.write("Tipo de votación: " + self.get_voting_type_display()  + "\n")
+            file.write("Tipo de votación: " + self.question.type+ "\n")
             if self.desc:
                 file.write("Descripción: " + self.desc + "\n")
             file.write("Fecha de inicio: " + self.start_date.strftime('%d/%m/%y %H:%M:%S') + "\n")
