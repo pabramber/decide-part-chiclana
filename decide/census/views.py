@@ -19,6 +19,7 @@ from tablib import Dataset
 from .models import Census
 from django.http import HttpResponse
 from django.shortcuts import render
+from .forms import CreationCensusForm
 
 
 def importer(request):
@@ -107,3 +108,33 @@ def hello(request):
     return render(request,'census.html')
 
 
+def createCensus(request): 
+    if request.method == 'GET':
+        return render(request, 'census_create.html',{'form': CreationCensusForm})
+    else: 
+        if request.method == 'POST':
+            try: 
+                census = Census.objects.create(voting_id = request.POST['voting_id'],voter_id = request.POST['voter_id'],
+                name = request.POST['name'],surname= request.POST['surname'],city = request.POST['city'],a_community = request.POST['a_community'],
+                gender = request.POST['gender'],born_year = request.POST['born_year'],civil_state = request.POST['civil_state'],
+                sexuality = request.POST['sexuality'],works = request.POST['works'])
+                census.save()
+                return HttpResponse('The census was created correctly')
+            except: 
+                return render(request,'census_create.html',{'form': CreationCensusForm, "error": 'Census already exist'})
+        return  render(request,'census_create.html',{'form': CreationCensusForm})
+        
+def deleteCensus(request):
+    Voterid = request.GET['Voterid']
+    Votingid = request.GET['Votingid']
+    census = Census.objects.filter(voting_id=int(Votingid),voter_id = int(Voterid))
+    if len(census) == 0: 
+        return HttpResponse('There is not Census')
+    census.delete()
+    return HttpResponse('The census was deleted correctly')
+    
+
+
+
+
+    return None
