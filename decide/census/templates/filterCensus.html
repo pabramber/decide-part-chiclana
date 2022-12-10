@@ -147,21 +147,26 @@
                 </ul>
             </div>
             <div>
-                <h2>Reutilizar censo para otra votación:</h2>
+                <h2>Reuse Census for other Voting:</h2>
                 <br>
-                <form action="{% url 'reutilizar_censo' %}" method="get">
+                <form action="{% url 'reuse_census' %}" method="get">
+                    {% csrf_token %}
                     <div class="form-group col-md-4">
-                        <label for="id">ID de la votación:</label>
-                        <select id="id" class="form-control" name="id">
-                            <!-- Recorre los votings ids y los lista en un select -->
+                        <label for="id">Voting ID: &nbsp;</label>
+                        <!-- Recorre los votings ids y los lista en un select -->
+                        <!--<select id="id" class="form-control" name="q">
                             <option selected>Voting ID</option>
-                            {% for censo in census %}
-                            <option value="{{ censo.voting_id }}">{{ censo.voting_id }}</option>
+                            {{ votingsIds }}
+                            {% for votingId in votingsIds %}
+                            <option value="{{ votingId }}">{{ votingId }}</option>
                             {% endfor %}
-                        </select>
+                        </select> -->
+                        <input type="hidden" name="census" value="{{ census }}">
+                        <input type="number" name="q" min="1" value="1">
+                        <br>
+                        <hr>
+                        <button class="input-group-text" type="submit">Change Voting ID</button>
                     </div>
-                    <br>
-                    <button class="input-group-text" type="submit">Reutilizar</button>
                     <hr>
                 </form>
             </div>

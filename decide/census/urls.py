@@ -30,5 +30,5 @@ urlpatterns = [
     path('filter-works/', views.FilterWorks.as_view(), name='filter_works'),
 
     #Reutilizar censo
-    path('reuse/', views.reutilizarCenso, name='reutilizar_censo'),
+    path('reuse/', views.reuseCensus, name='reuse_census'),
 ]

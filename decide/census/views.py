@@ -29,7 +29,9 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
 def filter(request):
     censo = Census.objects.all()
-    return render(request, 'filterCensus.html', {'census' : censo})
+    votingsIds = votingIdSet()
+    return render(request, 'filterCensus.html', 
+        {'census' : censo, 'votingsIds': votingsIds})
 
 class FilterVotingID(ListView):
     model = Census
@@ -290,7 +292,31 @@ class ReporteAutorExcel(TemplateView):
         wb.save(response)
         return response
 
+
 # -------------------- REUTILIZAR CENSO ------------------------
 
-def reutilizarCenso():
-    pass
+def votingIdSet():
+    lista=[]
+    for census in Census.objects.all():
+        lista.append(census.voting_id)
+    conjunto=set(lista)
+    return conjunto
+    
+def reuseCensus(request):
+    query = request.GET['q']
+    c = request.GET['census']
+    print(c)
+    query = int(query)
+
+    Census.objects.update(voting_id=query)
+    census = Census.objects.filter(voting_id__icontains=query).order_by('-voter_id')
+    return render(request, "census-reused.html", {'census':census, 'page_name':'Reuse Results'})
+
+"""
+class reuseContext(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)"""
