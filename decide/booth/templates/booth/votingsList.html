@@ -2,48 +2,81 @@
 {% load i18n static %}
 
 {% block extrahead %}
-    <link type="text/css" rel="stylesheet"
-         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
-    <link type="text/css" rel="stylesheet"
-         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
-    <link type="text/css" rel="stylesheet" href='{% static "booth/style.css" %}' />
+<link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+<link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+<link type="text/css" rel="stylesheet" href='{% static "booth/style.css" %}' />
+
+<style>
+    .tittle {
+        margin-top: 30px;
+    }
+
+    table {
+        table-layout: fixed;
+        width: 100%;
+        border-collapse: collapse;
+        border: 3px solid black;
+    }
+
+    thead th:nth-child(1) {
+        width: 30%;
+    }
+
+    thead th:nth-child(2) {
+        width: 20%;
+    }
+
+    thead th:nth-child(3) {
+        width: 15%;
+    }
+
+    thead th:nth-child(4) {
+        width: 35%;
+    }
+
+    th,
+    td {
+        padding: 20px;
+    }
+
+</style>
 {% endblock %}
 
 {% block content %}
 
-    <div class="container">
+<div class="container">
 
-        {% if votings %}
-        <h2 style="margin-top: 30px;">Avaible votings</h2>
+    {% if votings %}
+    <h2 class="tittle">Avaible votings</h2>
 
-        <table id="result_list" cellspacing="20px">
-            <thead>
-                <tr>
-                
-                    <th scope="col" class="sortable column-name sorted ascending">                                         
-                        <div><a>Name</a></div>
-                        <div class="clear"></div>
-                    </th>
+    <table id="result_list" cellspacing="20px">
+        <thead>
+            <tr>
 
-                    <th scope="col" class="sortable column-voting_type" style="padding-right: 40px">                       
-                        <div><a>Voting type</a></div>
-                        <div class="clear"></div>
-                    </th>
+                <th scope="col" class="sortable column-name sorted ascending">
+                    <div><a>Name</a></div>
+                    <div class="clear"></div>
+                </th>
 
-                    <th scope="col" class="sortable column-start_date">
-                        <div><a >Start date</a></div>
-                        <div class="clear"></div>
-                    </th>
+                <th scope="col" class="sortable column-voting_type">
+                    <div><a>Voting type</a></div>
+                    <div class="clear"></div>
+                </th>
 
-                    <th scope="col" class="sortable column-end_date">
-                        <div><a>End date</a></div>
-                        <div class="clear"></div>
-                    </th>
+                <th scope="col" class="sortable column-start_date">
+                    <div><a>Start date</a></div>
+                    <div class="clear"></div>
+                </th>
 
-                </tr>
-            </thead>
-            <tbody>
-            
+                <th scope="col" class="sortable column-end_date">
+                    <div><a>End date</a></div>
+                    <div class="clear"></div>
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+
             {% for i in votings %}
 
             <tr>
@@ -51,24 +84,24 @@
                     <a href="{{i.id}}">{{ i.name }}</a>
                 </th>
 
-                <td style="padding: 15px;">{{i.voting_type}}</td>
+                <td id="table-element" style="padding: 15px;">{{i.voting_type}}</td>
 
-                <td style="padding: 15px;">{{i.start_date}}</td>
+                <td id="table-element" style="padding: 15px;">{{i.start_date}}</td>
 
-                <td style="padding: 15px;">{{i.end_date}}</td>
+                <td id="table-element" style="padding: 15px;">{{i.end_date}}</td>
             </tr>
 
             {% endfor %}
-            
-            </tbody>
 
-            {% else %}
+        </tbody>
 
-            <H1>There are no votings avaible for you</H1>
+        {% else %}
 
-            {% endif %}
+        <H1 class="tittle">There are no votings avaible for you</H1>
 
-        </table>
-    </div>
+        {% endif %}
+
+    </table>
+</div>
 
 {% endblock %}
