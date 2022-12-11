@@ -323,7 +323,6 @@ def main(request):
     if request.user.is_authenticated == True:
         authenticated = True
         context['username'] = request.user.username
-        print(request.user.id)
         census = Census.objects.filter(voter_id=request.user.id)
         for c in census:
             voting_id = c.voting_id
@@ -333,7 +332,6 @@ def main(request):
             if voting is not None and voting.start_date is not None and voting.end_date is None:
                 votings.append(voting) 
 
-        print(votings)
     context['authenticated'] = authenticated
     context['votings'] = votings
 
