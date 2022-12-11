@@ -100,7 +100,7 @@ class DefRegister(TaskSet):
 
             current_url = self.client.base_url
 
-            if response.status_code == 404 and current_url == "http://localhost:8000":
+            if response.status_code == 200 and current_url == "http://localhost:8000":
                 response.success()
 
 
@@ -153,7 +153,7 @@ class DefLogin(TaskSet):
 
                 response.success()
                 
-                if response2.status_code == 404 and current_url2 == "http://localhost:8000":
+                if response2.status_code == 200 and current_url2 == "http://localhost:8000":
                     response2.success()
 
 
