@@ -12,9 +12,9 @@ jsonnet==0.12.1
 selenium
 social-auth-app-django
 django-import-export==2.0
-tablib==3.2
+tablib==3.1
 dj-database-url==0.5.0
 whitenoise
 gunicorn
 django-allauth
-
+django-crontab

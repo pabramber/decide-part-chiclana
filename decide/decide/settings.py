@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google', # for Google OAuth 2.0
 
     'corsheaders',
+    'django_crontab',
     'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
@@ -66,6 +67,11 @@ INSTALLED_APPS = [
     'ApiUser',
     'import_export',
 ]
+
+CRONJOBS = [
+    ('* * * * *', 'voting.models.update_votings', '>>a.txt')
+]
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -211,9 +217,14 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 STATIC_URL = '/static/'
 
+
 if not DEBUG:
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = ''
+
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
@@ -241,6 +252,7 @@ if os.path.exists("config.jsonnet"):
     config = json.loads(evaluate_file("config.jsonnet"))
     for k, v in config.items():
         vars()[k] = v
+
 
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES

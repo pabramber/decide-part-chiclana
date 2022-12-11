@@ -39,9 +39,17 @@ class VotingView(generics.ListCreateAPIView):
         for idx, q_opt in enumerate(request.data.get('question_opt')):
             opt = QuestionOption(question=question, option=q_opt, number=idx)
             opt.save()
+        end_date = request.data.get('end_date')
+        start_date = request.data.get('start_date')
+        future_start = request.data.get('future_start')
+        future_stop = request.data.get('future_stop')
         postproc_type = request.data.get('postproc_type')
         number_seats = request.data.get('number_seats')
         voting = Voting(name=request.data.get('name'), desc=request.data.get('desc'),
+                end_date = end_date,
+                start_date = start_date,
+                future_start = future_start,
+                future_stop = future_stop,
                 question=question,
                 postproc_type=postproc_type,
                 number_seats=number_seats)
@@ -100,10 +108,26 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
             else:
                 voting.tally_votes(request.auth.key)
                 msg = 'Voting tallied'
+        elif action == 'save':
+            if not voting.start_date:
+                msg = 'Voting is not started'
+                st = status.HTTP_400_BAD_REQUEST
+            elif not voting.end_date:
+                msg = 'Voting is not stopped'
+                st = status.HTTP_400_BAD_REQUEST
+            elif not voting.tally:
+                msg = 'Voting has not being tallied' 
+                st = status.HTTP_400_BAD_REQUEST
+            else: 
+                voting.save_file()
+                msg = 'Saved voting file'
         else:
             msg = 'Action not found, try with start, stop or tally'
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
+
+
+
 
 def create_yes_no_question(self):
         option_yes = False
@@ -130,16 +154,18 @@ def create_yes_no_question(self):
             option_no.save()
 
 
-def create_preference_question(self):
+def create_ranked_question(self):
     try:
         options = QuestionOption.objects.all().filter(question=self)
         num_options = len(options)
         list_options = []
 
         for o in options:
-            list_options.append(o.option)
+            list_options.append(o.option + ', ')
+
+        permutation = itertools.permutations(list_options, num_options)
                 
-        for iter in itertools.permutations(list_options, num_options):
+        for iter in permutation:
             option = QuestionOption(option=''.join(iter), question=self)
             option.save()
 
@@ -149,5 +175,20 @@ def create_preference_question(self):
         self.create_ordination = False
         self.save()
         
+    except:
+        pass
+
+def create_score_question(self):
+    try:
+        options = QuestionOption.objects.all().filter(question=self)
+        list_options = [str(o.option) for o in options]
+
+        for i in range(0, 11):
+            if str(i) in list_options:
+                continue
+            else:
+                option = QuestionOption(option=str(i), question=self)
+                option.save()
+
     except:
         pass
