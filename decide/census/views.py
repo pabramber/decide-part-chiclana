@@ -21,7 +21,8 @@ from .models import Census
 from django.views.generic import ListView
 from django.http import HttpResponse
 from django.shortcuts import render
-
+from .forms import CreationCensusForm
+from django.views.generic.base import TemplateView
 
 def filter(request):
     censo = Census.objects.all()
@@ -206,10 +207,52 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
 
 def GetId(request):
     id = request.GET['id']
+    
     census = Census.objects.filter(voting_id=int(id))
-    return render(request,"census_details.html",{'census':census})
+    if len(census) == 0:
+        return render(request,'census.html',{'error_id':'There is not a census with that voting_id'})
+    else:
+        return render(request,"census_details.html",{'census':census})
+
 
 def hello(request):
     return render(request,'census.html')
 
+
+def createCensus(request): 
+    if request.method == 'GET':
+        return render(request, 'census_create.html',{'form': CreationCensusForm})
+    else: 
+        if request.method == 'POST':
+            try: 
+                census = Census.objects.create(voting_id = request.POST['voting_id'],voter_id = request.POST['voter_id'],
+                name = request.POST['name'],surname= request.POST['surname'],city = request.POST['city'],a_community = request.POST['a_community'],
+                gender = request.POST['gender'],born_year = request.POST['born_year'],civil_state = request.POST['civil_state'],
+                sexuality = request.POST['sexuality'],works = request.POST['works'])
+                census.save()
+                return render(request,'census_succeed.html',{'census':census})
+                
+            except: 
+                return render(request,'census_create.html',{'form': CreationCensusForm, "error": 'Census already exist'})
+        return  render(request,'census_create.html',{'form': CreationCensusForm})
+
+
+############BORRAR CENSOS
+def deleteCensus(request):
+    Voterid = request.GET['Voterid']
+    Votingid = request.GET['Votingid']
+    census = Census.objects.filter(voting_id=int(Votingid),voter_id = int(Voterid))
+    if len(census) == 0: 
+        return render(request,'census.html',{'error':'Census does not exist.Try other census'})
+    if len(census)==1:
+        census.delete()
+        return render(request,'census_deleted.html')
+    
+
+def censusCreatedSucced(request):
+    return render(request,'census_succeed.html')
+
+
+def censusDeletedSucced(request):
+    return render(request,'census_deleted.html')
 
