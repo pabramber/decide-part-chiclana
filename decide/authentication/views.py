@@ -246,12 +246,8 @@ class LoginView(CreateView):
 
         if user is not None:
             login(request, user)
-            print(request)
-            print(request.POST)
             token, created = Token.objects.get_or_create(user=userObject)
-            print(token)
             response.set_cookie(key='token', value=token)
-            print("authenticate")
         else:
             errors = ["Username and password do not match"]
             template = loader.get_template("authentication/authentication.html")
@@ -297,7 +293,6 @@ def main(request):
     if request.user.is_authenticated == True:
         authenticated = True
         context['username'] = request.user.username
-        print(request.user.id)
         census = Census.objects.filter(voter_id=request.user.id)
         for c in census:
             voting_id = c.voting_id
@@ -307,7 +302,6 @@ def main(request):
             if voting is not None and voting.start_date is not None and voting.end_date is None:
                 votings.append(voting) 
 
-        print(votings)
     context['authenticated'] = authenticated
     context['votings'] = votings
 
