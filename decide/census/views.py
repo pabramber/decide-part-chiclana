@@ -218,7 +218,7 @@ def GetId(request):
 def hello(request):
     return render(request,'census.html')
 
-
+######Creación de censo
 def createCensus(request): 
     if request.method == 'GET':
         return render(request, 'census_create.html',{'form': CreationCensusForm})
