@@ -6,8 +6,11 @@ from rest_framework.status import (
         HTTP_400_BAD_REQUEST,
         HTTP_401_UNAUTHORIZED
 )
+from django.http import HttpRequest, QueryDict
+from django.contrib.auth import logout
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import obtain_auth_token
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.db import IntegrityError
@@ -25,6 +28,8 @@ import re
 from django.contrib.auth import authenticate, login
 from django.core.mail import EmailMessage
 from django.shortcuts import render
+from census.models import Census
+from voting.models import Voting
 
 
 class GetUserView(APIView):
@@ -248,6 +253,10 @@ class LoginView(CreateView):
         pass1 = values['password1']
         
         user = authenticate(request, username=username, password=pass1)
+        userObject = User.objects.get(username=username)
+
+        response = redirect("/")
+
         if user is not None:
 
             email=user.email
@@ -261,8 +270,8 @@ class LoginView(CreateView):
             "",[email], reply_to=[email])
 
             email.send()
-
-            print("authenticate")
+            token, created = Token.objects.get_or_create(user=userObject)
+            response.set_cookie(key='token', value=token)
         else:
             errors = ["Username and password do not match"]
             template = loader.get_template("authentication/authentication.html")
@@ -270,7 +279,10 @@ class LoginView(CreateView):
 
             return HttpResponse(template.render(context, request))
 
-        return redirect("/")
+        
+
+
+        return response
 
 
     @staticmethod     
@@ -302,5 +314,35 @@ class RegisterViewAPI(APIView):
             return Response({}, status=HTTP_400_BAD_REQUEST)
         return Response({'user_pk': user.pk, 'token': token.key}, HTTP_201_CREATED)
 
+
+def main(request):
+    template = loader.get_template("authentication/decide.html")
+    context = {}
+    authenticated = False
+    votings=[]
+    if request.user.is_authenticated == True:
+        authenticated = True
+        context['username'] = request.user.username
+        print(request.user.id)
+        census = Census.objects.filter(voter_id=request.user.id)
+        for c in census:
+            voting_id = c.voting_id
+
+            voting = Voting.objects.get(id = voting_id)
+            
+            if voting is not None and voting.start_date is not None and voting.end_date is None:
+                votings.append(voting) 
+
+        print(votings)
+    context['authenticated'] = authenticated
+    context['votings'] = votings
+
+    return HttpResponse(template.render(context, request))
+
+
+def logout_view(request):
+    if request.user.is_authenticated == True:
+        logout(request)
+    return redirect('/')
 
 

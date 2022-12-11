@@ -27,8 +27,9 @@
 
         <div class="voting">
             <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
-
             <!-- Register -->
+
+
             <b-form @submit="onSubmitLogin" v-if="signup">
                 <b-form-group label="{% trans "Username" %}" label-for="username">
                     <b-form-input
@@ -86,6 +87,7 @@
                 </div>
 
             </div>
+            
         </div>
     </div>
 {% endblock %}
@@ -138,7 +140,18 @@
             },
             methods: {
                 init() {
+                    console.log("init")
                     var cookies = document.cookie.split("; ");
+                    
+                    var cookieString = document.cookie;
+                    var myCookieValue = cookieString.match(new RegExp('(^| )token=([^;]+)'));
+
+                    if (myCookieValue) {
+                        this.token = myCookieValue[2];
+                        document.cookie = 'decide='+this.token+';';
+                        this.getUser();
+                    }
+                    console.log(this.token)
                     cookies.forEach((c) => {
                         var cs = c.split("=");
                         if (cs[0] == 'decide' && cs[1]) {
@@ -148,6 +161,7 @@
                     });
                 },
                 postData(url, data) {
+                    console.log("postData")
                     // Default options are marked with *
                     var fdata = {
                         body: JSON.stringify(data),
@@ -171,9 +185,12 @@
                         });
                 },
                 onSubmitLogin(evt) {
+                    console.log("onSubmitLogin")
+                    console.log("entra en onSubmitLogin")
                     evt.preventDefault();
                     this.postData("{% url "gateway" "authentication" "/login/" %}", this.form)
                         .then(data => {
+                            console.log(data)
                             document.cookie = 'decide='+data.token+';';
                             this.token = data.token;
                             this.getUser();
@@ -181,11 +198,14 @@
                         .catch(error => {
                             this.showAlert("danger", '{% trans "Error: " %}' + error);
                         });
+                    
                 },
                 getUser(evt) {
+                    console.log("getUser")
                     var data = {token: this.token};
                     this.postData("{% url "gateway" "authentication" "/getuser/" %}", data)
                         .then(data => {
+                            console.log(data)
                             this.user = data;
                             this.signup = false;
                         }).catch(error => {
@@ -193,6 +213,7 @@
                         });
                 },
                 decideLogout(evt) {
+                    console.log("decideLogout")
                     evt.preventDefault();
                     var data = {token: this.token};
                     this.postData("{% url "gateway" "authentication" "/logout/" %}", data);
@@ -202,11 +223,13 @@
                     this.signup = true;
                 },
                 decideEncrypt() {
+                    console.log("decideEncrypt")
                     var bigmsg = BigInt.fromJSONObject(this.selected.toString());
                     var cipher = ElGamal.encrypt(this.bigpk, bigmsg);
                     return cipher;
                 },
                 decideSend(evt) {
+                    console.log("decideSend")
                     evt.preventDefault();
                     var v = this.decideEncrypt();
                     var data = {
@@ -224,6 +247,7 @@
                         });
                 },
                 showAlert(lvl, msg) {
+                    console.log("showAlert")
                     this.alertLvl = lvl;
                     this.alertMsg = msg;
                     this.alertShow = true;
