@@ -309,8 +309,11 @@ def main(request):
 
 
 def logout_view(request):
+    response = redirect("/")
     if request.user.is_authenticated == True:
         logout(request)
-    return redirect('/')
+        response.delete_cookie('token')
+        response.delete_cookie('decide')
+    return response
 
 
