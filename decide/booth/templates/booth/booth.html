@@ -131,7 +131,6 @@
                     cookies.forEach((c) => {
                         var cs = c.split("=");
                         if (cs[0] == 'decide' && cs[1]) {
-                            this.token = cs[1];
                             this.getUser();
                         }
                     });
