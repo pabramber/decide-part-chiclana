@@ -45,6 +45,10 @@
                 <canvas id="pie-chart"></canvas>
                 <canvas id="polar-chart-post"></canvas>
                 <canvas id="polar-chart-votes"></canvas>
+                <canvas id="radar-chart-votes"></canvas>
+                <canvas id="doughnut-chart-votes"></canvas>
+                <canvas id="radar-chart-post"></canvas>
+                <canvas id="doughnut-chart-post"></canvas>
             </div>
 
         </div>
@@ -181,6 +185,115 @@
                 responsive: true,
                 title: {
                     text: voting.name + " (votes)",
+                    display: true
+                }
+            }
+        });
+
+        ctx = document.getElementById("radar-chart-votes").getContext("2d");
+        randomColors = [...Array(voting.postproc.length).keys()].map(i => "#" + Math.floor(random((i+100)*10)*16777215).toString(16));
+        var myChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                    label: 'Votes',
+                    data: votes,
+                    backgroundColor: randomColors,
+                    borderColor: randomColors,
+                    borderWidth: 1,
+                    hoverBackgroundColor: randomColors,
+                    borderJoinStyle: 'round',
+                    pointHoverBorderWidth: 6,
+                    pointHitRadius: 6,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    text: voting.name + " (votes)",
+                    display: true
+                }
+            }
+        });
+
+        ctx = document.getElementById("doughnut-chart-votes").getContext("2d");
+        randomColors = [...Array(voting.postproc.length).keys()].map(i => "#" + Math.floor(random((i+100)*10)*16777215).toString(16));
+        var myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                    label: 'Votes',
+                    data: votes,
+                    backgroundColor: randomColors,
+                    borderColor: randomColors,
+                    borderWidth: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    text: voting.name + " (votes)",
+                    display: true
+                }
+            }
+        });
+
+        ctx = document.getElementById("radar-chart-post").getContext("2d");
+        randomColors = [...Array(voting.postproc.length).keys()].map(i => "#" + Math.floor(random((i+100)*10)*16777215).toString(16));
+        var myChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                    label: 'Postproc',
+                    data: postproc,
+                    backgroundColor: randomColors,
+                    borderColor: randomColors,
+                    borderWidth: 1,
+                    hoverBackgroundColor: randomColors,
+                    borderJoinStyle: 'round',
+                    pointHoverBackgroundColor : randomColors,
+                    pointHoverBorderWidth: 6,
+                    pointHitRadius: 6,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    text: voting.name + " (postproc)",
+                    display: true
+                }
+            }
+        });
+
+        ctx = document.getElementById("doughnut-chart-post").getContext("2d");
+        randomColors = [...Array(voting.postproc.length).keys()].map(i => "#" + Math.floor(random((i+100)*10)*16777215).toString(16));
+        var myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                    label: 'Postproc',
+                    data: postproc,
+                    backgroundColor: randomColors,
+                    borderColor: randomColors,
+                    borderWidth: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    text: voting.name + " (postproc)",
                     display: true
                 }
             }

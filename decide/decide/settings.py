@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+SOCIAL_AUTH_FACEBOOK_KEY = "1167741833830127"
+SOCIAL_AUTH_FACEBOOK_SECRET = "9f385bef6b16634319fade93cfa7bf5a"
 
 # Application definition
 
@@ -37,6 +39,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social_django',
+    
+
+    
+
+    # Add the following django-allauth apps
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google', # for Google OAuth 2.0
 
     'corsheaders',
     'django_crontab',
@@ -46,6 +58,7 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     'gateway',
     'ApiUser',
+    'import_export',
 ]
 
 CRONJOBS = [
@@ -63,7 +76,33 @@ REST_FRAMEWORK = {
 
 AUTHENTICATION_BACKENDS = [
     'base.backends.AuthBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+    'social_core.backends.facebook.FacebookOAuth2',
 ]
+
+SITE_ID = 1
+LOGIN_REDIRECT_URL = '/authentication/authenticated'
+
+# Additional configuration settings
+SOCIALACCOUNT_QUERY_EMAIL = True
+ACCOUNT_LOGOUT_ON_GET= True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_REQUIRED = True
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
 
 MODULES = [
     'authentication',
@@ -165,6 +204,8 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 STATIC_URL = '/static/'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = ''
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
@@ -196,3 +237,13 @@ if os.path.exists("config.jsonnet"):
 
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
+
+
+# Configuracion email
+
+EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST="smtp.gmail.com"
+EMAIL_USE_TLS=True
+EMAIL_PORT=587
+EMAIL_HOST_USER="decidepartchiclana2@gmail.com"
+EMAIL_HOST_PASSWORD="gtpsbwiaqpfqruiu"   

@@ -23,6 +23,8 @@ from django.forms.fields import EmailField
 from django.forms.forms import Form 
 import re
 from django.contrib.auth import authenticate, login
+from django.core.mail import EmailMessage
+from django.shortcuts import render
 
 
 class GetUserView(APIView):
@@ -59,7 +61,7 @@ class CustomUserCreationForm(UserCreationForm):
         )
 
         labels = {
-            'username':('Userame'),
+            'username':('Username'),
             'password1':('Password'),
             'password2':('Repeat the password'),
             'email':('Email'),
@@ -172,6 +174,7 @@ class RegisterView(CreateView):
 
         errors = []
 
+
         if(ver.clean_password2(pass1, pass2)):
             errors.append("Both passwords must be the same")
 
@@ -212,6 +215,15 @@ class RegisterView(CreateView):
                 user.last_name = last_name
                 user.email = email
                 user.set_password(pass1)
+
+                email=EmailMessage("Message from the app Decide", 
+
+                "The user with name {} and email {} has registered in the app Decide".format(user.first_name,user.email), 
+
+                "",[user.email], reply_to=[email])
+
+                email.send()
+
                 user.save()
                 token, _ = Token.objects.get_or_create(user=user)
 
@@ -219,6 +231,7 @@ class RegisterView(CreateView):
                 return HttpResponse("Integrity Error raised", status=HTTP_400_BAD_REQUEST)
 
             return redirect("/")
+
 
 
     
@@ -233,17 +246,38 @@ class LoginView(CreateView):
 
         username = values['username']
         pass1 = values['password1']
-
+        
         user = authenticate(request, username=username, password=pass1)
         if user is not None:
+
+            email=user.email
+            
             login(request, user)
+
+            email=EmailMessage("Message from the app Decide", 
+
+            "The user with email {} has logged in the app Decide".format(email), 
+
+            "",[email], reply_to=[email])
+
+            email.send()
+
             print("authenticate")
         else:
-            print("usuario no autenticado")
-            return HttpResponse("Username and password do not match", status=HTTP_400_BAD_REQUEST)
+            errors = ["Username and password do not match"]
+            template = loader.get_template("authentication/authentication.html")
+            context = {"errors":errors}
+
+            return HttpResponse(template.render(context, request))
 
         return redirect("/")
 
+
+    @staticmethod     
+    def authenticated(request):
+        return render(request, 'authentication/authenticated.html', {
+                'username' : request.user
+            })
 
 
 
@@ -267,5 +301,6 @@ class RegisterViewAPI(APIView):
         except IntegrityError:
             return Response({}, status=HTTP_400_BAD_REQUEST)
         return Response({'user_pk': user.pk, 'token': token.key}, HTTP_201_CREATED)
+
 
 

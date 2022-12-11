@@ -10,3 +10,8 @@ coverage==4.5.2
 django-nose==1.4.6
 jsonnet==0.12.1
 selenium
+social-auth-app-django
+django-import-export==2.0
+tablib==3.1
+django-allauth
+django-crontab

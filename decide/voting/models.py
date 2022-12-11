@@ -11,33 +11,29 @@ from postproc.models import PostprocTypeEnum
 
 class Question(models.Model):
     desc = models.TextField()
-    TYPES = [('O', 'Options'),
-            ('S','Score')]
-    tipo = models.CharField(max_length=1, choices=TYPES, default='O')  
-    yes_no_question = models.BooleanField(verbose_name='Yes/No question', default=False)
+    TYPES = [
+            ('C', 'Classic question'),
+            ('S', 'Score question'),
+            ('R', 'Ranked question'),
+            ('B', 'Yes/No question'),
+            ]
+    type = models.CharField(max_length=1, choices=TYPES, default='C')  
+    create_ordination = models.BooleanField(verbose_name='Create ordination', default=False)
 
     def save(self):
         super().save()
-        if self.yes_no_question:
+        if self.type == 'B':
             import voting.views # Importo aquí porque si lo hago arriba da error por importacion circular
             voting.views.create_yes_no_question(self)
+        elif self.type == 'R' and self.create_ordination:
+            import voting.views
+            voting.views.create_ranked_question(self)
+        elif self.type == 'S':
+            import voting.views
+            voting.views.create_score_question(self)
 
     def __str__(self):
         return self.desc
-@receiver(post_save, sender=Question)
-def my_handler(sender, instance, **kwargs):
-    if instance.tipo == 'S':
-        instance.options.all().delete()
-        instance.options.create(option='1')
-        instance.options.create(option='2')
-        instance.options.create(option='3')
-        instance.options.create(option='4')
-        instance.options.create(option='5')
-        instance.options.create(option='6')
-        instance.options.create(option='7')
-        instance.options.create(option='8')
-        instance.options.create(option='9')
-        instance.options.create(option='10')
 
 
 class QuestionOption(models.Model):
@@ -46,7 +42,7 @@ class QuestionOption(models.Model):
     option = models.TextField()
 
     def save(self, *args, **kwargs):
-        if self.question.yes_no_question:
+        if self.question.type == 'B':
             if not self.option == 'Sí' and not self.option == 'No':
                 return ""
         else:
@@ -63,14 +59,6 @@ class Voting(models.Model):
     desc = models.TextField(blank=True, null=True)
     question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE)
 
-    voting_types = (
-        ('CV', 'CLASSIC VOTING'),
-        ('PV', 'PREFERENCE VOTING'),
-        ('BV', 'BINARY VOTING'),
-        ('SV', 'SCORE VOTING'),)
-
-    voting_type = models.CharField(max_length=2, choices=voting_types, default='CV')
-
     postproc_type = models.CharField(max_length=255, choices=PostprocTypeEnum.choices(), default='IDENTITY')
     number_seats = models.PositiveIntegerField(default=1)
 
@@ -85,6 +73,8 @@ class Voting(models.Model):
 
     tally = JSONField(blank=True, null=True)
     postproc = JSONField(blank=True, null=True)
+
+    file = models.FileField(blank=True)
 
     def create_pubkey(self):
         if self.pub_key or not self.auths.count():
@@ -162,6 +152,28 @@ class Voting(models.Model):
 
         self.postproc = postp
         self.save()
+
+    def save_file(self):
+        if self.postproc:
+            file_name = "[" + str(self.id) + "]" + self.name + ".txt"
+            path = "voting/files/" + file_name
+            file = open(path, "w")
+            file.write("Id: " + str(self.id) + "\n")
+            file.write("Nombre: " + self.name + "\n")
+            file.write("Tipo de votación: " + self.question.type+ "\n")
+            if self.desc:
+                file.write("Descripción: " + self.desc + "\n")
+            file.write("Fecha de inicio: " + self.start_date.strftime('%d/%m/%y %H:%M:%S') + "\n")
+            file.write("Fecha de fin: " + self.end_date.strftime('%d/%m/%y %H:%M:%S') + "\n\n")
+            file.write("Pregunta: " + str(self.question) + "\n")
+            file.write("Resultado: \n")
+            for opt in self.postproc:
+                file.write("    - Opción: " + str(opt.get('option')))
+                file.write("    Puntuación: " + str(opt.get('postproc')))
+                file.write("    Votos: " + str(opt.get('votes')) + "\n")
+            file.close()
+            self.file = path
+            self.save()    
 
     def __str__(self):
         return self.name
