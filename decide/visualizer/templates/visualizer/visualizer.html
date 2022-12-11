@@ -28,6 +28,7 @@
                     <thead>
                         <tr>
                             <th>Opción</th>
+                            <th>borda</th>
                             <th>Puntuación</th>
                             <th>Votos</th>
                         </tr>
@@ -35,6 +36,7 @@
                     <tbody>
                         <tr v-for="opt in voting.postproc" :key="opt.number">
                             <th>[[opt.option]]</th>
+                            <th>[[opt.borda]]</th>
                             <td>[[opt.postproc]]</td>
                             <td class="text-muted">[[opt.votes]]</td>
                         </tr>
