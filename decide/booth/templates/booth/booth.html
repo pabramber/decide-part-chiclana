@@ -27,8 +27,9 @@
 
         <div class="voting">
             <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
-
             <!-- Register -->
+
+
             <b-form @submit="onSubmitLogin" v-if="signup">
                 <b-form-group label="{% trans "Username" %}" label-for="username">
                     <b-form-input
@@ -64,6 +65,7 @@
                         {% trans "Vote" %}
                     </b-button>
             </div>
+            
         </div>
     </div>
 {% endblock %}
@@ -117,10 +119,18 @@
             methods: {
                 init() {
                     var cookies = document.cookie.split("; ");
+                    
+                    var cookieString = document.cookie;
+                    var myCookieValue = cookieString.match(new RegExp('(^| )token=([^;]+)'));
+
+                    if (myCookieValue) {
+                        this.token = myCookieValue[2];
+                        document.cookie = 'decide='+this.token+';';
+                        this.getUser();
+                    }
                     cookies.forEach((c) => {
                         var cs = c.split("=");
                         if (cs[0] == 'decide' && cs[1]) {
-                            this.token = cs[1];
                             this.getUser();
                         }
                     });
@@ -159,6 +169,7 @@
                         .catch(error => {
                             this.showAlert("danger", '{% trans "Error: " %}' + error);
                         });
+                    
                 },
                 getUser(evt) {
                     var data = {token: this.token};
