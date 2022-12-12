@@ -3,20 +3,11 @@ from . import views
 
 
 urlpatterns = [
-    path('create', views.createCensus, name='census_create'),
+    path('create', views.CensusCreate.as_view(), name='census_create'),
     path('details<int:voting_id>', views.CensusDetail.as_view(), name='census_detail'),
     path('detalles/',views.GetId),
-    path('delete/',views.deleteCensus),
     path('',views.hello, name="hello"),
     path('importer/', views.importer, name='importer'),
-
-    path('succeed',views.censusCreatedSucced),
-    path('deleted',views.censusDeletedSucced),
-
-    path('lista_censo/', views.home, name = 'lista_censo'),
-    url(r'^reporte/', login_required(ReporteAutorExcel.as_view()), name = "reporte"),
-
-
     path('filter/', views.filter, name='filter'),
     path('filter-votingID/', views.FilterVotingID.as_view(), name='filter_votingID'),
     path('filter-voterID/', views.FilterVoterID.as_view(), name='filter_voterID'),
