@@ -146,30 +146,6 @@
                     {% endfor %}
                 </ul>
             </div>
-            <div>
-                <h2>Reuse Census for other Voting:</h2>
-                <br>
-                <form action="{% url 'reuse_census' %}" method="get">
-                    {% csrf_token %}
-                    <div class="form-group col-md-4">
-                        <label for="id">Voting ID: &nbsp;</label>
-                        <!-- Recorre los votings ids y los lista en un select -->
-                        <!--<select id="id" class="form-control" name="q">
-                            <option selected>Voting ID</option>
-                            {{ votingsIds }}
-                            {% for votingId in votingsIds %}
-                            <option value="{{ votingId }}">{{ votingId }}</option>
-                            {% endfor %}
-                        </select> -->
-                        <input type="hidden" name="census" value="{{ census }}">
-                        <input type="number" name="q" min="1" value="1">
-                        <br>
-                        <hr>
-                        <button class="input-group-text" type="submit">Change Voting ID</button>
-                    </div>
-                    <hr>
-                </form>
-            </div>
         </main>
     </body>
 </html>

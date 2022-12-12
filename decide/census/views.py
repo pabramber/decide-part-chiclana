@@ -20,18 +20,12 @@ from tablib import Dataset
 from .models import Census
 from django.views.generic import ListView
 from django.http import HttpResponse
-from django.http.response import HttpResponse
 from django.shortcuts import render
-from django.views.generic.base import TemplateView
-from openpyxl import Workbook
-from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
 
 def filter(request):
     censo = Census.objects.all()
-    votingsIds = votingIdSet()
-    return render(request, 'filterCensus.html', 
-        {'census' : censo, 'votingsIds': votingsIds})
+    return render(request, 'filterCensus.html', {'census' : censo})
 
 class FilterVotingID(ListView):
     model = Census
@@ -230,104 +224,3 @@ def hello(request):
     return render(request,'census.html')
 
 
-def home(request):
-    queryset = Census.objects.all()
-    return render(request, 'lista_censo.html', {'queryset':queryset})
-'''
-class ReportePersonalizadoExcel(TemplateView):
-    def get(self,request,*args,**kwargs):
-        query = Census.objects.all()
-        wb = Workbook()
-        bandera = True
-        cont = 1
-        for q in query:
-            if bandera:
-                ws = wb.active
-                bandera = False
-            else:
-                ws = wb.create_sheet('Hoja'+str(cont))
-            cont += 1
-
-        #Establecer el nombre de mi archivo
-        nombre_archivo = "ReportePersonalizadoExcel.xlsx"
-        #Definir el tipo de respuesta que se va a dar
-        response = HttpResponse(content_type = "application/ms-excel")
-        contenido = "attachment; filename = {0}".format(nombre_archivo)
-        response["Content-Disposition"] = contenido
-        wb.save(response)
-        return response
-'''
-
-class ReporteAutorExcel(TemplateView):
-    def get(self,request,*args,**kwargs):
-        census = Census.objects.all()
-        wb = Workbook()
-        ws = wb.active
-        ws['B1'] = 'Reporte de Censos'
-
-        ws.merge_cells('B1:L1')
-
-        ws['B3'] = 'Voting_id'
-        ws['C3'] = 'Voter_id'
-        ws['D3'] = 'Name'
-        ws['E3'] = 'Surname'
-        ws['F3'] = 'City'
-        ws['G3'] = 'A_community'
-        ws['H3'] = 'Gender'
-        ws['I3'] = 'Born_year'
-        ws['J3'] = 'Civil_state'
-        ws['K3'] = 'Sexuality'
-        ws['L3'] = 'Works'
-
-        cont = 4
-
-        for censu in census:
-            ws.cell(row = cont, column = 2).value = censu.voting_id
-            ws.cell(row = cont, column = 3).value = censu.voter_id
-            ws.cell(row = cont, column = 4).value = censu.name
-            ws.cell(row = cont, column = 5).value = censu.surname
-            ws.cell(row = cont, column = 6).value = censu.city
-            ws.cell(row = cont, column = 7).value = censu.a_community
-            ws.cell(row = cont, column = 8).value = censu.gender
-            ws.cell(row = cont, column = 9).value = censu.born_year
-            ws.cell(row = cont, column = 10).value = censu.civil_state
-            ws.cell(row = cont, column = 11).value = censu.sexuality
-            ws.cell(row = cont, column = 12).value = censu.works
-            cont+=1
-
-        nombre_archivo = "ReporteAutorExcel.xlsx"
-        response = HttpResponse(content_type = "application/ms-excel")
-
-        contenido = "attachment; filename = {0}".format(nombre_archivo)
-        response["Content-Disposition"] = contenido
-        wb.save(response)
-        return response
-
-
-# -------------------- REUTILIZAR CENSO ------------------------
-
-def votingIdSet():
-    lista=[]
-    for census in Census.objects.all():
-        lista.append(census.voting_id)
-    conjunto=set(lista)
-    return conjunto
-    
-def reuseCensus(request):
-    query = request.GET['q']
-    c = request.GET['census']
-    print(c)
-    query = int(query)
-
-    Census.objects.update(voting_id=query)
-    census = Census.objects.filter(voting_id__icontains=query).order_by('-voter_id')
-    return render(request, "census-reused.html", {'census':census, 'page_name':'Reuse Results'})
-
-"""
-class reuseContext(ListView):
-    model = Census
-    template_name = 'filterCensus.html'
-    context_object_name = 'census'
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(**kwargs)"""

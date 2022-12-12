@@ -60,7 +60,7 @@ class AuthTestCase(APITestCase):
         self.assertEqual(response.status_code, 200)
 
         user = response.json()
-        self.assertEqual(user['id'], 1)
+        self.assertEqual(user['id'], 27)
         self.assertEqual(user['username'], 'voter1')
 
     def test_getuser_invented_token(self):
