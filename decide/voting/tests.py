@@ -15,6 +15,8 @@ from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
 from voting.models import Voting, Question, QuestionOption
 
+import urllib.request
+
 
 class VotingTestCase(BaseTestCase):
 
@@ -24,6 +26,7 @@ class VotingTestCase(BaseTestCase):
     def tearDown(self):
         super().tearDown()
 
+    
     def encrypt_msg(self, msg, v, bits=settings.KEYBITS):
         pk = v.pub_key
         p, g, y = (pk.p, pk.g, pk.y)
@@ -82,6 +85,54 @@ class VotingTestCase(BaseTestCase):
                 voter = voters.pop()
                 mods.post('store', json=data)
         return clear
+    
+    # Test de votación por preferencia con 2 opciones
+    def test_create_ranked_question_with_two_options(self):
+        question = Question(
+            desc='test question 1', 
+            type='R',
+        )
+        question.save()
+
+        option1 = QuestionOption(question = question, option='op1')
+        option1.save()
+        option2 = QuestionOption(question = question, option='op2')
+        option2.save()
+        question.create_ordination = True
+        question.save()
+
+        test1 = Question.objects.get(desc='test question 1').options.all()
+        self.assertEqual(test1.count(), 2)
+        self.assertEqual(test1[0].option, 'op1, op2, ')
+        self.assertEqual(test1[1].option, 'op2, op1, ')
+
+
+    # Test de votación por preferencia con 3 opciones
+    def test_create_ranked_question_with_three_options(self):
+        question = Question(
+            desc='test question 2', 
+            type='R',
+        )
+        question.save()
+
+        option1 = QuestionOption(question = question, option='op1')
+        option1.save()
+        option2 = QuestionOption(question = question, option='op2')
+        option2.save()
+        option3 = QuestionOption(question = question, option='op3')
+        option3.save()
+        question.create_ordination = True
+        question.save()
+
+        test2 = Question.objects.get(desc='test question 2').options.all()
+        possible_ordenations = ['op1, op2, op3, ', 'op1, op3, op2, ', 'op2, op1, op3, ',
+             'op2, op3, op1, ', 'op3, op1, op2, ', 'op3, op2, op1, ']
+
+        self.assertEqual(test2.count(), 6)
+        for opcion in test2:
+            possible_ordenations.remove(opcion.option)
+            
+        self.assertEqual(len(possible_ordenations), 0)
 
     def test_complete_voting(self):
         v = self.create_voting()
@@ -210,3 +261,102 @@ class VotingTestCase(BaseTestCase):
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting already tallied')
+    
+    # Testing yes/no question feature
+    def test_create_yes_no_question(self):
+        q = Question(desc='Yes/No question test', type='B')
+        q.save()
+
+        self.assertEquals(len(q.options.all()), 2)
+        self.assertEquals(q.type, 'B')
+        self.assertEquals(q.options.all()[0].option, 'Sí')
+        self.assertEquals(q.options.all()[1].option, 'No')
+        self.assertEquals(q.options.all()[0].number, 1)
+        self.assertEquals(q.options.all()[1].number, 2)
+
+    # Adding options other than yes and no manually
+    def test_create_yes_no_question_with_other_options(self):
+        q = Question(desc='Yes/No question test', type='B')
+        q.save()
+        qo1 = QuestionOption(question = q, option = 'First option')
+        qo1.save()
+        qo2 = QuestionOption(question = q, option = 'Second option')
+        qo2.save()
+        qo3 = QuestionOption(question = q, option = 'Third option')
+        qo3.save()
+
+        self.assertEquals(len(q.options.all()), 2)
+        self.assertEquals(q.type, 'B')
+        self.assertEquals(q.options.all()[0].option, 'Sí')
+        self.assertEquals(q.options.all()[1].option, 'No')
+        self.assertEquals(q.options.all()[0].number, 1)
+        self.assertEquals(q.options.all()[1].number, 2)
+
+    # Testing score question feature
+    def test_create_score_question(self):
+        q = Question(desc='Score question test', type='S')
+        q.save()
+        self.assertEquals(len(q.options.all()), 11)
+        self.assertEquals(q.type, 'S')
+        for i in range(0, 11):
+                self.assertEquals(q.options.all()[i].option, str(i))
+                self.assertEquals(q.options.all()[i].number, i+2)
+    
+    # Testing save voting file
+    def test_save_voting_file_200(self):
+        self.login()
+        voting = self.create_voting()
+        
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')       
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+
+        data = {'action': 'save'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Saved voting file')
+
+    def test_save_voting_file_not_started_400(self):
+        self.login()
+        voting = self.create_voting()
+
+        data = {'action': 'save'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting is not started')
+
+    def test_save_voting_file_not_stopped_400(self):
+        self.login()
+        voting = self.create_voting()
+
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')       
+
+        data = {'action': 'save'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting is not stopped')
+
+    def test_save_voting_file_not_tallied_400(self):
+        self.login()
+        voting = self.create_voting()
+
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')       
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+
+        data = {'action': 'save'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting has not being tallied')

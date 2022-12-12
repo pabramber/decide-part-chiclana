@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+    <link type="text/css" rel="stylesheet" href='{% static "booth/style.css" %}' />
+{% endblock %}
+
+{% block content %}
+<div class="row h-100 justify-content-center align-items-center">
+
+  {% if authenticated == False %}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Decide!</h1>
+      <p class="lead">Decide is a web app where you can find your voitings and you can vote.</p>
+      <p class="lead">Please register or login to access to your votings</p>
+      <p class="lead">
+        <a href="/authentication/register" class="btn btn-lg btn-secondary">Register</a>
+      </p>
+      <p class="lead">
+        <a href="/authentication/login-view" class="btn btn-lg btn-secondary">Login</a>
+      </p>
+    </main>
+    {% endif %}
+
+    {% if authenticated == True %}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Decide!</h1>
+      <p class="lead">Decide is a web app where you can find your voitings and you can vote.</p>
+      <p class="lead">You are loggued as {{ username }}</p>
+      <p class="lead">
+        <a href="/authentication/logout-view" class="btn btn-lg btn-secondary">Logout</a>
+      </p>
+      
+      {% if votings|length == 0 %}
+        <p class="lead">You don't have any votings to vote</p>      
+      {% endif %}
+      {% if votings|length > 0 %}
+        <table class="table table-dark">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Link</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for voting in votings %}
+              <tr>
+                <td>{{ voting.name }}</td>
+                <td><a class="nav-link" href="/booth/{{ voting.id }}">Go!</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        {% endif %}
+    </main>
+    {% endif %}
+</div> 
+
+{% endblock %}
