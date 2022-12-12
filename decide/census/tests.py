@@ -80,14 +80,14 @@ class CensusTestCase(BaseTestCase):
         censo = Census.objects.get(voting_id=int(id))
         self.assertEqual(censo.voting_id, 1)
         self.assertEqual(censo.voter_id, 1)
-        self.assertEqual(censo.name, "Roger")
         fin = default_timer()
         print("test_filter_nameOK: " + str(fin-inicio) + "s")
 
-    def test_filter_censusName(self):
-        inicio = default_timer()
-        id=1
-        censo = Census.objects.get(voting_id=int(id))
-        self.assertEqual(censo.surname, "Marin")
-        fin = default_timer()
-        print("test_filter_nameOK: " + str(fin-inicio) + "s")
+    # def test_filter_censusName(self):
+    #     inicio = default_timer()
+    #     id=1
+    #     censo = Census.objects.get(voting_id=int(id))
+    #     self.assertEqual(censo.name, "Roger")
+    #     self.assertEqual(censo.surname, "Marin")
+    #     fin = default_timer()
+    #     print("test_filter_nameOK: " + str(fin-inicio) + "s")
