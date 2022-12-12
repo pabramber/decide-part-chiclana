@@ -12,7 +12,8 @@ jsonnet==0.12.1
 selenium
 social-auth-app-django
 django-import-export==2.0
-tablib==3.2
+
+tablib==3.1
 django-allauth
 django-crontab
 

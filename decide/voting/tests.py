@@ -85,12 +85,12 @@ class VotingTestCase(BaseTestCase):
                 voter = voters.pop()
                 mods.post('store', json=data)
         return clear
-
+    
     # Test de votación por preferencia con 2 opciones
-    def test_create_question_by_preference_two_options(self):
+    def test_create_ranked_question_with_two_options(self):
         question = Question(
             desc='test question 1', 
-            tipo='P',
+            type='R',
         )
         question.save()
 
@@ -108,10 +108,10 @@ class VotingTestCase(BaseTestCase):
 
 
     # Test de votación por preferencia con 3 opciones
-    def test_create_question_by_preference_three_options(self):
+    def test_create_ranked_question_with_three_options(self):
         question = Question(
             desc='test question 2', 
-            tipo='P',
+            type='R',
         )
         question.save()
 
@@ -264,11 +264,11 @@ class VotingTestCase(BaseTestCase):
     
     # Testing yes/no question feature
     def test_create_yes_no_question(self):
-        q = Question(desc='Yes/No question test', tipo='B')
+        q = Question(desc='Yes/No question test', type='B')
         q.save()
 
         self.assertEquals(len(q.options.all()), 2)
-        self.assertEquals(q.tipo, 'B')
+        self.assertEquals(q.type, 'B')
         self.assertEquals(q.options.all()[0].option, 'Sí')
         self.assertEquals(q.options.all()[1].option, 'No')
         self.assertEquals(q.options.all()[0].number, 1)
@@ -276,7 +276,7 @@ class VotingTestCase(BaseTestCase):
 
     # Adding options other than yes and no manually
     def test_create_yes_no_question_with_other_options(self):
-        q = Question(desc='Yes/No question test', tipo='B')
+        q = Question(desc='Yes/No question test', type='B')
         q.save()
         qo1 = QuestionOption(question = q, option = 'First option')
         qo1.save()
@@ -286,14 +286,24 @@ class VotingTestCase(BaseTestCase):
         qo3.save()
 
         self.assertEquals(len(q.options.all()), 2)
-        self.assertEquals(q.tipo, 'B')
+        self.assertEquals(q.type, 'B')
         self.assertEquals(q.options.all()[0].option, 'Sí')
         self.assertEquals(q.options.all()[1].option, 'No')
         self.assertEquals(q.options.all()[0].number, 1)
         self.assertEquals(q.options.all()[1].number, 2)
+
+    # Testing score question feature
+    def test_create_score_question(self):
+        q = Question(desc='Score question test', type='S')
+        q.save()
+        self.assertEquals(len(q.options.all()), 11)
+        self.assertEquals(q.type, 'S')
+        for i in range(0, 11):
+                self.assertEquals(q.options.all()[i].option, str(i))
+                self.assertEquals(q.options.all()[i].number, i+2)
     
     # Testing save voting file
-    def test_save_voting_file(self):
+    def test_save_voting_file_200(self):
         self.login()
         voting = self.create_voting()
         
@@ -312,7 +322,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Saved voting file')
 
-    def test_save_voting_file_not_started(self):
+    def test_save_voting_file_not_started_400(self):
         self.login()
         voting = self.create_voting()
 
@@ -322,7 +332,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting is not started')
 
-    def test_save_voting_file_not_stopped(self):
+    def test_save_voting_file_not_stopped_400(self):
         self.login()
         voting = self.create_voting()
 
@@ -335,7 +345,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting is not stopped')
 
-    def test_save_voting_file_not_tallied(self):
+    def test_save_voting_file_not_tallied_400(self):
         self.login()
         voting = self.create_voting()
 

@@ -21,8 +21,8 @@ from .resources import CensusResource
 from tablib import Dataset
 from .models import Census
 from django.http import HttpResponse
-from django.http.response import HttpResponse
 from django.shortcuts import render
+
 from .forms import CreationCensusForm
 from django.views.generic.base import TemplateView
 from openpyxl import Workbook
@@ -31,11 +31,10 @@ from django.views.generic import ListView
 
 
 
+
 def filter(request):
     censo = Census.objects.all()
-    votingsIds = votingIdSet()
-    return render(request, 'filterCensus.html', 
-        {'census' : censo, 'votingsIds': votingsIds})
+    return render(request, 'filterCensus.html', {'census' : censo})
 
 class FilterVotingID(ListView):
     model = Census
