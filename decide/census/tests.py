@@ -83,6 +83,7 @@ class CensusTestCase(BaseTestCase):
         fin = default_timer()
         print("test_filter_nameOK: " + str(fin-inicio) + "s")
 
+###
     # def test_filter_censusName(self):
     #     inicio = default_timer()
     #     id=1
