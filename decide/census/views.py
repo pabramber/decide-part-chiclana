@@ -1,6 +1,8 @@
 from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
+
 from django.shortcuts import render,redirect
+
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -18,7 +20,6 @@ from django.contrib import messages
 from .resources import CensusResource
 from tablib import Dataset
 from .models import Census
-from django.views.generic import ListView
 from django.http import HttpResponse
 from django.http.response import HttpResponse
 from django.shortcuts import render
@@ -26,6 +27,7 @@ from .forms import CreationCensusForm
 from django.views.generic.base import TemplateView
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+
 
 
 def filter(request):
@@ -134,6 +136,7 @@ class FilterWorks(ListView):
         return Census.objects.filter(works__icontains=query).order_by('-works')
     
 
+
 def importer(request):
     if request.method == 'POST':
         census_resource = CensusResource()
@@ -203,7 +206,7 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
     def retrieve(self, request, voting_id, *args, **kwargs):
         voter = request.GET.get('voter_id')
         try:
-            Census.objects.get(voting_id=voting_id)
+            Census.objects.get(voting_id=voting_id, voter_id=voter)
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
