@@ -1,0 +1,13 @@
+Id: 3
+Nombre: test voting
+Tipo de votación: CLASSIC VOTING
+Fecha de inicio: 11/12/22 10:13:41
+Fecha de fin: 11/12/22 10:13:41
+
+Pregunta: test question
+Resultado: 
+    - Opción: option 1    Puntuación: 0    Votos: 0
+    - Opción: option 2    Puntuación: 0    Votos: 0
+    - Opción: option 3    Puntuación: 0    Votos: 0
+    - Opción: option 4    Puntuación: 0    Votos: 0
+    - Opción: option 5    Puntuación: 0    Votos: 0
