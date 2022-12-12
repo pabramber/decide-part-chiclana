@@ -2,14 +2,13 @@ import random
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
-from tablib import Dataset
 
 from .models import Census
 from base import mods
 from base.tests import BaseTestCase
 
 
-class CensusTestCase(BaseTestCase):
+#class CensusTestCase(BaseTestCase):
 
     # def setUp(self):
     #     super().setUp()
@@ -75,6 +74,7 @@ class CensusTestCase(BaseTestCase):
     #     self.assertEqual(response.status_code, 204)
     #     self.assertEqual(0, Census.objects.count())
 
+
     # def test_importer_census(self):
     #     rows = [
     #         ['14', '1', '11', 'PABLO', 'PÉREZ GARCÍA', 'BILBAO', 'PAÍS VASCO', 'HOMBRE', '1992', 'SOLTERO', 'HETEROSEXUAL', '1'],
@@ -92,3 +92,4 @@ class CensusTestCase(BaseTestCase):
     #     # Deberíamos obtener 1 línea bien y 1 línea fallada
     #     self.assertEqual(len(result.failed_dataset), 1)
     #     self.assertEqual(len(result.valid_rows()), 3)
+
