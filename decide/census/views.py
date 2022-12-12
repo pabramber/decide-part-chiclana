@@ -1,5 +1,8 @@
 from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
+
+from django.shortcuts import render,redirect
+
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -20,9 +23,118 @@ from .models import Census
 from django.http import HttpResponse
 from django.http.response import HttpResponse
 from django.shortcuts import render
+from .forms import CreationCensusForm
 from django.views.generic.base import TemplateView
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+
+
+
+def filter(request):
+    censo = Census.objects.all()
+    votingsIds = votingIdSet()
+    return render(request, 'filterCensus.html', 
+        {'census' : censo, 'votingsIds': votingsIds})
+
+class FilterVotingID(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('i')
+        return Census.objects.filter(voting_id__icontains=query).order_by('-voting_id')
+
+class FilterVoterID(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('i')
+        return Census.objects.filter(voting_id__icontains=query).order_by('-voter_id')
+
+class FilterName(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        return Census.objects.filter(name__icontains=query).order_by('-name')
+
+class FilterSurname(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('i')
+        return Census.objects.filter(surname__icontains=query).order_by('-surname')
+
+class FilterCity(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(city__icontains=query).order_by('-city')
+
+class FilterCommunity(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(a_community__icontains=query).order_by('-a_community')
+
+class FilterGender(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(gender__icontains=query).order_by('-gender')
+
+class FilterBornYear(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(born_year__icontains=query).order_by('-born_year')
+
+class FilterCivilState(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(civil_state__icontains=query).order_by('-civil_state')
+
+class FilterSexuality(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(sexuality__icontains=query).order_by('-sexuality')
+
+class FilterWorks(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_queryset(self):
+        query = self.request.GET.get('j')
+        return Census.objects.filter(works__icontains=query).order_by('-works')
+    
 
 
 def importer(request):
@@ -104,11 +216,53 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
 
 def GetId(request):
     id = request.GET['id']
+    
     census = Census.objects.filter(voting_id=int(id))
-    return render(request,"census_details.html",{'census':census})
+    if len(census) == 0:
+        return render(request,'census.html',{'error_id':'There is not a census with that voting_id'})
+    else:
+        return render(request,"census_details.html",{'census':census})
 
 def hello(request):
     return render(request,'census.html')
+
+
+def createCensus(request): 
+    if request.method == 'GET':
+        return render(request, 'census_create.html',{'form': CreationCensusForm})
+    else: 
+        if request.method == 'POST':
+            try: 
+                census = Census.objects.create(voting_id = request.POST['voting_id'],voter_id = request.POST['voter_id'],
+                name = request.POST['name'],surname= request.POST['surname'],city = request.POST['city'],a_community = request.POST['a_community'],
+                gender = request.POST['gender'],born_year = request.POST['born_year'],civil_state = request.POST['civil_state'],
+                sexuality = request.POST['sexuality'],works = request.POST['works'])
+                census.save()
+                return render(request,'census_succeed.html',{'census':census})
+                
+            except: 
+                return render(request,'census_create.html',{'form': CreationCensusForm, "error": 'Census already exist'})
+        return  render(request,'census_create.html',{'form': CreationCensusForm})
+
+
+
+def deleteCensus(request):
+    Voterid = request.GET['Voterid']
+    Votingid = request.GET['Votingid']
+    census = Census.objects.filter(voting_id=int(Votingid),voter_id = int(Voterid))
+    if len(census) == 0: 
+        return render(request,'census.html',{'error':'Census does not exist.Try other census'})
+    if len(census)==1:
+        census.delete()
+        return render(request,'census_deleted.html')
+    
+
+def censusCreatedSucced(request):
+    return render(request,'census_succeed.html')
+
+
+def censusDeletedSucced(request):
+    return render(request,'census_deleted.html')
 
 
 def home(request):
@@ -184,4 +338,31 @@ class ReporteAutorExcel(TemplateView):
         wb.save(response)
         return response
 
-       
+
+# -------------------- REUTILIZAR CENSO ------------------------
+
+def votingIdSet():
+    lista=[]
+    for census in Census.objects.all():
+        lista.append(census.voting_id)
+    conjunto=set(lista)
+    return conjunto
+    
+def reuseCensus(request):
+    query = request.GET['q']
+    c = request.GET['census']
+    print(c)
+    query = int(query)
+
+    Census.objects.update(voting_id=query)
+    census = Census.objects.filter(voting_id__icontains=query).order_by('-voter_id')
+    return render(request, "census-reused.html", {'census':census, 'page_name':'Reuse Results'})
+
+"""
+class reuseContext(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)"""

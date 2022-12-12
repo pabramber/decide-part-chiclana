@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -5,11 +7,12 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Filter Census</title>
+        <link rel="stylesheet" href="{% static '/style/main.css' %}">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
     
     </head>
-    <body>
+    <body class="body3" style="margin-top: 50px;">
         <main role="main" class="container">
             <h1 style="text-align:center">FILTER CENSUS</h1>
 
@@ -145,6 +148,30 @@
                         <hr />
                     {% endfor %}
                 </ul>
+            </div>
+            <div>
+                <h2>Reuse Census for other Voting:</h2>
+                <br>
+                <form action="{% url 'reuse_census' %}" method="get">
+                    {% csrf_token %}
+                    <div class="form-group col-md-4">
+                        <label for="id">Voting ID: &nbsp;</label>
+                        <!-- Recorre los votings ids y los lista en un select -->
+                        <!--<select id="id" class="form-control" name="q">
+                            <option selected>Voting ID</option>
+                            {{ votingsIds }}
+                            {% for votingId in votingsIds %}
+                            <option value="{{ votingId }}">{{ votingId }}</option>
+                            {% endfor %}
+                        </select> -->
+                        <input type="hidden" name="census" value="{{ census }}">
+                        <input type="number" name="q" min="1" value="1">
+                        <br>
+                        <hr>
+                        <button class="input-group-text" type="submit">Change Voting ID</button>
+                    </div>
+                    <hr>
+                </form>
             </div>
         </main>
     </body>
