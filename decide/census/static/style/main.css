@@ -24,15 +24,10 @@
     
 }
 
+
+
 .body2 {
     background-image: url('/static/maxresdefault.jpg');
-    background-repeat: no-repeat;
-    background-size: cover;
-    
-}
-
-.body3 {
-    background-image: url('/static/filterCensusImage.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     
