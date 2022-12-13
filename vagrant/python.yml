@@ -3,7 +3,7 @@
   become: yes
   become_user: decide
   git:
-    repo: 'https://github.com/pabramber/decide-part-chiclana.git'
+    repo: 'https://github.com/wadobo/decide.git'
     dest: /home/decide/decide
     version: master
 
@@ -13,7 +13,7 @@
   pip:
     name: "gunicorn"
     virtualenv: /home/decide/venv
-    virtualenv_python: python3.7
+    virtualenv_python: python3
 
 - name: Requirements
   become: yes
@@ -21,4 +21,4 @@
   pip:
     requirements: /home/decide/decide/requirements.txt
     virtualenv: /home/decide/venv
-    virtualenv_python: python3.7
+    virtualenv_python: python3

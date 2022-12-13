@@ -1,14 +1,8 @@
 Id: 3
 Nombre: test voting
-<<<<<<< HEAD
-Tipo de votación: CLASSIC VOTING
-Fecha de inicio: 11/12/22 10:13:41
-Fecha de fin: 11/12/22 10:13:41
-=======
 Tipo de votación: C
 Fecha de inicio: 11/12/22 13:24:01
 Fecha de fin: 11/12/22 13:24:01
->>>>>>> decide-part-chiclana-3.0
 
 Pregunta: test question
 Resultado: 

@@ -7,6 +7,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 import os
 
+from timeit import default_timer
 from .models import Census
 from base import mods
 from base.tests import BaseTestCase
