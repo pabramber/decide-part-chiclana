@@ -1,4 +1,4 @@
-from python:3.7-alpine
+from python:alpine
 
 RUN apk add --no-cache git postgresql-dev gcc libc-dev
 RUN apk add --no-cache gcc g++ make libffi-dev python3-dev build-base
@@ -10,7 +10,7 @@ RUN pip install ipython
 
 WORKDIR /app
 
-RUN git clone https://github.com/pabramber/decide-part-chiclana.git .
+RUN git clone https://github.com/wadobo/decide.git .
 RUN pip install -r requirements.txt
 
 WORKDIR /app/decide

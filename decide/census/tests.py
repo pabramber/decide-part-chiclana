@@ -8,16 +8,16 @@ from base import mods
 from base.tests import BaseTestCase
 
 
-#class CensusTestCase(BaseTestCase):
+class CensusTestCase(BaseTestCase):
 
-    # def setUp(self):
-    #     super().setUp()
-    #     self.census = Census(voting_id=1, voter_id=1)
-    #     self.census.save()
+    def setUp(self):
+        super().setUp()
+        self.census = Census(voting_id=1, voter_id=1)
+        self.census.save()
 
-    # def tearDown(self):
-    #     super().tearDown()
-    #     self.census = None
+    def tearDown(self):
+        super().tearDown()
+        self.census = None
 
     # def test_check_vote_permissions(self):
     #     response = self.client.get('/census/{}/?voter_id={}'.format(1, 2), format='json')
@@ -83,6 +83,7 @@ from base.tests import BaseTestCase
         fin = default_timer()
         print("test_filter_nameOK: " + str(fin-inicio) + "s")
 
+###
     # def test_filter_censusName(self):
     #     inicio = default_timer()
     #     id=1
