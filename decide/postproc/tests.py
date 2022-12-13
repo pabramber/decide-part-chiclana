@@ -286,31 +286,6 @@ class PostProcTestCase(APITestCase):
         self.assertEqual(values, expected_result)
     
 
-    def test_borda(self):
-        
-        data = {
-            'type': 'BORDA',
-            'options': [
-                {'option': 'Popular','number':1, 'positions': [1,1,3,2],'votes': 0},
-                {'option': 'Psoe','number':2, 'positions': [2,3,4,3],'votes': 0},
-                {'option': 'Podemos','number':3, 'positions': [3,4,1,4],'votes': 0},
-                {'option': 'Ciudadanos','number':4, 'positions': [4,2,2,1],'votes': 0},
-            ]
-        }
-
-        expected_result = [
-            {'option': 'Popular','number':1,'positions': [1,1,3,2], 'votes': 13},
-            {'option': 'Psoe','number':2,'positions': [2,3,4,3], 'votes': 8},
-            {'option': 'Podemos','number':3,'positions': [3,4,1,4], 'votes': 8},
-            {'option': 'Ciudadanos','number':4,'positions': [4,2,2,1], 'votes': 11},
-        ]
-
-        response = self.client.post('/postproc/', data, format='json')
-        self.assertEqual(response.status_code, 200)
-
-        values = response.json()
-        self.assertEqual(values, expected_result)
-
     def test_imperiali_1(self):
         data = {
             'type': 'IMPERIALI',
