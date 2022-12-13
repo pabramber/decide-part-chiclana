@@ -49,42 +49,20 @@
                 <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
             </b-form>
 
-           <!-- Voting -->
-           <div v-if="!signup">
-
-                <!-- Classic Voting -->
-                <div v-if="voting.voting_type != 'PV'">
-                    <h2>[[ voting.question.desc ]]</h2>
-                    <b-form-group v-for="opt in voting.question.options" :key="opt.number">
-                        <b-form-radio v-model="selected"
-                                    :id="'q' + opt.number"
-                                    name="question"
-                                    :value="opt.number">
-                            [[ opt.option ]]
-                        </b-form-radio>
-                    </b-form-group>
-                    <b-button type="button" variant="primary" v-on:click="decideSend">
-                        {% trans "Vote" %}
-                    </b-button>
-                </div>
-
-                <!-- Preference Voting -->
-                <div v-if="voting.voting_type == 'PV'">
-                    <h2>[[ voting.question.desc ]]</h2>
-                    <h3> Seleccione la ordenación de opciones que más se ajusta a sus intereses</h3>
-                    <b-form-group v-for="opt in voting.question.options" :key="opt.number">
-                        <b-form-radio v-model="selected"
-                                    :id="'q' + opt.number"
-                                    name="question"
-                                    :value="opt.number">
-                            [[ opt.option ]]
-                        </b-form-radio>
-                    </b-form-group>
-                    <b-button type="button" variant="primary" v-on:click="decideSend">
-                        {% trans "Vote" %}
-                    </b-button>
-                </div>
-
+            <!-- Voting -->
+            <div v-if="!signup">
+                <h2>[[ voting.question.desc ]]</h2>
+                <b-form-group v-for="opt in voting.question.options" :key="opt.number">
+                    <b-form-radio v-model="selected"
+                                  :id="'q' + opt.number"
+                                  name="question"
+                                  :value="opt.number">
+                        [[ opt.option ]]
+                    </b-form-radio>
+                </b-form-group>
+                <b-button type="button" variant="primary" v-on:click="decideSend">
+                    {% trans "Vote" %}
+                </b-button>
             </div>
         </div>
     </div>
