@@ -41,15 +41,13 @@ class QuestionOptionInline(admin.TabularInline):
     readonly_fields = ('image_tag',)
 
 class QuestionAdmin(admin.ModelAdmin):
+    list_display = ('desc', 'type')
     inlines = [QuestionOptionInline]
     list_display = ('desc','tipo')
 
 
 class VotingAdmin(admin.ModelAdmin):
-    list_display = ('name', 'voting_type', 'start_date', 'end_date')
-    readonly_fields = ('start_date', 'end_date', 'pub_key',
-                       'tally', 'postproc', 'file')
-    list_display = ('name', 'voting_type', 'start_date', 'end_date','future_start', 'future_stop')
+    list_display = ('name', 'start_date', 'end_date','future_start', 'future_stop')
     readonly_fields = ('start_date','end_date','pub_key',
                        'tally', 'postproc', 'file')
     date_hierarchy = 'start_date'
