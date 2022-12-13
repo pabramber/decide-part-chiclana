@@ -1,6 +1,7 @@
 from pyexpat import model
 from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from .models import Census
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -36,8 +37,9 @@ class ImportTestCase(StaticLiveServerTestCase):
         self.driver.find_element(By.CSS_SELECTOR, ".col:nth-child(4) .card-title").click()
         self.driver.find_element(By.NAME, "myfile").click()
         self.driver.find_element(By.NAME, "myfile").send_keys("C:\\fakepath\\census_formato_incorrecto.ods")
-        #self.driver.find_element(By.CSS_SELECTOR, ".input-group-text:nth-child(4)").click()
+        self.driver.find_element(By.CSS_SELECTOR, ".input-group-text:nth-child(4)").click()
 
         #messages = list(get_messages(response.wsgi_request))
         #self.assertEqual(len(messages), 'incorrect format, must be .xlsx')
-        self.assertFalse(str(self.driver.find_elements(By.NAME,'myfile')), '')
+        c=Census.objects.all()
+        self.assertEqual(Census.objects.count(), 0)

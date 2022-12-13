@@ -107,7 +107,7 @@ class CensusTestCase(BaseTestCase):
     #     self.assertEqual(response.status_code, 204)
     #     self.assertEqual(0, Census.objects.count())
 
-    # def test_upload_video(self):
+    # def test_import_census(self):
     #     #data = SimpleUploadedFile("static/census_data.xlsx", "file_content", content_type="mimetype")
     #     data_file_path = os.path.join(os.path.dirname(__file__), "census_data.xlsx")
     #     myfile = open(data_file_path)
