@@ -31,8 +31,15 @@
     
 }
 
-.body3 {
+/* .body3 {
     background-image: url('/static/filterCensusImage.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    
+} */
+
+.bodyFilt {
+    background-image: url('/static/filterCensusImagen.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     
