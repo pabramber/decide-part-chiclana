@@ -53,6 +53,39 @@ class CensusTestCase(BaseTestCase):
         self.assertEqual(c[1].gender, "MUJER")
         self.assertEqual(c[2].works, 1)
 
+    def test_import_wrong_format(self):
+        myfile = open('census/static/census_formato_incorrecto.ods', 'rb')
+        data = {
+            'myfile': myfile
+        }
+        response = self.client.post(reverse('importer'), data)
+
+        # (3 son la cantidad de registros que había antes)
+        # Es decir, no se ha añadido ningún registro más, el import no se ha realizado
+        self.assertEqual(Census.objects.count(), 3)
+
+    def test_import_success(self):
+        myfile = open('census/static/census_data.xlsx', 'rb')
+        data = {
+            'myfile': myfile
+        }
+        response = self.client.post(reverse('importer'), data)
+
+        c=Census.objects.all()
+        # El Excel contiene 10 registros, más los 3 anteriores = 13
+        self.assertEqual(Census.objects.count(), 13)
+        self.assertEqual(c[3].name, "SERGIO")
+        self.assertEqual(c[9].a_community, "EXTREMADURA")
+
+    # def test_import_census(self):
+    #     #data = SimpleUploadedFile("static/census_data.xlsx", "file_content", content_type="mimetype")
+    #     data_file_path = os.path.join(os.path.dirname(__file__), "census_data.xlsx")
+    #     myfile = open(data_file_path)
+    #     self.client.post(reverse('importer/'), {'myfile': myfile})
+    #     # some important assertions ...
+
+    #     self.assertEqual(Census.objects.count(), 10)
+
     # def test_check_vote_permissions(self):
     #     response = self.client.get('/census/{}/?voter_id={}'.format(1, 2), format='json')
     #     self.assertEqual(response.status_code, 401)
@@ -107,12 +140,3 @@ class CensusTestCase(BaseTestCase):
     #     response = self.client.delete('/census/{}/'.format(1), data, format='json')
     #     self.assertEqual(response.status_code, 204)
     #     self.assertEqual(0, Census.objects.count())
-
-    # def test_import_census(self):
-    #     #data = SimpleUploadedFile("static/census_data.xlsx", "file_content", content_type="mimetype")
-    #     data_file_path = os.path.join(os.path.dirname(__file__), "census_data.xlsx")
-    #     myfile = open(data_file_path)
-    #     self.client.post(reverse('importer/'), {'myfile': myfile})
-    #     # some important assertions ...
-
-    #     self.assertEqual(Census.objects.count(), 10)
