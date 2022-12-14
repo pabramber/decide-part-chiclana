@@ -28,7 +28,9 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
 def filter(request):
     censo = Census.objects.all()
-    return render(request, 'filterCensus.html', {'census' : censo})
+    votingsIds = votingIdSet()
+    return render(request, 'filterCensus.html', 
+        {'census' : censo, 'votingsIds': votingsIds})
 
 class FilterVotingID(ListView):
     model = Census
@@ -131,39 +133,48 @@ class FilterWorks(ListView):
     
 
 def importer(request):
-    if request.method == 'POST':
-        census_resource = CensusResource()
-        dataset = Dataset()
-        new_census = request.FILES['myfile']
+    try:
+        if request.method == 'POST':
+            census_resource = CensusResource()
+            # obtendremos datos en census_resource
+            dataset = Dataset()
+            new_census = request.FILES['myfile']
 
-        if not new_census.name.endswith('xlsx'):
-            messages.info(request, 'formato incorrecto, debe ser .xslx')
-            return render(request, 'importer.html')
+            if not new_census.name.endswith('xlsx'):
+                messages.error(request, 'incorrect format, must be .xlsx')
+                return render(request, 'importer.html')
+            messages.info(request, 'Uploading Data Line by Line...')
 
-        imported_data = dataset.load(new_census.read(),format='xlsx')
-        #print(imported_data)
-        for data in imported_data:
-            value = Census(
-                    data[0],
-                    data[1],
-                    data[2],
-                    data[3],
-                    data[4],
-                    data[5],
-                    data[6],
-                    data[7],
-                    data[8],
-                    data[9],
-                    data[10],
-                    data[11]
-                    ) 
-            value.save()
-        
-        #result = person_resource.import_data(dataset, dry_run=True)  # Test the data import
+            imported_data = dataset.load(new_census.read(),format='xlsx')
+            #print(imported_data)
+            count = 1
+            for data in imported_data:
+                value = Census(
+                        data[0],
+                        data[1],
+                        data[2],
+                        data[3],
+                        data[4],
+                        data[5],
+                        data[6],
+                        data[7],
+                        data[8],
+                        data[9],
+                        data[10],
+                        data[11]
+                        )
+                value.save()
+            # time.sleep(1)
+            messages.info(request, 'File Uploaded Successfully...')
+            
+            #result = census_resource.import_data(dataset, dry_run=True)  # Test the data import
 
-        #if not result.has_errors():
-        #    person_resource.import_data(dataset, dry_run=False)  # Actually import now
-
+            #if not result.has_errors():
+            #    census_resource.import_data(dataset, dry_run=False)  # Actually import now
+     
+    except:
+        messages.error(request,'Same voter_id has been observed more than once. Import has been canceled../nPlease Make sure voter_id field should be unique.')
+    
     return render(request, 'importer.html')
 
 
@@ -330,3 +341,31 @@ class ReporteAutorExcel(TemplateView):
         response["Content-Disposition"] = contenido
         wb.save(response)
         return response
+
+
+# -------------------- REUTILIZAR CENSO ------------------------
+
+def votingIdSet():
+    lista=[]
+    for census in Census.objects.all():
+        lista.append(census.voting_id)
+    conjunto=set(lista)
+    return conjunto
+
+def reuseCensus(request):
+    query = request.GET['q']
+    c = request.GET['census']
+    print(c)
+    query = int(query)
+
+    Census.objects.update(voting_id=query)
+    census = Census.objects.filter(voting_id__icontains=query).order_by('-voter_id')
+    return render(request, "census_reused.html", {'census':census, 'page_name':'Reuse Results'})
+
+"""
+class reuseContext(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)"""
