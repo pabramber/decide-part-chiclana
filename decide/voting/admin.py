@@ -43,7 +43,7 @@ class QuestionOptionInline(admin.TabularInline):
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ('desc', 'type')
     inlines = [QuestionOptionInline]
-    list_display = ('desc','tipo')
+    list_display = ('desc','type')
 
 
 class VotingAdmin(admin.ModelAdmin):

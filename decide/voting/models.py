@@ -47,7 +47,7 @@ class QuestionOption(models.Model):
     option = models.TextField()
 
     def clean(self):
-        if self.question.tipo == 'I':
+        if self.question.type == 'I':
             validator = URLValidator()
             validator(self.option)
             image_formats = ("image/png", "image/jpeg", "image/jpg")
@@ -66,7 +66,7 @@ class QuestionOption(models.Model):
 
     def image_tag(self):
         from django.utils.html import escape
-        if self.question.tipo == 'I':
+        if self.question.type == 'I':
             return mark_safe(u'<img src="%s" width="150" height="150" />' % escape(self.option))
         else:
             return ""
@@ -156,20 +156,23 @@ class Voting(models.Model):
 
     def do_postproc(self):
         tally = self.tally
-        options = self.question.options.all()
-
+        questions = list(self.question.all())
+        options = []
         opts = []
-        for opt in options:
-            if isinstance(tally, list):
-                votes = tally.count(opt.number)
-            else:
-                votes = 0
-            opts.append({
-                'option': opt.option,
-                'number': opt.number,
-                'votes': votes,
-                'borda': '',
-            })
+        for question in questions:
+            for opt in QuestionOption.objects.filter(question=question):
+                if isinstance(tally, list):
+                    votes = tally.count(opt.number)
+                else:
+                    votes = 0
+                opts.append({
+                    'question': question.desc,
+                    'question_type': question.type,
+                    'option': opt.option,
+                    'number': opt.number,
+                    'votes': votes,
+                    'borda': '',
+                })
         
         data = { 'type': self.postproc_type, 'seats': self.number_seats, 'options': opts }
         postp = mods.post('postproc', json=data)
@@ -184,7 +187,6 @@ class Voting(models.Model):
             file = open(path, "w")
             file.write("Id: " + str(self.id) + "\n")
             file.write("Nombre: " + self.name + "\n")
-            file.write("Tipo de votación: " + self.question.type+ "\n")
             if self.desc:
                 file.write("Descripción: " + self.desc + "\n")
             file.write("Fecha de inicio: " + self.start_date.strftime('%d/%m/%y %H:%M:%S') + "\n")
@@ -192,6 +194,8 @@ class Voting(models.Model):
             file.write("Pregunta: " + str(self.question) + "\n")
             file.write("Resultado: \n")
             for opt in self.postproc:
+                file.write("    Pregunta: " + str(opt.get('question')))
+                file.write("    Tipo: " + str(opt.get('question_type')))
                 file.write("    - Opción: " + str(opt.get('option')))
                 file.write("    Puntuación: " + str(opt.get('postproc')))
                 file.write("    Votos: " + str(opt.get('votes')) + "\n")
