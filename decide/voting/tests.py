@@ -430,4 +430,15 @@ class VotingTestCase(BaseTestCase):
         except ValidationError as e:
             self.assertEquals(e.message, 'Enter a valid URL.')
         self.assertEquals(len(question.options.all()), 0)
+    def test_create_image_question_failure_destination_unreachable(self):
+        not_url = "http://www.google.com"
+        question = Question(desc='Image question test', type='I')
+        question.save()
+        qo_one = QuestionOption(question=question, option=not_url)
+        try:
+            qo_one.clean()
+            qo_one.save()
+        except ValidationError as e:
+            self.assertEquals(e.message, 'Url does not contain a compatible image')
+        self.assertEquals(len(question.options.all()), 0)
 
