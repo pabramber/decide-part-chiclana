@@ -29,5 +29,4 @@ urlpatterns = [
     url(r'^reporte/', login_required(ReporteAutorExcel.as_view()), name = "reporte"),
     path('lista_censo/', views.home, name = 'lista_censo'),
 
-
 ]

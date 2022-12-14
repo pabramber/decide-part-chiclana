@@ -26,7 +26,6 @@ from django.views.generic.base import TemplateView
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
-
 def filter(request):
     censo = Census.objects.all()
     return render(request, 'filterCensus.html', {'census' : censo})
