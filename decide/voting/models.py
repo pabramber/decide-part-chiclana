@@ -7,11 +7,7 @@ from base import mods
 from base.models import Auth, Key
 from django.utils import timezone
 from postproc.models import PostprocTypeEnum
-from django.utils.safestring import mark_safe
-from django.core.validators import URLValidator
-import requests
-from io import StringIO
-from django.core.exceptions import ValidationError
+
 
 class Question(models.Model):
     desc = models.TextField()
@@ -20,7 +16,6 @@ class Question(models.Model):
             ('S', 'Score question'),
             ('R', 'Ranked question'),
             ('B', 'Yes/No question'),
-            ('I', 'Image'),
             ]
     type = models.CharField(max_length=1, choices=TYPES, default='C')  
     create_ordination = models.BooleanField(verbose_name='Create ordination', default=False)
@@ -46,15 +41,6 @@ class QuestionOption(models.Model):
     number = models.PositiveIntegerField(blank=True, null=True)
     option = models.TextField()
 
-    def clean(self):
-        if self.question.type == 'I':
-            validator = URLValidator()
-            validator(self.option)
-            image_formats = ("image/png", "image/jpeg", "image/jpg")
-            r = requests.get(self.option)
-            if r.headers["content-type"] not in image_formats:
-                raise ValidationError("Url does not contain a compatible image")
-
     def save(self, *args, **kwargs):
         if self.question.type == 'B':
             if not self.option == 'Sí' and not self.option == 'No':
@@ -64,15 +50,6 @@ class QuestionOption(models.Model):
                 self.number = self.question.options.count() + 2
         return super().save()
 
-    def image_tag(self):
-        from django.utils.html import escape
-        if self.question.type == 'I':
-            return mark_safe(u'<img src="%s" width="150" height="150" />' % escape(self.option))
-        else:
-            return ""
-    image_tag.short_description = 'Image'
-    image_tag.allow_tags = True
-
     def __str__(self):
         return '{} ({})'.format(self.option, self.number)
 
@@ -80,7 +57,7 @@ class QuestionOption(models.Model):
 class Voting(models.Model):
     name = models.CharField(max_length=200)
     desc = models.TextField(blank=True, null=True)
-    question = models.ManyToManyField(Question, related_name='voting')
+    question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE)
 
     postproc_type = models.CharField(max_length=255, choices=PostprocTypeEnum.choices(), default='IDENTITY')
     number_seats = models.PositiveIntegerField(default=1)
@@ -156,23 +133,20 @@ class Voting(models.Model):
 
     def do_postproc(self):
         tally = self.tally
-        questions = list(self.question.all())
-        options = []
+        options = self.question.options.all()
+
         opts = []
-        for question in questions:
-            for opt in QuestionOption.objects.filter(question=question):
-                if isinstance(tally, list):
-                    votes = tally.count(opt.number)
-                else:
-                    votes = 0
-                opts.append({
-                    'question': question.desc,
-                    'question_type': question.type,
-                    'option': opt.option,
-                    'number': opt.number,
-                    'votes': votes,
-                    'borda': '',
-                })
+        for opt in options:
+            if isinstance(tally, list):
+                votes = tally.count(opt.number)
+            else:
+                votes = 0
+            opts.append({
+                'option': opt.option,
+                'number': opt.number,
+                'votes': votes,
+                'borda': '',
+            })
         
         data = { 'type': self.postproc_type, 'seats': self.number_seats, 'options': opts }
         postp = mods.post('postproc', json=data)
@@ -187,6 +161,7 @@ class Voting(models.Model):
             file = open(path, "w")
             file.write("Id: " + str(self.id) + "\n")
             file.write("Nombre: " + self.name + "\n")
+            file.write("Tipo de votación: " + self.question.type+ "\n")
             if self.desc:
                 file.write("Descripción: " + self.desc + "\n")
             file.write("Fecha de inicio: " + self.start_date.strftime('%d/%m/%y %H:%M:%S') + "\n")
@@ -194,8 +169,6 @@ class Voting(models.Model):
             file.write("Pregunta: " + str(self.question) + "\n")
             file.write("Resultado: \n")
             for opt in self.postproc:
-                file.write("    Pregunta: " + str(opt.get('question')))
-                file.write("    Tipo: " + str(opt.get('question_type')))
                 file.write("    - Opción: " + str(opt.get('option')))
                 file.write("    Puntuación: " + str(opt.get('postproc')))
                 file.write("    Votos: " + str(opt.get('votes')) + "\n")
