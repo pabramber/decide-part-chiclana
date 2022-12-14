@@ -81,7 +81,7 @@ class VotingSeleniumTestCase(StaticLiveServerTestCase):
         self.assertIn('Option 3, Option 1, Option 2', self.browser.find_element_by_name("options-4-option").get_attribute('value'))
         self.assertIn('Option 3, Option 2, Option 1', self.browser.find_element_by_name("options-5-option").get_attribute('value'))
 
-    def test_create_multi_and_images_voting_selenium(self):
+    def test_create_multi_voting_selenium(self):
         #Login
         self.browser.get(self.live_server_url + '/admin/')
         username_input = self.browser.find_element_by_name("username")
