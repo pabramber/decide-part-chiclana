@@ -1,7 +1,7 @@
 Id: 5
 Nombre: test voting
-Fecha de inicio: 14/12/22 12:28:30
-Fecha de fin: 14/12/22 12:28:30
+Fecha de inicio: 14/12/22 16:52:33
+Fecha de fin: 14/12/22 16:52:33
 
 Pregunta: voting.Question.None
 Resultado: 

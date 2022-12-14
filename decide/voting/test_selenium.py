@@ -6,7 +6,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
-
+from selenium.webdriver.support.ui import Select
+import time
 from base.tests import BaseTestCase
 
 from django.contrib.auth.models import User
@@ -80,6 +81,66 @@ class VotingSeleniumTestCase(StaticLiveServerTestCase):
         self.assertIn('Option 3, Option 1, Option 2', self.browser.find_element_by_name("options-4-option").get_attribute('value'))
         self.assertIn('Option 3, Option 2, Option 1', self.browser.find_element_by_name("options-5-option").get_attribute('value'))
 
+    def test_create_multi_and_images_voting_selenium(self):
+        #Login
+        self.browser.get(self.live_server_url + '/admin/')
+        username_input = self.browser.find_element_by_name("username")
+        username_input.send_keys('admin')
+        password_input = self.browser.find_element_by_name("password")
+        password_input.send_keys('qwerty')
+        password_input.send_keys(Keys.ENTER)
+        #Add questions
+        q_types = ['I','C','B','S']
+        q_descs = []
+        for i in range(4):
+            self.browser.get(self.live_server_url + '/admin/voting/question/add/')
+            desc_input = self.browser.find_element_by_name("desc")
+            desc = 'Test question {i}'.format(i=i)
+            q_descs.append(desc)
+            desc_input.send_keys(desc)
+            desc_input.send_keys(Keys.ENTER)
+
+            tipo_input = self.browser.find_element_by_name("type")
+            tipo_input.send_keys(q_types[i])
+            tipo_input.send_keys(Keys.ENTER)
+            save = self.browser.find_element_by_name("_continue")
+            save.click()
+
+
+        save2 = self.browser.find_element_by_name("_continue")
+        save2.click()
+        #Auth
+        self.browser.find_element(By.LINK_TEXT, 'Home').click()
+        self.browser.find_element(By.LINK_TEXT, 'Auths').click()
+        self.browser.find_element(By.LINK_TEXT, 'ADD AUTH').click()
+        self.browser.find_element(By.ID, 'id_name').click()
+        self.browser.find_element(By.ID, 'id_name').send_keys('auth_name')
+        self.browser.find_element(By.ID, 'id_url').click()
+        self.browser.find_element(By.ID, 'id_url').send_keys(f'{self.live_server_url}')
+        self.browser.find_element(By.ID, 'id_me').click()
+        self.browser.find_element(By.XPATH, "//input[@value='Save']").click()
+
+        #Select multiple questions
+        name = "Test multiple questions voting"
+        self.browser.get(self.live_server_url + '/admin/voting/voting/add/')
+        voting_name_input = self.browser.find_element_by_name("name")
+        voting_name_input.send_keys(name)
+        voting_desc_input = self.browser.find_element_by_name("desc")
+        voting_desc_input.send_keys("Test voting")
+        select = Select(self.browser.find_element_by_name("question"))
+        for q_desc in q_descs:
+            select.select_by_visible_text(q_desc)
+        self.browser.find_element(By.XPATH, "//select[@id='id_auths']//child::option[last()]").click()
+        self.browser.find_element(By.XPATH, "//input[@value='Save']").click()
+        #Go to check on voting
+        
+        self.browser.get(self.live_server_url + '/admin/voting/voting/')
+        self.browser.find_element_by_link_text(name).click()
+        
+        select_check = Select(self.browser.find_element_by_name("question"))
+        questions_check = select_check.all_selected_options
+        self.assertEquals(len(questions_check), 4)
+        
 '''
 El test de TestSaveVotingFile funciona correctamente en local, cuando el usuario ya existe en la base de datos,
 creado con el comando: psql -c "create user <usuario> with password '<contraseña>'".
@@ -214,3 +275,4 @@ class TestSaveVotingFile(StaticLiveServerTestCase):
         driver.find_element(By.XPATH, "//button[@name='index']").click()
         driver.find_element(By.XPATH, '//input[@value="Yes, I\'m sure"]').click()
 '''
+
