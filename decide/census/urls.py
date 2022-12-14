@@ -1,8 +1,5 @@
 from django.urls import path, include
 from . import views
-from django.conf.urls import url
-from django.contrib.auth.decorators import login_required
-from .views import ReporteAutorExcel
 
 
 urlpatterns = [
@@ -26,7 +23,6 @@ urlpatterns = [
     path('filter-civilstate/', views.FilterCivilState.as_view(), name='filter_civil_state'),
     path('filter-sexuality/', views.FilterSexuality.as_view(), name='filter_sexuality'),
     path('filter-works/', views.FilterWorks.as_view(), name='filter_works'),
-    url(r'^reporte/', login_required(ReporteAutorExcel.as_view()), name = "reporte"),
-    path('lista_censo/', views.home, name = 'lista_censo'),
+
 
 ]
