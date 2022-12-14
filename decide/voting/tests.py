@@ -80,9 +80,7 @@ class VotingTestCase(BaseTestCase):
             for opt in QuestionOption.objects.filter(question=question):
                 clear[opt.number] = 0
                 for i in range(random.randint(0, 5)):
-                    msg = "({opt_number}, {opt_question})".format(opt_number=opt.number, opt_question=question.id)
-                    msg = int.from_bytes(msg.encode(), "little")
-                    a, b = self.encrypt_msg(msg, v)
+                    a, b = self.encrypt_msg(opt.number, v)
                     data = {
                         'voting': v.id,
                         'voter': voter.voter_id,
@@ -409,7 +407,7 @@ class VotingTestCase(BaseTestCase):
     def test_create_image_question_success(self):
         url_one = "https://wallpapercave.com/uwp/uwp1871846.png"
         url_two = "https://wallpapercave.com/uwp/uwp2004429.jpeg"
-        question = Question(desc='Image question test', tipo='I')
+        question = Question(desc='Image question test', type='I')
         question.save()
         qo_one = QuestionOption(question=question, option=url_one)
         qo_two = QuestionOption(question=question, option=url_two)
@@ -421,7 +419,7 @@ class VotingTestCase(BaseTestCase):
     
     def test_create_image_question_failure_no_url(self):
         not_url = "This is not a url!!!"
-        question = Question(desc='Image question test', tipo='I')
+        question = Question(desc='Image question test', type='I')
         question.save()
         qo_one = QuestionOption(question=question, option=not_url)
         try:
