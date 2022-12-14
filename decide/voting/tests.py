@@ -16,7 +16,6 @@ from mixnet.mixcrypt import ElGamal
 from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
 from voting.models import Voting, Question, QuestionOption
-from django.core.exceptions import ValidationError
 
 import urllib.request
 
@@ -43,9 +42,8 @@ class VotingTestCase(BaseTestCase):
         for i in range(5):
             opt = QuestionOption(question=q, option='option {}'.format(i+1))
             opt.save()
-        v = Voting(name='test voting')
+        v = Voting(name='test voting', question=q)
         v.save()
-        v.question.add(q)
 
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'name': 'test auth'})
@@ -74,23 +72,20 @@ class VotingTestCase(BaseTestCase):
         voter = voters.pop()
 
         clear = {}
-        questions = list(v.question.all())
-
-        for question in questions:
-            for opt in QuestionOption.objects.filter(question=question):
-                clear[opt.number] = 0
-                for i in range(random.randint(0, 5)):
-                    a, b = self.encrypt_msg(opt.number, v)
-                    data = {
-                        'voting': v.id,
-                        'voter': voter.voter_id,
-                        'vote': { 'a': a, 'b': b },
-                    }
-                    clear[opt.number] += 1
-                    user = self.get_or_create_user(voter.voter_id)
-                    self.login(user=user.username)
-                    voter = voters.pop()
-                    mods.post('store', json=data)
+        for opt in v.question.options.all():
+            clear[opt.number] = 0
+            for i in range(random.randint(0, 5)):
+                a, b = self.encrypt_msg(opt.number, v)
+                data = {
+                    'voting': v.id,
+                    'voter': voter.voter_id,
+                    'vote': { 'a': a, 'b': b },
+                }
+                clear[opt.number] += 1
+                user = self.get_or_create_user(voter.voter_id)
+                self.login(user=user.username)
+                voter = voters.pop()
+                mods.post('store', json=data)
         return clear
     
     # Test de votación por preferencia con 2 opciones
@@ -158,9 +153,8 @@ class VotingTestCase(BaseTestCase):
         tally.sort()
         tally = {k: len(list(x)) for k, x in itertools.groupby(tally)}
 
-        for q in v.question.all():
-            for qo in QuestionOption.objects.filter(question=q):
-                self.assertEqual(tally.get(qo.number, 0), clear.get(qo.number, 0))
+        for q in v.question.options.all():
+            self.assertEqual(tally.get(q.number, 0), clear.get(q.number, 0))
 
         for q in v.postproc:
             self.assertEqual(tally.get(q["number"], 0), q["votes"])
@@ -294,10 +288,9 @@ class VotingTestCase(BaseTestCase):
         for i in range(5):
             opt = QuestionOption(question=q, option='option {}'.format(i+1))
             opt.save()
-        v = Voting(name='test voting')
-        
+        v = Voting(name='test voting', question=q)
         v.save()
-        v.question.add(q)
+
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'name': 'test auth'})
         a.save()
@@ -404,59 +397,3 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting has not being tallied')
-
-    
-    def test_create_image_question_success(self):
-        url_one = "https://wallpapercave.com/uwp/uwp1871846.png"
-        url_two = "https://wallpapercave.com/uwp/uwp2004429.jpeg"
-        question = Question(desc='Image question test', type='I')
-        question.save()
-        qo_one = QuestionOption(question=question, option=url_one)
-        qo_two = QuestionOption(question=question, option=url_two)
-        qo_one.save()
-        qo_two.save()
-        self.assertEquals(len(question.options.all()), 2)
-        self.assertEquals(question.options.all()[0].option, url_one)
-        self.assertEquals(question.options.all()[1].option, url_two)
-    
-    def test_create_image_question_failure_no_url(self):
-        not_url = "This is not a url!!!"
-        question = Question(desc='Image question test', type='I')
-        question.save()
-        qo_one = QuestionOption(question=question, option=not_url)
-        try:
-            qo_one.clean()
-            qo_one.save()
-        except ValidationError as e:
-            self.assertEquals(e.message, 'Enter a valid URL.')
-        self.assertEquals(len(question.options.all()), 0)
-    def test_create_image_question_failure_not_an_image(self):
-        not_url = "http://www.google.com"
-        question = Question(desc='Image question test', type='I')
-        question.save()
-        qo_one = QuestionOption(question=question, option=not_url)
-        try:
-            qo_one.clean()
-            qo_one.save()
-        except ValidationError as e:
-            self.assertEquals(e.message, 'Url does not contain a compatible image')
-        self.assertEquals(len(question.options.all()), 0)
-    
-    def test_create_multi_voting(self):
-        question1 = Question(desc='Image question test', type='I')
-        question1.save()
-        question2 = Question(desc='Preference question test', type='R')
-        question2.save()
-        question3 = Question(desc='Yes/no question test', type='B')
-        question3.save()
-        question4 = Question(desc='Classic question test', type='C')
-        question4.save()
-        voting = Voting(desc="Test Multiple questions voting")
-        voting.save()
-        voting.question.add(question1)
-        voting.question.add(question2)
-        voting.question.add(question3)
-        voting.question.add(question4)
-
-        self.assertEquals(len(voting.question.all()), 4)
-

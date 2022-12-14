@@ -7,9 +7,6 @@ from .models import Voting
 
 from .filters import StartedFilter
 
-from django.forms.models import BaseInlineFormSet
-from django.core.validators import URLValidator
-from django.core.exceptions import ValidationError
 
 def start(modeladmin, request, queryset):
     for v in queryset.all():
@@ -37,13 +34,11 @@ save.short_description = 'Save voting file'
 
 class QuestionOptionInline(admin.TabularInline):
     model = QuestionOption
-    list_display = ('image_tag',)
-    readonly_fields = ('image_tag',)
+
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ('desc', 'type')
     inlines = [QuestionOptionInline]
-    list_display = ('desc','type')
 
 
 class VotingAdmin(admin.ModelAdmin):
@@ -59,4 +54,3 @@ class VotingAdmin(admin.ModelAdmin):
 
 admin.site.register(Voting, VotingAdmin)
 admin.site.register(Question, QuestionAdmin)
-
