@@ -23,6 +23,9 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from .forms import CreationCensusForm
 from django.views.generic.base import TemplateView
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+
 
 def filter(request):
     censo = Census.objects.all()
