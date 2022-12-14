@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte en Excel</title>
+</head>
+<body>
+    {% if queryset %}
+        <table border="2">
+            <thead>
+                <tr>
+                    <td>id</td>
+                    <td>voting_id</td> 
+                    <td>voter_id</td> 
+                    <td>name</td> 
+                    <td>surname</td> 
+                    <td>city</td> 
+                    <td>a_community</td>  
+                    <td>gender</td> 
+                    <td>born_year</td> 
+                    <td>civil_state</td> 
+                    <td>sexuality</td> 
+                    <td>works</td> 
+
+                </tr>
+
+            </thead>
+            <tbody>
+                
+                {% for census in queryset %}
+
+                    <tr>
+                        <td>{{ census.id}}</td>
+                        <td>{{ census.voting_id}}</td> 
+                        <td>{{census.voter_id}}</td> 
+                        <td>{{census.name}}</td> 
+                        <td>{{census.surname}}</td> 
+                        <td>{{census.city}}</td> 
+                        <td>{{census.a_community}}</td>  
+                        <td>{{census.gender}}</td> 
+                        <td>{{census.born_year}}</td> 
+                        <td>{{census.city_state}}</td> 
+                        <td>{{census.sexuality}}</td> 
+                        <td>{{census.works}}</td> 
+            
+                    </tr>
+                {% endfor %}
+   
+            </tbody>
+
+
+    
+      
+        </table>
+    {% else %}
+        <h1>No hay datos registrados</h1>
+    {% endif %}
+
+    <a href="{% url 'reporte' %}">Exportar en Excel</a>
+</body>>
+</html>

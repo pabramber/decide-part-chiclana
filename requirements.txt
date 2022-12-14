@@ -18,3 +18,4 @@ whitenoise
 gunicorn
 django-allauth
 django-crontab
+openpyxl==3.0.10

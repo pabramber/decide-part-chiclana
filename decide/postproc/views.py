@@ -199,6 +199,8 @@ class PostProcView(APIView):
 
         out = []
 
+        delim=','
+
         for opt in options:
 
             lista = opt['option'].split(delim)
