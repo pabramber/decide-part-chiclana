@@ -8,15 +8,15 @@
     packages:
     - git
     - postgresql
-    - python3.7
+    - python3
     - python3-pip
     - python3-psycopg2
-    - python3.7-venv
+    - python3-virtualenv
     - virtualenv
     - nginx
     - libpq-dev
     - python-setuptools
     - build-essential
-    - python3.7-dev
+    - python-dev
     - make
     - m4

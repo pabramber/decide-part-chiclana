@@ -2,22 +2,22 @@ import random
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
-
+from timeit import default_timer
 from .models import Census
 from base import mods
 from base.tests import BaseTestCase
 
 
-#class CensusTestCase(BaseTestCase):
+class CensusTestCase(BaseTestCase):
 
-    # def setUp(self):
-    #     super().setUp()
-    #     self.census = Census(voting_id=1, voter_id=1)
-    #     self.census.save()
+    def setUp(self):
+        super().setUp()
+        self.census = Census(voting_id=1, voter_id=1)
+        self.census.save()
 
-    # def tearDown(self):
-    #     super().tearDown()
-    #     self.census = None
+    def tearDown(self):
+        super().tearDown()
+        self.census = None
 
     # def test_check_vote_permissions(self):
     #     response = self.client.get('/census/{}/?voter_id={}'.format(1, 2), format='json')
@@ -73,3 +73,22 @@ from base.tests import BaseTestCase
     #     response = self.client.delete('/census/{}/'.format(1), data, format='json')
     #     self.assertEqual(response.status_code, 204)
     #     self.assertEqual(0, Census.objects.count())
+
+    def test_filter_census(self):
+        inicio = default_timer()
+        id=1
+        censo = Census.objects.get(voting_id=int(id))
+        self.assertEqual(censo.voting_id, 1)
+        self.assertEqual(censo.voter_id, 1)
+        fin = default_timer()
+        print("test_filter_nameOK: " + str(fin-inicio) + "s")
+
+###
+    # def test_filter_censusName(self):
+    #     inicio = default_timer()
+    #     id=1
+    #     censo = Census.objects.get(voting_id=int(id))
+    #     self.assertEqual(censo.name, "Roger")
+    #     self.assertEqual(censo.surname, "Marin")
+    #     fin = default_timer()
+    #     print("test_filter_nameOK: " + str(fin-inicio) + "s")
