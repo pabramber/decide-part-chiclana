@@ -72,20 +72,25 @@ class VotingTestCase(BaseTestCase):
         voter = voters.pop()
 
         clear = {}
-        for opt in v.question.options.all():
-            clear[opt.number] = 0
-            for i in range(random.randint(0, 5)):
-                a, b = self.encrypt_msg(opt.number, v)
-                data = {
-                    'voting': v.id,
-                    'voter': voter.voter_id,
-                    'vote': { 'a': a, 'b': b },
-                }
-                clear[opt.number] += 1
-                user = self.get_or_create_user(voter.voter_id)
-                self.login(user=user.username)
-                voter = voters.pop()
-                mods.post('store', json=data)
+        questions = list(v.question.all())
+
+        for question in questions:
+            for opt in QuestionOption.objects.filter(question=question):
+                clear[opt.number] = 0
+                for i in range(random.randint(0, 5)):
+                    msg = "({opt_number}, {opt_question})".format(opt_number=opt.number, opt_question=question.id)
+                    msg = int.from_bytes(msg.encode(), "little")
+                    a, b = self.encrypt_msg(msg, v)
+                    data = {
+                        'voting': v.id,
+                        'voter': voter.voter_id,
+                        'vote': { 'a': a, 'b': b },
+                    }
+                    clear[opt.number] += 1
+                    user = self.get_or_create_user(voter.voter_id)
+                    self.login(user=user.username)
+                    voter = voters.pop()
+                    mods.post('store', json=data)
         return clear
     
     # Test de votación por preferencia con 2 opciones
