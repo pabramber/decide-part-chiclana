@@ -49,11 +49,10 @@ class VotingView(generics.ListCreateAPIView):
                 start_date = start_date,
                 future_start = future_start,
                 future_stop = future_stop,
-                question=question,
                 postproc_type=postproc_type,
                 number_seats=number_seats)
         voting.save()
-
+        voting.question.add(question)
         auth, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'name': 'test auth'})
         auth.save()
