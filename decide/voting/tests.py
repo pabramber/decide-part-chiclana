@@ -430,7 +430,7 @@ class VotingTestCase(BaseTestCase):
         except ValidationError as e:
             self.assertEquals(e.message, 'Enter a valid URL.')
         self.assertEquals(len(question.options.all()), 0)
-    def test_create_image_question_failure_destination_unreachable(self):
+    def test_create_image_question_failure_not_an_image(self):
         not_url = "http://www.google.com"
         question = Question(desc='Image question test', type='I')
         question.save()
@@ -441,4 +441,22 @@ class VotingTestCase(BaseTestCase):
         except ValidationError as e:
             self.assertEquals(e.message, 'Url does not contain a compatible image')
         self.assertEquals(len(question.options.all()), 0)
+    
+    def test_create_multi_voting(self):
+        question1 = Question(desc='Image question test', type='I')
+        question1.save()
+        question2 = Question(desc='Preference question test', type='R')
+        question2.save()
+        question3 = Question(desc='Yes/no question test', type='B')
+        question3.save()
+        question4 = Question(desc='Classic question test', type='C')
+        question4.save()
+        voting = Voting(desc="Test Multiple questions voting")
+        voting.save()
+        voting.question.add(question1)
+        voting.question.add(question2)
+        voting.question.add(question3)
+        voting.question.add(question4)
+
+        self.assertEquals(len(voting.question.all()), 4)
 
