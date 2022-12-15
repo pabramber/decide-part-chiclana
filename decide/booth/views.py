@@ -1,3 +1,4 @@
+import datetime
 import json
 from django.views.generic import TemplateView
 from django.conf import settings
@@ -8,7 +9,6 @@ from django.shortcuts import render, redirect
 from base import mods
 from census.models import Census
 from voting.models import Voting
-from django.contrib.auth.models import User
 
 
 # TODO: check permissions and census
@@ -47,7 +47,9 @@ def get_votings(request):
 
         for c in census:
             voting = Voting.objects.get(id=c.voting_id)
-            votings.append(voting)
+            if(voting.start_date!= None and (voting.end_date == None
+                                            or voting.end_date > datetime.now)):
+                votings.append(voting)
 
         print(len(votings))
     return render(request, 'booth/votingsList.html', {'votings': votings})
