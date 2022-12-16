@@ -1,8 +1,8 @@
 Id: 3
 Nombre: test voting
 Tipo de votación: C
-Fecha de inicio: 11/12/22 13:24:01
-Fecha de fin: 11/12/22 13:24:01
+Fecha de inicio: 12/12/22 19:26:51
+Fecha de fin: 12/12/22 19:26:51
 
 Pregunta: test question
 Resultado: 
