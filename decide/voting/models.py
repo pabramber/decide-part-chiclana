@@ -8,6 +8,11 @@ from base.models import Auth, Key
 from django.utils import timezone
 from postproc.models import PostprocTypeEnum
 
+from django.core.validators import URLValidator
+import requests
+from io import StringIO
+from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
 
 class Question(models.Model):
     desc = models.TextField()
@@ -16,6 +21,7 @@ class Question(models.Model):
             ('S', 'Score question'),
             ('R', 'Ranked question'),
             ('B', 'Yes/No question'),
+            ('I', 'Image'),
             ]
     type = models.CharField(max_length=1, choices=TYPES, default='C')  
     create_ordination = models.BooleanField(verbose_name='Create ordination', default=False)
@@ -41,6 +47,14 @@ class QuestionOption(models.Model):
     number = models.PositiveIntegerField(blank=True, null=True)
     option = models.TextField()
 
+    def clean(self):
+        if self.question.type == 'I':
+            validator = URLValidator()
+            validator(self.option)
+            image_formats = ("image/png", "image/jpeg", "image/jpg")
+            r = requests.get(self.option)
+            if r.headers["content-type"] not in image_formats:
+                raise ValidationError("Url does not contain a compatible image")
     def save(self, *args, **kwargs):
         if self.question.type == 'B':
             if not self.option == 'Sí' and not self.option == 'No':
@@ -52,6 +66,15 @@ class QuestionOption(models.Model):
 
     def __str__(self):
         return '{} ({})'.format(self.option, self.number)
+    
+    def image_tag(self):
+        from django.utils.html import escape
+        if self.question.type == 'I':
+            return mark_safe(u'<img src="%s" width="150" height="150" />' % escape(self.option))
+        else:
+            return ""
+    image_tag.short_description = 'Image'
+    image_tag.allow_tags = True
 
 
 class Voting(models.Model):
