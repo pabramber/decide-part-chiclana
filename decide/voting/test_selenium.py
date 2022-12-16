@@ -80,20 +80,11 @@ class VotingSeleniumTestCase(StaticLiveServerTestCase):
         self.assertIn('Option 3, Option 1, Option 2', self.browser.find_element_by_name("options-4-option").get_attribute('value'))
         self.assertIn('Option 3, Option 2, Option 1', self.browser.find_element_by_name("options-5-option").get_attribute('value'))
 
-'''
-El test de TestSaveVotingFile funciona correctamente en local, cuando el usuario ya existe en la base de datos,
-creado con el comando: psql -c "create user <usuario> with password '<contraseña>'".
-Cuando se crea al usuario dentro del propio test, muestra un error 500 al realizar el tally.
-Dejo el test comentado, de manera que se pueda probar en local.
-
 class TestSaveVotingFile(StaticLiveServerTestCase):
 
     def setUp(self):
         self.base = BaseTestCase()
         self.base.setUp()
-        admin = User.objects.get(username='admin')
-        admin.is_superuser = True
-        admin.save()
 
         options = webdriver.ChromeOptions()
         options.headless = True
@@ -103,24 +94,22 @@ class TestSaveVotingFile(StaticLiveServerTestCase):
     
     def tearDown(self):           
         super().tearDown()
+        
         self.driver.quit()
-        admin = User.objects.get(username='admin')
-        admin.is_superuser = False
-        admin.save()
-
         self.base.tearDown() 
     
+    # Este test solo funciona en local, para probarlo hay que poner un usuario
+    # y una contraseña ya creados en las 2 lineas que se indican más abajo
+    '''
     def test_save_voting_file(self):
         driver = self.driver
 
         # Log in
-        # Comentar una de las dos siguientes lineas, según cómo se quiera probar
         driver.get("http://localhost:8000/admin/login/?next=/admin/")
-        # driver.get(f'{self.live_server_url}/admin/')
         driver.find_element(By.ID, 'id_username').click()
-        driver.find_element(By.ID, 'id_username').send_keys('dantorval')
+        driver.find_element(By.ID, 'id_username').send_keys('dantorval') # Usuario
         driver.find_element(By.ID, 'id_password').click()
-        driver.find_element(By.ID, 'id_password').send_keys('dantorval')
+        driver.find_element(By.ID, 'id_password').send_keys('dantorval') # Contraseña
         driver.find_element(By.XPATH, "//input[@value='Log in']").click()
                 
         # Create question
@@ -158,7 +147,7 @@ class TestSaveVotingFile(StaticLiveServerTestCase):
         driver.find_element(By.XPATH, "//select[@id='id_auths']//child::option[last()]").click()
         driver.find_element(By.XPATH, "//input[@value='Save']").click()
         
-        # Start, Stop, Tally & Save voting
+        # Start, Stop, Tally voting
         driver.find_element(By.NAME, '_selected_action').click()
         driver.find_element(By.XPATH, "//select[@name='action']").click()
         driver.find_element(By.XPATH, "//select[@name='action']//child::option[@value='start']").click()
@@ -189,16 +178,9 @@ class TestSaveVotingFile(StaticLiveServerTestCase):
         driver.find_element(By.PARTIAL_LINK_TEXT, 'voting/files/').click()
         driver.execute_script("window.history.go(-1)")
         
-        # En caso de probar con la dirección "f'{self.live_server_url}/admin/'",
-        # comentar las lineas de Delete auth y Delete question.
         # Delete auth
         driver.find_element(By.LINK_TEXT, 'Home').click()
         driver.find_element(By.LINK_TEXT, 'Auths').click()
-        driver.find_element(By.NAME, '_selected_action').click()
-        driver.find_element(By.NAME, 'action').click()
-        driver.find_element(By.XPATH, "//option[@value='delete_selected']").click()
-        driver.find_element(By.XPATH, "//button[@name='index']").click()
-        driver.find_element(By.XPATH, '//input[@value="Yes, I\'m sure"]').click()
         driver.find_element(By.NAME, '_selected_action').click()
         driver.find_element(By.NAME, 'action').click()
         driver.find_element(By.XPATH, "//option[@value='delete_selected']").click()
@@ -213,4 +195,4 @@ class TestSaveVotingFile(StaticLiveServerTestCase):
         driver.find_element(By.XPATH, "//option[@value='delete_selected']").click()
         driver.find_element(By.XPATH, "//button[@name='index']").click()
         driver.find_element(By.XPATH, '//input[@value="Yes, I\'m sure"]').click()
-'''
+    '''
