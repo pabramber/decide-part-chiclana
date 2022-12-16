@@ -11,8 +11,7 @@ from timeit import default_timer
 from .models import Census
 from base import mods
 from base.tests import BaseTestCase
-from .forms import CreationCensusForm
-from django.test import SimpleTestCase
+
 
 class CensusFrontendTestCase(BaseTestCase):
     def test_creation_census(self):
