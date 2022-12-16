@@ -1,8 +1,13 @@
 Id: 4
 Nombre: test voting
 Tipo de votación: C
+<<<<<<< HEAD
 Fecha de inicio: 16/12/22 12:07:00
 Fecha de fin: 16/12/22 12:07:00
+=======
+Fecha de inicio: 16/12/22 14:10:26
+Fecha de fin: 16/12/22 14:10:26
+>>>>>>> juacasben2
 
 Pregunta: test question
 Resultado: 

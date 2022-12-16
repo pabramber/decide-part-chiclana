@@ -16,6 +16,7 @@ from mixnet.mixcrypt import ElGamal
 from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
 from voting.models import Voting, Question, QuestionOption
+from django.core.exceptions import ValidationError
 
 import urllib.request
 
@@ -400,3 +401,39 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting has not being tallied')
+
+    def test_create_image_question_success(self):
+        url_one = "https://wallpapercave.com/uwp/uwp1871846.png"
+        url_two = "https://wallpapercave.com/uwp/uwp2004429.jpeg"
+        question = Question(desc='Image question test', type='I')
+        question.save()
+        qo_one = QuestionOption(question=question, option=url_one)
+        qo_two = QuestionOption(question=question, option=url_two)
+        qo_one.save()
+        qo_two.save()
+        self.assertEquals(len(question.options.all()), 2)
+        self.assertEquals(question.options.all()[0].option, url_one)
+        self.assertEquals(question.options.all()[1].option, url_two)
+    
+    def test_create_image_question_failure_no_url(self):
+        not_url = "This is not a url!!!"
+        question = Question(desc='Image question test', type='I')
+        question.save()
+        qo_one = QuestionOption(question=question, option=not_url)
+        try:
+            qo_one.clean()
+            qo_one.save()
+        except ValidationError as e:
+            self.assertEquals(e.message, 'Enter a valid URL.')
+        self.assertEquals(len(question.options.all()), 0)
+    def test_create_image_question_failure_not_an_image(self):
+        not_url = "http://www.google.com"
+        question = Question(desc='Image question test', type='I')
+        question.save()
+        qo_one = QuestionOption(question=question, option=not_url)
+        try:
+            qo_one.clean()
+            qo_one.save()
+        except ValidationError as e:
+            self.assertEquals(e.message, 'Url does not contain a compatible image')
+        self.assertEquals(len(question.options.all()), 0)
