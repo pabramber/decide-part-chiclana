@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+<link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+<link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+<link type="text/css" rel="stylesheet" href='{% static "booth/style.css" %}' />
+
+<style>
+    .tittle {
+        margin-top: 30px;
+    }
+
+    table {
+        table-layout: fixed;
+        width: 100%;
+        border-collapse: collapse;
+        border: 3px solid black;
+    }
+
+    thead th:nth-child(1) {
+        width: 30%;
+    }
+
+    thead th:nth-child(2) {
+        width: 20%;
+    }
+
+    thead th:nth-child(3) {
+        width: 15%;
+    }
+
+    thead th:nth-child(4) {
+        width: 35%;
+    }
+
+    th,
+    td {
+        padding: 20px;
+    }
+
+    *{
+        text-align: center;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    {% if votings %}
+    <h2 class="tittle">Avaible votings</h2>
+
+    <table id="result_list" cellspacing="20px">
+        <thead>
+            <tr>
+
+                <th scope="col" class="sortable column-name sorted ascending">
+                    <div><a>Name</a></div>
+                    <div class="clear"></div>
+                </th>
+
+                <th scope="col" class="sortable column-voting_type">
+                    <div><a>Voting type</a></div>
+                    <div class="clear"></div>
+                </th>
+
+                <th scope="col" class="sortable column-start_date">
+                    <div><a>Start date</a></div>
+                    <div class="clear"></div>
+                </th>
+
+                <th scope="col" class="sortable column-end_date">
+                    <div><a>End date</a></div>
+                    <div class="clear"></div>
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for i in votings %}
+
+            <tr>
+                <th style="padding: 15px;">
+                    <a href="{{i.id}}">{{ i.name }}</a>
+                </th>
+
+                <td id="table-element" style="padding: 15px;">{{i.voting_type}}</td>
+
+                <td id="table-element" style="padding: 15px;">{{i.start_date}}</td>
+
+                <td id="table-element" style="padding: 15px;">{{i.end_date}}</td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+        {% else %}
+
+        <H1 class="tittle" id="no-voting">There are no votings avaible for you</H1>
+
+        {% endif %}
+
+    </table>
+</div>
+
+{% endblock %}
