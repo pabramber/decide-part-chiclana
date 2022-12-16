@@ -112,6 +112,22 @@ class CensusTestCase(BaseTestCase):
         self.assertEqual(c[3].name, "SERGIO")
         self.assertEqual(c[9].a_community, "EXTREMADURA")
 
+    def test_export_success(self):
+        myfile = open('census/static/ReporteAutorExcel.xlsx', 'rb')
+        data = {
+            'myfile': myfile
+        }
+        response = self.client.post(reverse('reporte'), data)
+
+        
+        # El Excel contiene está vacío, con los 3 anteriores = 3
+        self.assertEqual(Census.objects.count(), 3)
+        
+
+        
+
+
+
     # def test_import_census(self):
     #     #data = SimpleUploadedFile("static/census_data.xlsx", "file_content", content_type="mimetype")
     #     data_file_path = os.path.join(os.path.dirname(__file__), "census_data.xlsx")
