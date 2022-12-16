@@ -2,6 +2,7 @@
 import pytest
 import time
 import json
+from .models import Census
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
@@ -11,12 +12,22 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 class TestFilterCensus():
-  def setup_method(self, method):
-    self.driver = webdriver.Chrome()
-    self.vars = {}
-  
-  def teardown_method(self, method):
-    self.driver.quit()
+  def setUp(self):
+        #Load base test functionality for decide
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
+        super().setUp()            
+
+  def tearDown(self):           
+      super().tearDown()
+      self.driver.quit()
+
+      self.base.tearDown()
   
   def test_filterCensus(self):
     self.driver.get("http://127.0.0.1:8000/census/")
@@ -45,4 +56,3 @@ class TestFilterCensus():
     self.driver.find_element(By.CSS_SELECTOR, "form:nth-child(12) .form-control").click()
     self.driver.find_element(By.CSS_SELECTOR, "form:nth-child(12) .form-control").send_keys("0")
     self.driver.find_element(By.CSS_SELECTOR, "form:nth-child(12) .input-group-text").click()
-  
