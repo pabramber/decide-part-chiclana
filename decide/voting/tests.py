@@ -43,9 +43,8 @@ class VotingTestCase(BaseTestCase):
         for i in range(5):
             opt = QuestionOption(question=q, option='option {}'.format(i+1))
             opt.save()
-        v = Voting(name='test voting')
+        v = Voting(name='test voting', question=q)
         v.save()
-        v.question.add(q)
 
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'name': 'test auth'})
@@ -414,11 +413,10 @@ class VotingTestCase(BaseTestCase):
         decide-part-chiclana-1
 =======
 
-    
     def test_create_image_question_success(self):
         url_one = "https://wallpapercave.com/uwp/uwp1871846.png"
         url_two = "https://wallpapercave.com/uwp/uwp2004429.jpeg"
-        question = Question(desc='Image question test', tipo='I')
+        question = Question(desc='Image question test', type='I')
         question.save()
         qo_one = QuestionOption(question=question, option=url_one)
         qo_two = QuestionOption(question=question, option=url_two)
@@ -430,7 +428,7 @@ class VotingTestCase(BaseTestCase):
     
     def test_create_image_question_failure_no_url(self):
         not_url = "This is not a url!!!"
-        question = Question(desc='Image question test', tipo='I')
+        question = Question(desc='Image question test', type='I')
         question.save()
         qo_one = QuestionOption(question=question, option=not_url)
         try:
@@ -439,5 +437,19 @@ class VotingTestCase(BaseTestCase):
         except ValidationError as e:
             self.assertEquals(e.message, 'Enter a valid URL.')
         self.assertEquals(len(question.options.all()), 0)
+<<<<<<< HEAD
 
 >>>>>>> decide-part-chiclana-1
+=======
+    def test_create_image_question_failure_not_an_image(self):
+        not_url = "http://www.google.com"
+        question = Question(desc='Image question test', type='I')
+        question.save()
+        qo_one = QuestionOption(question=question, option=not_url)
+        try:
+            qo_one.clean()
+            qo_one.save()
+        except ValidationError as e:
+            self.assertEquals(e.message, 'Url does not contain a compatible image')
+        self.assertEquals(len(question.options.all()), 0)
+>>>>>>> master

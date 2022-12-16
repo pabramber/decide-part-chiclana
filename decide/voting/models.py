@@ -7,11 +7,12 @@ from base import mods
 from base.models import Auth, Key
 from django.utils import timezone
 from postproc.models import PostprocTypeEnum
-from django.utils.safestring import mark_safe
+
 from django.core.validators import URLValidator
 import requests
 from io import StringIO
 from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
 
 class Question(models.Model):
     desc = models.TextField()
@@ -47,7 +48,7 @@ class QuestionOption(models.Model):
     option = models.TextField()
 
     def clean(self):
-        if self.question.tipo == 'I':
+        if self.question.type == 'I':
             validator = URLValidator()
             validator(self.option)
             image_formats = ("image/png", "image/jpeg", "image/jpg")
@@ -64,23 +65,23 @@ class QuestionOption(models.Model):
                 self.number = self.question.options.count() + 2
         return super().save()
 
+    def __str__(self):
+        return '{} ({})'.format(self.option, self.number)
+    
     def image_tag(self):
         from django.utils.html import escape
-        if self.question.tipo == 'I':
+        if self.question.type == 'I':
             return mark_safe(u'<img src="%s" width="150" height="150" />' % escape(self.option))
         else:
             return ""
     image_tag.short_description = 'Image'
     image_tag.allow_tags = True
 
-    def __str__(self):
-        return '{} ({})'.format(self.option, self.number)
-
 
 class Voting(models.Model):
     name = models.CharField(max_length=200)
     desc = models.TextField(blank=True, null=True)
-    question = models.ManyToManyField(Question, related_name='voting')
+    question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE)
 
     postproc_type = models.CharField(max_length=255, choices=PostprocTypeEnum.choices(), default='IDENTITY')
     number_seats = models.PositiveIntegerField(default=1)
