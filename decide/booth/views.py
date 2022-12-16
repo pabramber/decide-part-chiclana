@@ -1,9 +1,14 @@
+import datetime
 import json
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.http import Http404
+from django.contrib import messages
+from django.shortcuts import render, redirect
 
 from base import mods
+from census.models import Census
+from voting.models import Voting
 
 
 # TODO: check permissions and census
@@ -29,3 +34,22 @@ class BoothView(TemplateView):
         context['KEYBITS'] = settings.KEYBITS
 
         return context
+
+def get_votings(request):
+
+    if request.user.id is None:
+            messages.error(request, 'Log in')
+            return redirect('login')
+
+    else:  
+        census = Census.objects.filter(voter_id=request.user.id)
+        votings = []
+
+        for c in census:
+            voting = Voting.objects.get(id=c.voting_id)
+            if(voting.start_date!= None and (voting.end_date == None
+                                            or voting.end_date > datetime.now)):
+                votings.append(voting)
+
+        print(len(votings))
+    return render(request, 'booth/votingsList.html', {'votings': votings})
