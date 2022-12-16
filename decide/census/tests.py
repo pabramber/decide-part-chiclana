@@ -15,6 +15,40 @@ from base import mods
 from base.tests import BaseTestCase
 
 
+class CensusFrontendTestCase(BaseTestCase):
+    def test_creation_census(self):
+        censo = Census.objects.create(voting_id=1, voter_id=2, name='PABLO', surname='PÉREZ GARCÍA',city= 'BILBAO', a_community='PAÍS VASCO', gender='HOMBRE', born_year=1992, civil_state='SOLTERO', sexuality='HETEROSEXUAL',works= 1)
+        censo.save()
+        self.assertEqual(censo.name, "PABLO")
+        self.assertEqual(censo.voting_id, 1)
+        self.assertEqual(censo.voter_id, 2)
+        self.assertEqual(censo.surname, 'PÉREZ GARCÍA')
+        self.assertEqual(censo.city, 'BILBAO')
+        self.assertEqual(censo.a_community, 'PAÍS VASCO')
+        self.assertEqual(censo.gender, 'HOMBRE')
+        self.assertEqual(censo.born_year, 1992)
+        self.assertEqual(censo.civil_state, 'SOLTERO')
+        self.assertEqual(censo.sexuality, 'HETEROSEXUAL')
+        self.assertEqual(censo.works, 1)
+
+
+class CensusFrontendFormCreationTestCase(SimpleTestCase):
+
+    def test_creation_form_no_data(self):
+        form = CreationCensusForm(data={})
+        self.assertFalse(form.is_valid())
+
+
+#class CensusTestCase(BaseTestCase):
+
+    # def setUp(self):
+    #     super().setUp()
+    #     self.census = Census(voting_id=1, voter_id=1)
+    #     self.census.save()
+
+    # def tearDown(self):
+    #     super().tearDown()
+    #     self.census = None
 class CensusTestCase(BaseTestCase):
 
     def setUp(self):
@@ -143,14 +177,14 @@ class CensusTestCase(BaseTestCase):
     #     self.assertEqual(response.status_code, 204)
     #     self.assertEqual(0, Census.objects.count())
 
-    def test_filter_census(self):
-        inicio = default_timer()
-        id=1
-        censo = Census.objects.get(voting_id=int(id))
-        self.assertEqual(censo.voting_id, 1)
-        self.assertEqual(censo.voter_id, 1)
-        fin = default_timer()
-        print("test_filter_nameOK: " + str(fin-inicio) + "s")
+    # def test_filter_census(self):
+    #     inicio = default_timer()
+    #     id=1
+    #     censo = Census.objects.get(voting_id=int(id))
+    #     self.assertEqual(censo.voting_id, 1)
+    #     self.assertEqual(censo.voter_id, 1)
+    #     fin = default_timer()
+    #     print("test_filter_nameOK: " + str(fin-inicio) + "s")
 
     # def test_filter_censusName(self):
     #     inicio = default_timer()
