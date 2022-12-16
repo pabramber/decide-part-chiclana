@@ -2,12 +2,10 @@ import random
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
-
 from tablib import Dataset
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 import os
-
 
 from timeit import default_timer
 from .models import Census
@@ -177,6 +175,7 @@ class CensusTestCase(BaseTestCase):
     #     self.assertEqual(response.status_code, 204)
     #     self.assertEqual(0, Census.objects.count())
 
+
     # def test_filter_census(self):
     #     inicio = default_timer()
     #     id=1
@@ -194,3 +193,4 @@ class CensusTestCase(BaseTestCase):
     #     self.assertEqual(censo.surname, "Marin")
     #     fin = default_timer()
     #     print("test_filter_nameOK: " + str(fin-inicio) + "s")
+

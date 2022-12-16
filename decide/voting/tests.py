@@ -1,5 +1,7 @@
+
 import random
 import itertools
+from datetime import datetime
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -19,7 +21,7 @@ import urllib.request
 
 
 class VotingTestCase(BaseTestCase):
-
+    
     def setUp(self):
         super().setUp()
 
@@ -33,7 +35,7 @@ class VotingTestCase(BaseTestCase):
         k = MixCrypt(bits=bits)
         k.k = ElGamal.construct((p, g, y))
         return k.encrypt(msg)
-
+     
     def create_voting(self):
         q = Question(desc='test question')
         q.save()
@@ -260,7 +262,42 @@ class VotingTestCase(BaseTestCase):
         data = {'action': 'tally'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already tallied')
+        self.assertEqual(response.json(), 'Voting already tallied') 
+    def test_put_future_date(self):
+        #creacion de votacion:
+        q = Question(desc='test question')
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+        v.future_start = datetime.strptime('2023-08-09 01:01:01', "%Y-%m-%d %H:%M:%S")
+        v.save()
+        return v
+
+    def test_put_future_date(self):
+        #creacion de votacion:
+        q = Question(desc='test question')
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+        v.future_stop = datetime.strptime('2023-08-09 01:01:01', "%Y-%m-%d %H:%M:%S")
+        v.save()
+        return v
     
     # Testing yes/no question feature
     def test_create_yes_no_question(self):
