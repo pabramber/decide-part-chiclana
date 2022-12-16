@@ -1,0 +1,13 @@
+Id: 4
+Nombre: test voting
+Tipo de votación: C
+Fecha de inicio: 16/12/22 12:07:00
+Fecha de fin: 16/12/22 12:07:00
+
+Pregunta: test question
+Resultado: 
+    - Opción: option 1    Puntuación: 0    Votos: 0
+    - Opción: option 2    Puntuación: 0    Votos: 0
+    - Opción: option 3    Puntuación: 0    Votos: 0
+    - Opción: option 4    Puntuación: 0    Votos: 0
+    - Opción: option 5    Puntuación: 0    Votos: 0
