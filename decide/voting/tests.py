@@ -263,7 +263,7 @@ class VotingTestCase(BaseTestCase):
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting already tallied') 
-    def test_put_future_date(self):
+    def test_put_future_start(self):
         #creacion de votacion:
         q = Question(desc='test question')
         q.save()
@@ -278,10 +278,10 @@ class VotingTestCase(BaseTestCase):
         a.save()
         v.auths.add(a)
         v.future_start = datetime.strptime('2023-08-09 01:01:01', "%Y-%m-%d %H:%M:%S")
-        v.save()
-        return v
+        self.assertEquals(v.future_start, datetime.strptime('2023-08-09 01:01:01', "%Y-%m-%d %H:%M:%S"))
+        
 
-    def test_put_future_date(self):
+    def test_put_future_end(self):
         #creacion de votacion:
         q = Question(desc='test question')
         q.save()
@@ -297,7 +297,7 @@ class VotingTestCase(BaseTestCase):
         v.auths.add(a)
         v.future_stop = datetime.strptime('2023-08-09 01:01:01', "%Y-%m-%d %H:%M:%S")
         v.save()
-        return v
+        self.assertEquals(v.future_stop, datetime.strptime('2023-08-09 01:01:01', "%Y-%m-%d %H:%M:%S"))
     
     # Testing yes/no question feature
     def test_create_yes_no_question(self):
