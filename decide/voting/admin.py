@@ -34,12 +34,15 @@ save.short_description = 'Save voting file'
 
 class QuestionOptionInline(admin.TabularInline):
     model = QuestionOption
+    list_display = ('image_tag',)
+    readonly_fields = ('image_tag',)
+
 
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ('desc', 'type')
     inlines = [QuestionOptionInline]
-
+    list_display = ('desc','type')
 
 class VotingAdmin(admin.ModelAdmin):
     list_display = ('name', 'start_date', 'end_date','future_start', 'future_stop')
