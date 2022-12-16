@@ -3,19 +3,14 @@ import random
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.test import TestCase
-from rest_framework.test import APIClient
-from rest_framework.test import APITestCase
+from django.core import mail
 
 from .models import Vote
 from .serializers import VoteSerializer
-from base import mods
-from base.models import Auth
 from base.tests import BaseTestCase
 from census.models import Census
-from mixnet.models import Key
 from voting.models import Question
 from voting.models import Voting
-
 
 class StoreTextCase(BaseTestCase):
 
@@ -193,3 +188,9 @@ class StoreTextCase(BaseTestCase):
         self.voting.save()
         response = self.client.post('/store/', data, format='json')
         self.assertEqual(response.status_code, 401)
+
+class EmailTest(TestCase):
+    def test_send_email(self):
+        mail.send_mail('Subject', 'Message',
+            'decidepartchiclana2@gmail.com', ['to@example.com'],fail_silently=False)
+        self.assertEqual(len(mail.outbox), 1)
