@@ -82,8 +82,7 @@ class StoreView(generics.ListAPIView):
             "email": user.email,
             "description": voting.desc,
             "fecha_inicio": voting.start_date,
-            "question": voting.question,
-            "tipo": voting.question.tipo,
+            "question": voting.question.desc,
             "nombre_votacion": voting.name,
             "votacion_id": vid
         })
@@ -91,7 +90,7 @@ class StoreView(generics.ListAPIView):
         asunto = "Se ha registrado su voto"
         mensaje_email = strip_tags(mensaje)
 
-        from_mail = "pgpig3.3@gmail.com"
+        from_mail = "decidepartchiclana2@gmail.com"
         to_email = user.email
         send_mail(asunto,mensaje_email,from_mail,[to_email], html_message=mensaje)
 
