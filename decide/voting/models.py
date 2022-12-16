@@ -55,6 +55,7 @@ class QuestionOption(models.Model):
             r = requests.get(self.option)
             if r.headers["content-type"] not in image_formats:
                 raise ValidationError("Url does not contain a compatible image")
+
     def save(self, *args, **kwargs):
         if self.question.type == 'B':
             if not self.option == 'Sí' and not self.option == 'No':
