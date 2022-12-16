@@ -54,12 +54,22 @@
            <div v-if="!signup">
                     <h2>[[ voting.question.desc ]]</h2>
                     <b-form-group v-for="opt in voting.question.options" :key="opt.number">
+                        <div v-if="voting.question.type=='I'">
                         <b-form-radio v-model="selected"
                                     :id="'q' + opt.number"
                                     name="question"
                                     :value="opt.number">
-                            [[ opt.option ]]
+                            <img :src="opt.option" width="150" height="150"/>
                         </b-form-radio>
+                        </div>
+                        <div v-else>
+                            <b-form-radio v-model="selected"
+                                        :id="'q' + opt.number"
+                                        name="question"
+                                        :value="opt.number">
+                                [[ opt.option ]]
+                            </b-form-radio>
+                            </div>
                     </b-form-group>
                     <b-button type="button" variant="primary" v-on:click="decideSend">
                         {% trans "Vote" %}
