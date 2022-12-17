@@ -1,9 +1,6 @@
 from django.contrib import admin
 from django.utils import timezone
-
-from .models import QuestionOption
-from .models import Question
-from .models import Voting
+from .models import Voting , VotingFromFile , Question ,QuestionOption
 
 from .filters import StartedFilter
 
@@ -46,14 +43,17 @@ class QuestionAdmin(admin.ModelAdmin):
 
 class VotingAdmin(admin.ModelAdmin):
     list_display = ('name', 'start_date', 'end_date','future_start', 'future_stop')
-    readonly_fields = ('start_date','end_date','pub_key',
-                       'tally', 'postproc', 'file')
+    readonly_fields = ('start_date','end_date','pub_key', 'tally', 'postproc','file')
     date_hierarchy = 'start_date'
     list_filter = (StartedFilter,)
     search_fields = ('name', )
-
     actions = [ start, stop, tally, save ]
+
+class VotingAdminFromFile(admin.ModelAdmin):
+    list_display = ('voting','file_voting',)
+
 
 
 admin.site.register(Voting, VotingAdmin)
 admin.site.register(Question, QuestionAdmin)
+admin.site.register(VotingFromFile, VotingAdminFromFile)
