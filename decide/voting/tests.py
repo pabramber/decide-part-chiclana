@@ -17,7 +17,7 @@ from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
 from voting.models import Voting, Question, QuestionOption
 from django.core.exceptions import ValidationError
-
+from django.core.files.uploadedfile import SimpleUploadedFile
 import urllib.request
 
 
@@ -267,6 +267,8 @@ class VotingTestCase(BaseTestCase):
 
     def test_put_future_start(self):
         #creacion de votacion:
+        import warnings
+        warnings.filterwarnings("ignore")
         q = Question(desc='test question')
         q.save()
         for i in range(5):
@@ -285,6 +287,8 @@ class VotingTestCase(BaseTestCase):
 
     def test_put_future_stop(self):
         #creacion de votacion:
+        import warnings
+        warnings.filterwarnings("ignore")
         q = Question(desc='test question')
         q.save()
         for i in range(5):
@@ -299,7 +303,6 @@ class VotingTestCase(BaseTestCase):
         v.auths.add(a)
         v.future_stop = datetime.strptime('2023-08-09 01:01:01', "%Y-%m-%d %H:%M:%S")
         v.save()
-
         self.assertEquals(v.future_stop, datetime.strptime('2023-08-09 01:01:01', "%Y-%m-%d %H:%M:%S"))
 
     
@@ -439,3 +442,12 @@ class VotingTestCase(BaseTestCase):
         except ValidationError as e:
             self.assertEquals(e.message, 'Url does not contain a compatible image')
         self.assertEquals(len(question.options.all()), 0)
+    def test_load_voting_from_file(self):
+        with open("./voting/files/prueba", 'rb') as f:
+            simple_upload = SimpleUploadedFile(name="prueba", content= f.raw.readall(),content_type="text/plain")
+            voting = Voting(file = simple_upload)
+            voting.read_file()
+            voting.save()
+            self.assertEquals(voting.desc, "prueba lectura")
+
+        
