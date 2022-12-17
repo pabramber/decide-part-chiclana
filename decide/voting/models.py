@@ -124,18 +124,18 @@ class Voting(models.Model):
                     auth = Auth(name=auth_split[0].strip(), url=auth_split[1].strip())
                     auths.append(auth)
             if line.find("question_desc") != -1:
-                question_desc = line.split(":")[1].strip()
+                question_desc = line.split(":",1)[1].strip()
             if line.find("voting_desc") != -1:
-                voting_desc = line.split(":")[1].strip()
+                voting_desc = line.split(":",1)[1].strip()
             if line.find("options") != -1:
-                options_str_list = line.split(":")[1].replace("[(","").replace(")]","").strip().split("),(")
+                options_str_list = line.split(":",1)[1].replace("[(","").replace(")]","").strip().split("),(")
                 for option_str in options_str_list:
                     option = option_str.split(",")
                     options.append(option)
             if line.find("voting_name") != -1:
-                voting_name = line.split(":")[1].strip()
+                voting_name = line.split(":",1)[1].strip()
             if line.find("question_type") != -1:
-                question_type = line.split(":")[1].strip()
+                question_type = line.split(":",1)[1].strip()
             if line.find("future_start") != -1:
                 future_start_str = line.split(":",1)[1].strip()
                 future_start = datetime.strptime(future_start_str, "%Y-%m-%d %H:%M:%S")
