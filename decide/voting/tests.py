@@ -449,5 +449,36 @@ class VotingTestCase(BaseTestCase):
             voting.read_file()
             voting.save()
             self.assertEquals(voting.desc, "prueba lectura")
+    
+    def test_load_voting_from_file_negative_name(self):
+        with open("./voting/files/prueba_fallida_nombre", 'rb') as f:
+            simple_upload = SimpleUploadedFile(name="prueba", content= f.raw.readall(),content_type="text/plain")
+            voting = Voting(file = simple_upload)
+            try:
+                voting.read_file()
+                voting.save()
+            except ValidationError as e:
+                self.assertEqual(e.message, "You need to add a name")
+                
+    def test_load_voting_from_file_negative_auth(self):
+        with open("./voting/files/prueba_fallida_auth", 'rb') as f:
+            simple_upload = SimpleUploadedFile(name="prueba", content= f.raw.readall(),content_type="text/plain")
+            voting = Voting(file = simple_upload)
+            try:
+                voting.read_file()
+                voting.save()
+            except ValidationError as e:
+                self.assertEqual(e.message, "You need to add a valid auth")
+
+    def test_load_voting_from_file_negative_question(self):
+        with open("./voting/files/prueba_fallida_question", 'rb') as f:
+            simple_upload = SimpleUploadedFile(name="prueba", content= f.raw.readall(),content_type="text/plain")
+            voting = Voting(file = simple_upload)
+            try:
+                voting.read_file()
+                voting.save()
+            except ValidationError as e:
+                self.assertEqual(e.message, "You need to add a question")
+            
 
         

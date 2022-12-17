@@ -120,9 +120,12 @@ class Voting(models.Model):
             if line.find("auths") != -1:
                 auths_list = line.split(":",1)[1].replace("[(","").replace(")]","").strip().split("),(")
                 for auth_str in auths_list:
-                    auth_split = auth_str.split(",")
-                    auth = Auth(name=auth_split[0].strip(), url=auth_split[1].strip())
-                    auths.append(auth)
+                    try:
+                        auth_split = auth_str.split(",")
+                        auth = Auth(name=auth_split[0].strip(), url=auth_split[1].strip())
+                        auths.append(auth)
+                    except:
+                        raise ValidationError("You need to add a valid auth")
             if line.find("question_desc") != -1:
                 question_desc = line.split(":",1)[1].strip()
             if line.find("voting_desc") != -1:
@@ -162,11 +165,13 @@ class Voting(models.Model):
         self.future_stop = future_stop
         self.save()
         for auth in auths:
-            auth.save()
-            print(auth)
-            self.auths.add(auth)
-        if len(self.auths.all()) == 0:
-            raise ValidationError("You need to add a an Auth")
+            try:
+                auth.save()
+                auth.full_clean()
+                self.auths.add(auth)
+            except:
+                raise ValidationError("You need to add a valid auth")
+        
 
     def create_pubkey(self):
         if self.pub_key or not self.auths.count():
