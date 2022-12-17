@@ -168,16 +168,6 @@ class Voting(models.Model):
         if len(self.auths.all()) == 0:
             raise ValidationError("You need to add a an Auth")
 
-    def full_clean(self, exclude=None,validate_unique=True):
-        if self.file != None:
-            excluded = self.read_file()
-            if exclude != None:
-                exclude = list(exclude)
-                exclude.extend(excluded)
-            else:
-                exclude = excluded
-            super().full_clean(self, exclude= exclude)
-
     def create_pubkey(self):
         if self.pub_key or not self.auths.count():
             return
