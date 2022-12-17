@@ -1,0 +1,6 @@
+voting_name: prueba
+voting_desc: prueba lectura
+auths: [(auth_name,http://localhost:8000)]
+question_type: C
+question_desc: lectura
+options: [(1, opcion lectura 1),(2,opcion lectura 2),(3, opcion lectura 3)]
