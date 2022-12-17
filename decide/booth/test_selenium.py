@@ -17,6 +17,11 @@ class VotingSeleniumTestCase(StaticLiveServerTestCase):
     def setUp(self):
         self.base = BaseTestCase()
         self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
         admin = User.objects.get(username='admin')
         admin.is_superuser = True
         admin.save()
@@ -37,13 +42,13 @@ class VotingSeleniumTestCase(StaticLiveServerTestCase):
         u.set_password("egc.decide")
         u.save()
 
-        censo = Census.objects.create(voting_id=v.id, voter_id=u.id, name='PABLO', surname='PÉREZ GARCÍA',city= 'BILBAO', a_community='PAÍS VASCO', gender='HOMBRE', 
-                    born_year=1992, civil_state='SOLTERO', sexuality='HETEROSEXUAL',works= 1)
+        censo = Census.objects.create(voting_id=v.id, voter_id=u.id, name='a', surname='a',city= 'a', a_community='a', gender='a', 
+                    born_year=2001, civil_state='a', sexuality='a',works= 1)
         censo.save()
 
-        options = webdriver.ChromeOptions()
-        options.headless = False
-        self.driver = webdriver.Chrome(options=options)
+        super().setUp()  
+
+        
 
     def tearDown(self):
         admin = User.objects.get(username='admin')
