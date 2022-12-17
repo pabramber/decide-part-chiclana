@@ -347,6 +347,8 @@ class VotingTestCase(BaseTestCase):
     def test_save_voting_file_200(self):
         self.login()
         voting = self.create_voting()
+        voting.desc = "description voting"
+        voting.save()
         
         data = {'action': 'start'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')       

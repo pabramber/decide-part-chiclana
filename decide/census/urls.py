@@ -28,5 +28,6 @@ urlpatterns = [
     path('filter-works/', views.FilterWorks.as_view(), name='filter_works'),
     url(r'^reporte/', login_required(ReporteAutorExcel.as_view()), name = "reporte"),
     path('lista_censo/', views.home, name = 'lista_censo'),
-
+    #Reutilizar censo
+    path('reuse/', views.reuseCensus, name='reuse_census'),
 ]
