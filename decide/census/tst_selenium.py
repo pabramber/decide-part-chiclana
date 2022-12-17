@@ -70,3 +70,38 @@ class TestFilterCensus():
       self.assertFalse(str(self.driver.find_elements(By.NAME,'myfile')), '')
       c=Census.objects.all()
       self.assertEqual(Census.objects.count(), 0)
+
+  #Añadimos un censo y comprobamos que se exporta correctamente
+  def test_exporttest(self):
+    
+    self.driver.get("http://127.0.0.1:8000/census/")
+    self.driver.set_window_size(1366, 685)
+    self.driver.find_element(By.CSS_SELECTOR, ".col:nth-child(6) .card-title").click()
+    self.driver.find_element(By.CSS_SELECTOR, ".col:nth-child(1) .card-title").click()
+    self.driver.find_element(By.ID, "id_voting_id").click()
+    self.driver.find_element(By.ID, "id_voting_id").send_keys("2")
+    self.driver.find_element(By.ID, "id_voter_id").send_keys("2")
+    self.driver.find_element(By.ID, "id_name").send_keys("2")
+    self.driver.find_element(By.ID, "id_surname").send_keys("2")
+    self.driver.find_element(By.ID, "id_city").send_keys("2")
+    self.driver.find_element(By.ID, "id_a_community").send_keys("2")
+    self.driver.find_element(By.ID, "id_gender").send_keys("2")
+    self.driver.find_element(By.ID, "id_born_year").send_keys("2")
+    self.driver.find_element(By.ID, "id_civil_state").send_keys("2")
+    self.driver.find_element(By.ID, "id_sexuality").send_keys("2")
+    self.driver.find_element(By.ID, "id_works").send_keys("2")
+    self.driver.find_element(By.CSS_SELECTOR, "button").click()
+    self.driver.find_element(By.LINK_TEXT, "Come back to Census Menu").click()
+    self.driver.find_element(By.CSS_SELECTOR, ".col:nth-child(6) .card-title").click()
+    self.driver.find_element(By.LINK_TEXT, "Exportar en Excel").click()
+
+  #Hay que estra logueado para realizar una exportación
+  #Probamos a exportar sin login
+  def test_exportwronglogin(self):
+    self.driver.get("http://127.0.0.1:8000/census/")
+    self.driver.set_window_size(603, 684)
+    self.driver.find_element(By.CSS_SELECTOR, ".container2").click()
+    self.driver.find_element(By.CSS_SELECTOR, "h1").click()
+    self.driver.find_element(By.CSS_SELECTOR, ".col:nth-child(6) .card-title").click()
+    self.driver.find_element(By.CSS_SELECTOR, "html").click()
+    self.driver.find_element(By.LINK_TEXT, "Exportar en Excel").click()

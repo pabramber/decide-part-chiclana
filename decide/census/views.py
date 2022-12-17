@@ -272,6 +272,8 @@ def censusDeletedSucced(request):
 def home(request):
     queryset = Census.objects.all()
     return render(request, 'lista_censo.html', {'queryset':queryset})
+
+
 '''
 class ReportePersonalizadoExcel(TemplateView):
     def get(self,request,*args,**kwargs):
@@ -297,12 +299,16 @@ class ReportePersonalizadoExcel(TemplateView):
         return response
 '''
 
+#Exportar censo en excel
+
 class ReporteAutorExcel(TemplateView):
+
     def get(self,request,*args,**kwargs):
+
         census = Census.objects.all()
         wb = Workbook()
         ws = wb.active
-        ws['B1'] = 'Reporte de Censos'
+        
 
         ws.merge_cells('B1:L1')
 
@@ -322,16 +328,105 @@ class ReporteAutorExcel(TemplateView):
 
         for censu in census:
             ws.cell(row = cont, column = 2).value = censu.voting_id
+            ws.cell(row = cont, column = 2).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 2).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 2).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 3).value = censu.voter_id
+            ws.cell(row = cont, column = 3).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 3).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 3).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 4).value = censu.name
+            ws.cell(row = cont, column = 4).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 4).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 4).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 5).value = censu.surname
+            ws.cell(row = cont, column = 5).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 5).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 5).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 6).value = censu.city
+            ws.cell(row = cont, column = 6).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 6).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 6).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 7).value = censu.a_community
+            ws.cell(row = cont, column = 7).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 7).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 7).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 8).value = censu.gender
+            ws.cell(row = cont, column = 8).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 8).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 8).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 9).value = censu.born_year
+            ws.cell(row = cont, column = 9).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 9).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 9).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 10).value = censu.civil_state
+            ws.cell(row = cont, column = 10).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 10).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 10).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 11).value = censu.sexuality
+            ws.cell(row = cont, column = 11).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 11).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 11).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 12).value = censu.works
+            ws.cell(row = cont, column = 12).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 12).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 12).font = Font(name = 'Calibri', size = 8)
+
+            ws['B1'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['B1'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))                         
+            ws['B1'].fill = PatternFill(start_color = '66FFCC', end_color ='66FFCC', fill_type = "solid") 
+            ws['B1'].font = Font(name = 'Calibri', size = 12, bold = True)
+            ws['B1'] = 'EXPORTACIÓN DE CENSOS'
+
+            ws['B3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['B3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['C3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['C3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['D3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['D3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['E3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['E3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['F3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['F3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['G3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['G3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['H3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['H3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['I3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['I3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))  
+            ws['J3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['J3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['K3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['K3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['L3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['L3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))                        
+
+            ws.column_dimensions['B'].width = 10
+            ws.column_dimensions['C'].width = 10
+            ws.column_dimensions['D'].width = 20
+            ws.column_dimensions['E'].width = 20
+            ws.column_dimensions['F'].width = 20
+            ws.column_dimensions['G'].width = 20
+            ws.column_dimensions['H'].width = 20
+            ws.column_dimensions['I'].width = 10
+            ws.column_dimensions['J'].width = 20
+            ws.column_dimensions['K'].width = 20
+            ws.column_dimensions['L'].width = 10
+
+            ws.row_dimensions[1].height = 25
+
+
+
             cont+=1
 
         nombre_archivo = "ReporteAutorExcel.xlsx"
