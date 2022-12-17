@@ -100,6 +100,8 @@ class TestSaveVotingFile(StaticLiveServerTestCase):
     
     # Este test solo funciona en local, para probarlo hay que poner un usuario
     # y una contraseña ya creados en las 2 lineas que se indican más abajo
+    # Al correrlo con live_server_url si que puede crear un usuario, pero
+    # al hacer el tally devuelve un error 500.
     '''
     def test_save_voting_file(self):
         driver = self.driver
