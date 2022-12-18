@@ -7,7 +7,12 @@ from base import mods
 from base.models import Auth, Key
 from django.utils import timezone
 from postproc.models import PostprocTypeEnum
-
+from datetime import datetime
+from django.core.validators import URLValidator
+import requests
+from io import StringIO
+from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
 
 class Question(models.Model):
     desc = models.TextField()
@@ -16,6 +21,7 @@ class Question(models.Model):
             ('S', 'Score question'),
             ('R', 'Ranked question'),
             ('B', 'Yes/No question'),
+            ('I', 'Image'),
             ]
     type = models.CharField(max_length=1, choices=TYPES, default='C')  
     create_ordination = models.BooleanField(verbose_name='Create ordination', default=False)
@@ -41,6 +47,15 @@ class QuestionOption(models.Model):
     number = models.PositiveIntegerField(blank=True, null=True)
     option = models.TextField()
 
+    def clean(self):
+        if self.question.type == 'I':
+            validator = URLValidator()
+            validator(self.option)
+            image_formats = ("image/png", "image/jpeg", "image/jpg")
+            r = requests.get(self.option)
+            if r.headers["content-type"] not in image_formats:
+                raise ValidationError("Url does not contain a compatible image")
+
     def save(self, *args, **kwargs):
         if self.question.type == 'B':
             if not self.option == 'Sí' and not self.option == 'No':
@@ -52,6 +67,15 @@ class QuestionOption(models.Model):
 
     def __str__(self):
         return '{} ({})'.format(self.option, self.number)
+    
+    def image_tag(self):
+        from django.utils.html import escape
+        if self.question.type == 'I':
+            return mark_safe(u'<img src="%s" width="150" height="150" />' % escape(self.option))
+        else:
+            return ""
+    image_tag.short_description = 'Image'
+    image_tag.allow_tags = True
 
 
 class Voting(models.Model):
@@ -75,6 +99,79 @@ class Voting(models.Model):
     postproc = JSONField(blank=True, null=True)
 
     file = models.FileField(blank=True)
+
+    def read_file(self):
+        import warnings
+        warnings.filterwarnings("ignore")
+        text_buffer = self.file.open("rb")
+        auths = []
+        voting_desc = ""
+        voting_name = ""
+        question_desc = ""
+        question_type = ""
+        options = []
+        future_start = None
+        future_stop = None
+        voting:Voting = None
+        question:Question = None
+        lines = text_buffer.readlines()
+        for line in lines:
+            line = line.decode("utf-8")
+            if line.find("auths") != -1:
+                auths_list = line.split(":",1)[1].replace("[(","").replace(")]","").strip().split("),(")
+                for auth_str in auths_list:
+                    try:
+                        auth_split = auth_str.split(",")
+                        auth = Auth(name=auth_split[0].strip(), url=auth_split[1].strip())
+                        auths.append(auth)
+                    except:
+                        raise ValidationError("You need to add a valid auth")
+            if line.find("question_desc") != -1:
+                question_desc = line.split(":",1)[1].strip()
+            if line.find("voting_desc") != -1:
+                voting_desc = line.split(":",1)[1].strip()
+            if line.find("options") != -1:
+                options_str_list = line.split(":",1)[1].replace("[(","").replace(")]","").strip().split("),(")
+                for option_str in options_str_list:
+                    option = option_str.split(",")
+                    options.append(option)
+            if line.find("voting_name") != -1:
+                voting_name = line.split(":",1)[1].strip()
+            if line.find("question_type") != -1:
+                question_type = line.split(":",1)[1].strip()
+            if line.find("future_start") != -1:
+                future_start_str = line.split(":",1)[1].strip()
+                future_start = datetime.strptime(future_start_str, "%Y-%m-%d %H:%M:%S")
+            if line.find("future_stop") != -1:
+                future_end_str = line.split(":",1)[1]
+                future_stop = datetime.strptime(future_start_str, "%Y-%m-%d %H:%M:%S")
+        text_buffer.close
+        question = Question(desc=question_desc,type=question_type)
+        try:
+            question.full_clean()
+            question.save()
+        except:
+            raise ValidationError("You need to add a question")
+        
+        for option in options:
+            new_option = QuestionOption(question=question, number=int(option[0]), option=option[1])
+            new_option.save()
+        self.question = question
+        self.desc = voting_desc
+        self.name = voting_name
+        if self.name == "":
+            raise ValidationError("You need to add a name")
+        self.future_start=future_start
+        self.future_stop = future_stop
+        self.save()
+        for auth in auths:
+            try:
+                auth.save()
+                auth.full_clean()
+                self.auths.add(auth)
+            except:
+                raise ValidationError("You need to add a valid auth")
+        
 
     def create_pubkey(self):
         if self.pub_key or not self.auths.count():
@@ -175,9 +272,19 @@ class Voting(models.Model):
             file.close()
             self.file = path
             self.save()    
+    
+        
 
     def __str__(self):
         return self.name
+
+class VotingFromFile(models.Model):
+    voting = models.ForeignKey(Voting(), related_name='voting', on_delete=models.CASCADE, blank=True)
+    file_voting = models.FileField()
+    def clean(self):
+        v = Voting(file=self.file_voting)
+        v.read_file()
+        self.voting = v
 
 def update_votings():
     

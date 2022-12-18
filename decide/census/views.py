@@ -28,7 +28,9 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
 def filter(request):
     censo = Census.objects.all()
-    return render(request, 'filterCensus.html', {'census' : censo})
+    votingsIds = votingIdSet()
+    return render(request, 'filterCensus.html', 
+        {'census' : censo, 'votingsIds': votingsIds})
 
 class FilterVotingID(ListView):
     model = Census
@@ -131,39 +133,48 @@ class FilterWorks(ListView):
     
 
 def importer(request):
-    if request.method == 'POST':
-        census_resource = CensusResource()
-        dataset = Dataset()
-        new_census = request.FILES['myfile']
+    try:
+        if request.method == 'POST':
+            census_resource = CensusResource()
+            # obtendremos datos en census_resource
+            dataset = Dataset()
+            new_census = request.FILES['myfile']
 
-        if not new_census.name.endswith('xlsx'):
-            messages.info(request, 'formato incorrecto, debe ser .xslx')
-            return render(request, 'importer.html')
+            if not new_census.name.endswith('xlsx'):
+                messages.error(request, 'incorrect format, must be .xlsx')
+                return render(request, 'importer.html')
+            messages.info(request, 'Uploading Data Line by Line...')
 
-        imported_data = dataset.load(new_census.read(),format='xlsx')
-        #print(imported_data)
-        for data in imported_data:
-            value = Census(
-                    data[0],
-                    data[1],
-                    data[2],
-                    data[3],
-                    data[4],
-                    data[5],
-                    data[6],
-                    data[7],
-                    data[8],
-                    data[9],
-                    data[10],
-                    data[11]
-                    ) 
-            value.save()
-        
-        #result = person_resource.import_data(dataset, dry_run=True)  # Test the data import
+            imported_data = dataset.load(new_census.read(),format='xlsx')
+            #print(imported_data)
+            count = 1
+            for data in imported_data:
+                value = Census(
+                        data[0],
+                        data[1],
+                        data[2],
+                        data[3],
+                        data[4],
+                        data[5],
+                        data[6],
+                        data[7],
+                        data[8],
+                        data[9],
+                        data[10],
+                        data[11]
+                        )
+                value.save()
+            # time.sleep(1)
+            messages.info(request, 'File Uploaded Successfully...')
+            
+            #result = census_resource.import_data(dataset, dry_run=True)  # Test the data import
 
-        #if not result.has_errors():
-        #    person_resource.import_data(dataset, dry_run=False)  # Actually import now
-
+            #if not result.has_errors():
+            #    census_resource.import_data(dataset, dry_run=False)  # Actually import now
+     
+    except:
+        messages.error(request,'Same voter_id has been observed more than once. Import has been canceled../nPlease Make sure voter_id field should be unique.')
+    
     return render(request, 'importer.html')
 
 
@@ -261,6 +272,8 @@ def censusDeletedSucced(request):
 def home(request):
     queryset = Census.objects.all()
     return render(request, 'lista_censo.html', {'queryset':queryset})
+
+
 '''
 class ReportePersonalizadoExcel(TemplateView):
     def get(self,request,*args,**kwargs):
@@ -286,12 +299,16 @@ class ReportePersonalizadoExcel(TemplateView):
         return response
 '''
 
+#Exportar censo en excel
+
 class ReporteAutorExcel(TemplateView):
+
     def get(self,request,*args,**kwargs):
+
         census = Census.objects.all()
         wb = Workbook()
         ws = wb.active
-        ws['B1'] = 'Reporte de Censos'
+        
 
         ws.merge_cells('B1:L1')
 
@@ -311,16 +328,105 @@ class ReporteAutorExcel(TemplateView):
 
         for censu in census:
             ws.cell(row = cont, column = 2).value = censu.voting_id
+            ws.cell(row = cont, column = 2).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 2).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 2).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 3).value = censu.voter_id
+            ws.cell(row = cont, column = 3).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 3).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 3).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 4).value = censu.name
+            ws.cell(row = cont, column = 4).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 4).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 4).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 5).value = censu.surname
+            ws.cell(row = cont, column = 5).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 5).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 5).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 6).value = censu.city
+            ws.cell(row = cont, column = 6).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 6).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 6).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 7).value = censu.a_community
+            ws.cell(row = cont, column = 7).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 7).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 7).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 8).value = censu.gender
+            ws.cell(row = cont, column = 8).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 8).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 8).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 9).value = censu.born_year
+            ws.cell(row = cont, column = 9).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 9).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 9).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 10).value = censu.civil_state
+            ws.cell(row = cont, column = 10).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 10).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 10).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 11).value = censu.sexuality
+            ws.cell(row = cont, column = 11).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 11).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 11).font = Font(name = 'Calibri', size = 8)
+
             ws.cell(row = cont, column = 12).value = censu.works
+            ws.cell(row = cont, column = 12).alignment = Alignment(horizontal = "center")
+            ws.cell(row = cont, column = 12).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))
+            ws.cell(row = cont, column = 12).font = Font(name = 'Calibri', size = 8)
+
+            ws['B1'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['B1'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))                         
+            ws['B1'].fill = PatternFill(start_color = '66FFCC', end_color ='66FFCC', fill_type = "solid") 
+            ws['B1'].font = Font(name = 'Calibri', size = 12, bold = True)
+            ws['B1'] = 'EXPORTACIÓN DE CENSOS'
+
+            ws['B3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['B3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['C3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['C3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['D3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['D3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['E3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['E3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['F3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['F3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['G3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['G3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['H3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['H3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['I3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['I3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))  
+            ws['J3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['J3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['K3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['K3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin")) 
+            ws['L3'].alignment = Alignment(horizontal = "center", vertical = "center")
+            ws['L3'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top= Side(border_style="thin"), bottom = Side(border_style="thin"))                        
+
+            ws.column_dimensions['B'].width = 10
+            ws.column_dimensions['C'].width = 10
+            ws.column_dimensions['D'].width = 20
+            ws.column_dimensions['E'].width = 20
+            ws.column_dimensions['F'].width = 20
+            ws.column_dimensions['G'].width = 20
+            ws.column_dimensions['H'].width = 20
+            ws.column_dimensions['I'].width = 10
+            ws.column_dimensions['J'].width = 20
+            ws.column_dimensions['K'].width = 20
+            ws.column_dimensions['L'].width = 10
+
+            ws.row_dimensions[1].height = 25
+
+
+
             cont+=1
 
         nombre_archivo = "ReporteAutorExcel.xlsx"
@@ -330,3 +436,31 @@ class ReporteAutorExcel(TemplateView):
         response["Content-Disposition"] = contenido
         wb.save(response)
         return response
+
+
+# -------------------- REUTILIZAR CENSO ------------------------
+
+def votingIdSet():
+    lista=[]
+    for census in Census.objects.all():
+        lista.append(census.voting_id)
+    conjunto=set(lista)
+    return conjunto
+
+def reuseCensus(request):
+    query = request.GET['q']
+    c = request.GET['census']
+    print(c)
+    query = int(query)
+
+    Census.objects.update(voting_id=query)
+    census = Census.objects.filter(voting_id__icontains=query).order_by('-voter_id')
+    return render(request, "census_reused.html", {'census':census, 'page_name':'Reuse Results'})
+
+"""
+class reuseContext(ListView):
+    model = Census
+    template_name = 'filterCensus.html'
+    context_object_name = 'census'
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)"""

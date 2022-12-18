@@ -126,33 +126,14 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
 
-
-
-
 def create_yes_no_question(self):
-        option_yes = False
-        option_no = False
-        
-        try:
-            options = QuestionOption.objects.all().filter(question=self)
-            for o in options:
-                if o.option == 'Sí':
-                    option_yes = True
-                elif o.option == 'No':
-                    option_no = True
-
-                if option_yes and option_no:
-                    break
-        except:
-            pass
-        
-        if not option_yes:
-            option_yes = QuestionOption(option='Sí', number=1, question=self)
-            option_yes.save()
-        if not option_no:
-            option_no = QuestionOption(option='No', number=2, question=self)
-            option_no.save()
-
+    options = QuestionOption.objects.all().filter(question=self)
+    for o in options:
+        o.delete()
+    option_yes = QuestionOption(option='Sí', number=1, question=self)
+    option_yes.save()
+    option_no = QuestionOption(option='No', number=2, question=self)
+    option_no.save()
 
 def create_ranked_question(self):
     try:

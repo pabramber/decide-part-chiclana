@@ -16,7 +16,8 @@ from mixnet.mixcrypt import ElGamal
 from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
 from voting.models import Voting, Question, QuestionOption
-
+from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 import urllib.request
 
 
@@ -263,8 +264,11 @@ class VotingTestCase(BaseTestCase):
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting already tallied') 
-    def test_put_future_date(self):
+
+    def test_put_future_start(self):
         #creacion de votacion:
+        import warnings
+        warnings.filterwarnings("ignore")
         q = Question(desc='test question')
         q.save()
         for i in range(5):
@@ -279,10 +283,12 @@ class VotingTestCase(BaseTestCase):
         v.auths.add(a)
         v.future_start = datetime.strptime('2023-08-09 01:01:01', "%Y-%m-%d %H:%M:%S")
         v.save()
-        return v
+        self.assertEquals(v.future_start, datetime.strptime('2023-08-09 01:01:01', "%Y-%m-%d %H:%M:%S"))
 
-    def test_put_future_date(self):
+    def test_put_future_stop(self):
         #creacion de votacion:
+        import warnings
+        warnings.filterwarnings("ignore")
         q = Question(desc='test question')
         q.save()
         for i in range(5):
@@ -297,7 +303,8 @@ class VotingTestCase(BaseTestCase):
         v.auths.add(a)
         v.future_stop = datetime.strptime('2023-08-09 01:01:01', "%Y-%m-%d %H:%M:%S")
         v.save()
-        return v
+        self.assertEquals(v.future_stop, datetime.strptime('2023-08-09 01:01:01', "%Y-%m-%d %H:%M:%S"))
+
     
     # Testing yes/no question feature
     def test_create_yes_no_question(self):
@@ -343,6 +350,8 @@ class VotingTestCase(BaseTestCase):
     def test_save_voting_file_200(self):
         self.login()
         voting = self.create_voting()
+        voting.desc = "description voting"
+        voting.save()
         
         data = {'action': 'start'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')       
@@ -397,3 +406,79 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting has not being tallied')
+
+    def test_create_image_question_success(self):
+        url_one = "https://wallpapercave.com/uwp/uwp1871846.png"
+        url_two = "https://wallpapercave.com/uwp/uwp2004429.jpeg"
+        question = Question(desc='Image question test', type='I')
+        question.save()
+        qo_one = QuestionOption(question=question, option=url_one)
+        qo_two = QuestionOption(question=question, option=url_two)
+        qo_one.save()
+        qo_two.save()
+        self.assertEquals(len(question.options.all()), 2)
+        self.assertEquals(question.options.all()[0].option, url_one)
+        self.assertEquals(question.options.all()[1].option, url_two)
+    
+    def test_create_image_question_failure_no_url(self):
+        not_url = "This is not a url!!!"
+        question = Question(desc='Image question test', type='I')
+        question.save()
+        qo_one = QuestionOption(question=question, option=not_url)
+        try:
+            qo_one.clean()
+            qo_one.save()
+        except ValidationError as e:
+            self.assertEquals(e.message, 'Enter a valid URL.')
+        self.assertEquals(len(question.options.all()), 0)
+    def test_create_image_question_failure_not_an_image(self):
+        not_url = "http://www.google.com"
+        question = Question(desc='Image question test', type='I')
+        question.save()
+        qo_one = QuestionOption(question=question, option=not_url)
+        try:
+            qo_one.clean()
+            qo_one.save()
+        except ValidationError as e:
+            self.assertEquals(e.message, 'Url does not contain a compatible image')
+        self.assertEquals(len(question.options.all()), 0)
+    def test_load_voting_from_file(self):
+        with open("./voting/files/prueba", 'rb') as f:
+            simple_upload = SimpleUploadedFile(name="prueba", content= f.raw.readall(),content_type="text/plain")
+            voting = Voting(file = simple_upload)
+            voting.read_file()
+            voting.save()
+            self.assertEquals(voting.desc, "prueba lectura")
+    
+    def test_load_voting_from_file_negative_name(self):
+        with open("./voting/files/prueba_fallida_nombre", 'rb') as f:
+            simple_upload = SimpleUploadedFile(name="prueba", content= f.raw.readall(),content_type="text/plain")
+            voting = Voting(file = simple_upload)
+            try:
+                voting.read_file()
+                voting.save()
+            except ValidationError as e:
+                self.assertEqual(e.message, "You need to add a name")
+                
+    def test_load_voting_from_file_negative_auth(self):
+        with open("./voting/files/prueba_fallida_auth", 'rb') as f:
+            simple_upload = SimpleUploadedFile(name="prueba", content= f.raw.readall(),content_type="text/plain")
+            voting = Voting(file = simple_upload)
+            try:
+                voting.read_file()
+                voting.save()
+            except ValidationError as e:
+                self.assertEqual(e.message, "You need to add a valid auth")
+
+    def test_load_voting_from_file_negative_question(self):
+        with open("./voting/files/prueba_fallida_question", 'rb') as f:
+            simple_upload = SimpleUploadedFile(name="prueba", content= f.raw.readall(),content_type="text/plain")
+            voting = Voting(file = simple_upload)
+            try:
+                voting.read_file()
+                voting.save()
+            except ValidationError as e:
+                self.assertEqual(e.message, "You need to add a question")
+            
+
+        
