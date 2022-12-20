@@ -89,7 +89,7 @@ class Voting(models.Model):
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
 
-    future_start = models.DateTimeField(blank=True, null=True)
+    scheduled_start = models.DateTimeField(blank=True, null=True)
     future_stop = models.DateTimeField(blank=True, null=True)
 
     pub_key = models.OneToOneField(Key, related_name='voting', blank=True, null=True, on_delete=models.SET_NULL)
@@ -292,9 +292,9 @@ def update_votings():
     votaciones = list(Voting.objects.all())
     try:
         for v in votaciones :
-            if(v.future_start <= fecha_hora):
+            if(v.scheduled_start <= fecha_hora):
                 v.start_date = v.future_start
-            if(v.future_stop <= fecha_hora):
+            if(v.scheduled_stop <= fecha_hora):
                 v.end_date = v.future_stop
             v.save()
     except:
